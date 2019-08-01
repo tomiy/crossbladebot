@@ -1,0 +1,6 @@
+*.log
+*.cache
+*.sqlite
+.vscode
+/vendor/
+/build/
