@@ -3,7 +3,6 @@
 namespace CrossbladeBot\Core;
 
 use CrossbladeBot\Traits\Configurable;
-use CrossbladeBot\Debug\Logger;
 
 class Client extends Configurable
 {
@@ -11,12 +10,11 @@ class Client extends Configurable
     private $logger;
     private $socket;
 
-    public function __construct($socket)
+    public function __construct($logger, $socket)
     {
         parent::__construct();
 
-        $this->logger = Logger::getlogger($this);
-
+        $this->logger = $logger;
         $this->socket = $socket;
     }
 

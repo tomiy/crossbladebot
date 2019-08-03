@@ -1,13 +1,13 @@
 <?php
 include_once 'autoloader.php';
 
-use CrossbladeBotV2\Debug\Logger;
-use CrossbladeBotV2\Core\Socket;
+use CrossbladeBot\Debug\Logger;
+use CrossbladeBot\Core\Socket;
 use CrossbladeBot\Core\Client;
 
-Logger::init();
+$logger = new Logger();
 
-$socket = new Socket();
-$client = new Client($socket);
+$socket = new Socket($logger);
+$client = new Client($logger, $socket);
 
 $client->serve();
