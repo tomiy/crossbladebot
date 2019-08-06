@@ -4,19 +4,28 @@ namespace CrossbladeBot\Core;
 
 use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Debug\Logger;
 
 class Client extends Configurable
 {
 
     private $logger;
     private $socket;
+    private $eventhandler;
+    private $loader;
 
-    public function __construct($logger, $socket)
+    private $name;
+
+    public function __construct($logger, $socket, $eventhandler, $loader)
     {
         parent::__construct();
 
         $this->logger = $logger;
         $this->socket = $socket;
+        $this->eventhandler = $eventhandler;
+        $this->loader = $loader;
+
+        $this->loader->register($eventhandler);
     }
 
     public function connect()
@@ -51,13 +60,16 @@ class Client extends Configurable
 
             if ($data) {
                 $message = new Message($data);
+                // print_r($message);
 
                 if (is_null($message->from)) {
                     switch ($message->type) {
                         case 'PING':
                             $lastping = time();
                             $this->socket->send('PONG');
+
                             //pong event
+                            $this->eventhandler->trigger('pong');
                             break;
                         case 'PONG':
                             $latency = time() - $lastping;
@@ -82,6 +94,7 @@ class Client extends Configurable
                         case '372':
                             $this->logger->info('Client connected');
                             //connect event
+                            $this->eventhandler->trigger('connect');
                             break;
                         case 'NOTICE':
                             switch ($message->id) {
@@ -313,6 +326,9 @@ class Client extends Configurable
                             break;
                     }
                 } else {
+                    $message->user = substr($message->from, 0, strpos($message->from, '!'));
+                    if($message->user === $this->name) continue;
+
                     switch ($message->type) {
                         case '353':
                             break;
@@ -325,10 +341,11 @@ class Client extends Configurable
                         case 'WHISPER':
                             break;
                         case 'PRIVMSG':
-                            //FIXME put that treatment in a Command object
-                            if (substr($message->message, 0, $prefixlen) === $prefix) {
+                        //FIXME put that treatment in the Command object
+                            if(substr($message->message, 0, $prefixlen) === $prefix) {
                                 $messagearr = explode(' ', $message->message);
                                 $message->command = substr(array_shift($messagearr), 1);
+                                $this->eventhandler->trigger('command', $message);
                             }
                             break;
                         default:
