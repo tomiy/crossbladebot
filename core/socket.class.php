@@ -3,6 +3,7 @@
 namespace CrossbladeBot\Core;
 
 use CrossbladeBot\Traits\Configurable;
+use CrossbladeBot\Debug\Logger;
 
 class Socket extends Configurable
 {

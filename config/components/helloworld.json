@@ -1,0 +1,9 @@
+{
+    "events": {
+        "connect": "hello"
+    },
+    "commands": {
+        "test": "test",
+        "anothertest": "test"
+    }
+}

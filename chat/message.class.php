@@ -8,9 +8,12 @@ class Message
     public $raw;
     public $tags;
     public $type;
+
     public $channel;
     public $message;
     public $command;
+    public $user;
+
     public $from;
     public $params;
     public $id;
