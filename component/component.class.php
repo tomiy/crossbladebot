@@ -19,10 +19,10 @@ class Component extends Configurable
         }
 
         foreach ($this->config->commands as $command => $callback) {
-            $eventhandler->register('command', function ($message) use ($command, $callback) {
-                if(!isset($message->command)) return;
+            $eventhandler->register('command', function ($message, ...$data) use ($command, $callback) {
+                if (!isset($message->command)) return;
                 if ($message->command === $command) {
-                    call_user_func([$this, $callback], $message);
+                    $this->$callback($message, ...$data);
                 }
             });
         }

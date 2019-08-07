@@ -4,7 +4,6 @@ namespace CrossbladeBot\Core;
 
 use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Debug\Logger;
 
 class Client extends Configurable
 {
@@ -59,14 +58,14 @@ class Client extends Configurable
             $data = $this->socket->getNext();
 
             if ($data) {
+                $cost = microtime(true);
                 $message = new Message($data);
-                // print_r($message);
-
-                if (is_null($message->from)) {
+                 
+                if (empty($message->from)) {
                     switch ($message->type) {
                         case 'PING':
                             $lastping = time();
-                            $this->socket->send('PONG');
+                            $this->socket->send('PONG :' . $message->params[0]);
 
                             //pong event
                             $this->eventhandler->trigger('pong');
@@ -270,6 +269,7 @@ class Client extends Configurable
                                 case "host_off":
                                     break;
                                 default:
+                                    $this->logger->warning('Potential auth failure');
                                     break;
                             }
                             break;
@@ -327,7 +327,6 @@ class Client extends Configurable
                     }
                 } else {
                     $message->user = substr($message->from, 0, strpos($message->from, '!'));
-                    if($message->user === $this->name) continue;
 
                     switch ($message->type) {
                         case '353':
@@ -341,11 +340,13 @@ class Client extends Configurable
                         case 'WHISPER':
                             break;
                         case 'PRIVMSG':
-                        //FIXME put that treatment in the Command object
-                            if(substr($message->message, 0, $prefixlen) === $prefix) {
+                            if ($message->user === $this->name) break;
+                            if (substr($message->message, 0, $prefixlen) === $prefix) {
                                 $messagearr = explode(' ', $message->message);
                                 $message->command = substr(array_shift($messagearr), 1);
                                 $this->eventhandler->trigger('command', $message);
+                            } else {
+                                $this->eventhandler->trigger('message', $message);
                             }
                             break;
                         default:
@@ -353,6 +354,7 @@ class Client extends Configurable
                             break;
                     }
                 }
+                print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E4));
             }
         }
     }
