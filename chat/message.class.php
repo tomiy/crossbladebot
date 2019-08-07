@@ -41,9 +41,9 @@ class Message
 
         $match = preg_match($regex, $this->raw, $matches);
 
-        if(!$match) return false;
+        if (!$match) return false;
 
-        if($this->raw[0] === '@') {
+        if ($this->raw[0] === '@') {
             $rawtags = explode(';', $matches['tags']);
 
             for ($i = 0; $i < sizeof($rawtags); $i++) {
@@ -53,17 +53,17 @@ class Message
             }
         }
 
-        $this->from = $matches['from'];
         $this->type = $matches['type'];
 
-        if(!empty($matches['params'])) {
+        if (!empty($matches['params'])) {
             $this->params = explode(' ', $matches['params']);
         }
 
-        if(isset($matches['trailing'])) {
+        if (isset($matches['trailing'])) {
             $this->params[] = $matches['trailing'];
         }
 
+        $this->from = $matches['from'] ?? null;
         $this->channel = $this->params[0] ?? null;
         $this->message = $this->params[1] ?? null;
         $this->id = $this->tags['msg-id'] ?? null;

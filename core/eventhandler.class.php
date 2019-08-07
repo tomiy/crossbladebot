@@ -33,14 +33,14 @@ class EventHandler
         return $id;
     }
 
-    public function trigger($event, $data = null)
+    public function trigger($event, ...$data)
     {
         if (!isset($this->events[$event])) return;
 
         $this->logger->info('Triggered event ' . $event);
 
         foreach ($this->events[$event] as $callback) {
-            call_user_func($callback, $data);
+            call_user_func($callback, ...$data);
         }
     }
 
