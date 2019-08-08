@@ -11,7 +11,7 @@ $logger = new Logger();
 
 $socket = new Socket($logger);
 $eventhandler = new EventHandler($logger);
-$loader = new Loader();
+$loader = new Loader($socket);
 $client = new Client($logger, $socket, $eventhandler, $loader);
 
 $client->serve();

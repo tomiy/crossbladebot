@@ -7,20 +7,35 @@ use CrossbladeBot\Chat\Message;
 
 class Channel extends RateLimit
 {
-    private $name;
+    private $logger;
 
-    public function __construct(Message $join)
+    private $name;
+    private $ismod;
+
+    public function __construct($logger, Message $join)
     {
-        if ($join->isMod) {
-            parent::__construct(100, 30);
-        } else {
-            parent::__construct(20, 30);
+        parent::__construct(20, 30);
+        $this->logger = $logger;
+        $this->name = $join->params[0];
+
+        $this->logger->info('Joined channel ' . $this->name);
+    }
+
+    public function userstate(Message $userstate)
+    {
+        if ($userstate->tags['mod'] == true && !$this->ismod) {
+            $this->logger->info('Setting rate limit to moderator settings');
+            $this->setRate(100, 30);
+        } else if($userstate->tags['mod'] == false && $this->ismod) {
+            $this->logger->info('Setting rate limit to user settings');
+            $this->setRate(20, 30);
         }
     }
 
-    public function send($message)
+    public function send($message, $socket)
     {
+        $this->logger->info('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
         $this->limit();
-        //send the message
+        $socket->send('PRIVMSG ' . $this->name . ' :' . $message . NL);
     }
 }
