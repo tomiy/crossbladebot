@@ -9,7 +9,7 @@ class Channel extends RateLimit
 {
     private $logger;
 
-    private $name;
+    public $name;
     private $ismod;
 
     public function __construct($logger, Message $join)
@@ -26,9 +26,11 @@ class Channel extends RateLimit
         if ($userstate->tags['mod'] == true && !$this->ismod) {
             $this->logger->info('Setting rate limit to moderator settings');
             $this->setRate(100, 30);
+            $this->ismod = true;
         } else if($userstate->tags['mod'] == false && $this->ismod) {
             $this->logger->info('Setting rate limit to user settings');
             $this->setRate(20, 30);
+            $this->ismod = false;
         }
     }
 

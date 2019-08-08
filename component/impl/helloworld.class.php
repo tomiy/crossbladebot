@@ -6,15 +6,13 @@ use CrossbladeBot\Component\Component;
 
 class HelloWorld extends Component
 {
-    public function hello()
+    public function join($channel)
     {
-        print_r('Hello!' . NL);
+        $this->send('Connected to channel ' . $channel->name . NL, $channel);
     }
 
-    public function test($message, $channel)
+    public function command($message, $channel)
     {
-        $output = 'Command: ' . $message->command . NL;
-        print_r($output);
-        $this->send($output, $channel);
+        $this->send('Command: ' . $message->command . NL, $channel);
     }
 }
