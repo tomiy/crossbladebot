@@ -11,8 +11,10 @@ class HelloWorld extends Component
         print_r('Hello!' . NL);
     }
 
-    public function test($message)
+    public function test($message, $channel)
     {
-        print_r('Command: ' . $message->command . NL);
+        $output = 'Command: ' . $message->command . NL;
+        print_r($output);
+        $this->send($output, $channel);
     }
 }

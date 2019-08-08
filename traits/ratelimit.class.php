@@ -13,6 +13,10 @@ class RateLimit
     public function __construct($rate, $span)
     {
         $this->last = microtime(true);
+        $this->setRate($rate, $span);
+    }
+    
+    protected function setRate($rate, $span) {
         $this->rate = $rate;
         $this->allowance = $rate;
         $this->span = $span;

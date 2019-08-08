@@ -4,6 +4,7 @@ namespace CrossbladeBot\Core;
 
 use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Chat\Channel;
 
 class Client extends Configurable
 {
@@ -14,6 +15,7 @@ class Client extends Configurable
     private $loader;
 
     private $name;
+    private $channels;
 
     public function __construct($logger, $socket, $eventhandler, $loader)
     {
@@ -60,7 +62,7 @@ class Client extends Configurable
             if ($data) {
                 $cost = microtime(true);
                 $message = new Message($data);
-                 
+
                 if (empty($message->from)) {
                     switch ($message->type) {
                         case 'PING':
@@ -306,6 +308,10 @@ class Client extends Configurable
                         case 'RECONNECT':
                             break;
                         case 'USERSTATE':
+                            $channel = $this->getChannel($message->params[0]);
+                            if ($channel) {
+                                $channel->userstate($message);
+                            }
                             break;
                         case 'GLOBALUSERSTATE':
                             break;
@@ -334,19 +340,26 @@ class Client extends Configurable
                         case '366':
                             break;
                         case 'JOIN':
+                            if ($this->isme($message->user)) {
+                                $this->channels[$message->params[0]] = new Channel($this->logger, $message);
+                                $this->channels[$message->params[0]]->send('Connected to channel!', $this->socket);
+                            } else {
+                                //another user joined
+                            }
                             break;
                         case 'PART':
                             break;
                         case 'WHISPER':
                             break;
                         case 'PRIVMSG':
-                            if ($message->user === $this->name) break;
+                            if ($this->isme($message->user)) break;
+                            $channel = $this->getChannel($message->channel);
                             if (substr($message->message, 0, $prefixlen) === $prefix) {
                                 $messagearr = explode(' ', $message->message);
                                 $message->command = substr(array_shift($messagearr), 1);
-                                $this->eventhandler->trigger('command', $message);
+                                $this->eventhandler->trigger('command', $message, $channel);
                             } else {
-                                $this->eventhandler->trigger('message', $message);
+                                $this->eventhandler->trigger('message', $message, $channel);
                             }
                             break;
                         default:
@@ -357,5 +370,18 @@ class Client extends Configurable
                 print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E4));
             }
         }
+    }
+
+    private function isme($user)
+    {
+        return $user === $this->name;
+    }
+
+    private function getChannel($name) {
+        if(isset($this->channels[$name])) {
+            return $this->channels[$name];
+        }
+        $this->logger->warning('Call to a nonexistant channel');
+        return false;
     }
 }
