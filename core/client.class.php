@@ -341,8 +341,8 @@ class Client extends Configurable
                             break;
                         case 'JOIN':
                             if ($this->isme($message->user)) {
-                                $this->channels[$message->params[0]] = new Channel($this->logger, $message);
-                                $this->channels[$message->params[0]]->send('Connected to channel!', $this->socket);
+                                $channel = $this->channels[$message->params[0]] = new Channel($this->logger, $message);
+                                $this->eventhandler->trigger('join', $channel);
                             } else {
                                 //another user joined
                             }
@@ -377,8 +377,9 @@ class Client extends Configurable
         return $user === $this->name;
     }
 
-    private function getChannel($name) {
-        if(isset($this->channels[$name])) {
+    private function getChannel($name)
+    {
+        if (isset($this->channels[$name])) {
             return $this->channels[$name];
         }
         $this->logger->warning('Call to a nonexistant channel');
