@@ -8,8 +8,11 @@ class HelloWorld extends Component
 {
     public function join($channel)
     {
-        $this->send('Connected to channel ' . $channel->name . NL, $channel);
+        $connectmsg = 'Connected to channel ' . $channel->name . NL;
+        $this->send($connectmsg, $channel);
         sleep(3);
+        print_r($connectmsg);
+        $this->logger->info($connectmsg);
     }
 
     public function command($message, $channel)

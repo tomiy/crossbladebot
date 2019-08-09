@@ -1,0 +1,6 @@
+{
+    "commands": {
+        "join": "join",
+        "part": "part"
+    }
+}

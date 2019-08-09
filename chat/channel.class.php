@@ -48,7 +48,11 @@ class Channel extends RateLimit
     {
         $this->logger->info('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
         $this->limit();
-        $this->socket->send('PRIVMSG ' . $this->name . ' :' . $message . NL);
+        $this->socket->send('PRIVMSG ' . $this->name . ' :' . $message);
+    }
+
+    public function sendRaw($message) {
+        $this->socket->send($message);
     }
 
     private function isOp($message) {
