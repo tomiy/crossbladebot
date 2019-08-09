@@ -3,7 +3,13 @@
         "join": "join"
     },
     "commands": {
-        "test": "command",
-        "anothertest": "command"
+        "test": {
+            "userlevel": "user",
+            "callback": "command"
+        },
+        "anothertest": {
+            "userlevel": "mod",
+            "command": "command"
+        }
     }
 }
