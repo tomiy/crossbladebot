@@ -368,7 +368,7 @@ class Client extends Configurable
                             break;
                     }
                 }
-                print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E4));
+                print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
             }
         }
     }
