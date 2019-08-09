@@ -8,14 +8,16 @@ use CrossbladeBot\Chat\Message;
 class Channel extends RateLimit
 {
     private $logger;
+    private $socket;
 
     public $name;
     private $ismod;
 
-    public function __construct($logger, Message $join)
+    public function __construct($logger, $socket, Message $join)
     {
         parent::__construct(20, 30);
         $this->logger = $logger;
+        $this->socket = $socket;
         $this->name = $join->params[0];
 
         $this->logger->info('Joined channel ' . $this->name);
@@ -34,10 +36,10 @@ class Channel extends RateLimit
         }
     }
 
-    public function send($message, $socket)
+    public function send($message)
     {
         $this->logger->info('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
         $this->limit();
-        $socket->send('PRIVMSG ' . $this->name . ' :' . $message . NL);
+        $this->socket->send('PRIVMSG ' . $this->name . ' :' . $message . NL);
     }
 }

@@ -7,13 +7,13 @@ class Loader
 
     private $components;
 
-    public function __construct($socket)
+    public function __construct()
     {
         //iterate through the impl folder and instanciate every class
         foreach (glob('./component/impl/*.class.php') as $file) {
             $name = basename($file, '.class.php');
             $class = __NAMESPACE__ . '\Impl\\' . ucfirst($name);
-            $this->components[$name] = new $class($socket);
+            $this->components[$name] = new $class();
         }
     }
 
