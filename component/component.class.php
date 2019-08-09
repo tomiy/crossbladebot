@@ -6,6 +6,12 @@ use CrossbladeBot\Traits\Configurable;
 
 class Component extends Configurable
 {
+    protected static $USERLEVEL = [
+        'user' => 0,
+        'mod' => 1,
+        'owner' => 2
+    ];
+
     protected $logger;
     
     public function __construct($logger)
@@ -23,11 +29,15 @@ class Component extends Configurable
         }
 
         if(isset($this->config->commands)) {
-            foreach ($this->config->commands as $command => $callback) {
-                $eventhandler->register('command', function ($message, $channel, ...$data) use ($command, $callback) {
+            foreach ($this->config->commands as $command => $cmdinfo) {
+                $eventhandler->register('command', function ($message, $channel, ...$data) use ($command, $cmdinfo) {
                     if (!isset($message->command)) return;
+                    //check user level here and compare to command level (to add in json)
                     if ($message->command === $command) {
-                        $this->$callback($message, $channel, ...$data);
+                        print_r($channel->getUserLevel($message) . NL);
+                        print_r(static::$USERLEVEL[$cmdinfo->userlevel] . NL);
+                        if ($channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return;
+                        $this->{$cmdinfo->callback}($message, $channel, ...$data);
                     }
                 });
             }

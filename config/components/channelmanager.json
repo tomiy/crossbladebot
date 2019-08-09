@@ -1,6 +1,12 @@
 {
     "commands": {
-        "join": "join",
-        "part": "part"
+        "join": {
+            "userlevel": "user",
+            "callback": "join"
+        },
+        "part": {
+            "userlevel": "owner",
+            "callback": "part"
+        }
     }
 }
