@@ -12,7 +12,10 @@ class Message
     public $channel;
     public $message;
     public $command;
+
     public $user;
+    public $nick;
+    public $host;
 
     public $from;
     public $params;
@@ -64,9 +67,19 @@ class Message
         }
 
         $this->from = $matches['from'] ?? null;
-        $this->channel = $this->params[0] ?? null;
+        $this->channel = $this->params[0][0] == '#' ? $this->params[0] : null;
         $this->message = $this->params[1] ?? null;
         $this->id = $this->tags['msg-id'] ?? null;
+
+        $usermatch = preg_match('/(.*)!(.*)@(.*)/', $this->from, $user);
+
+        if ($usermatch) {
+            $this->nick = $user[0];
+            $this->user = $user[1];
+            $this->host = $user[2];
+        } else if(isset($this->tags['display-name'])) {
+            $this->user = strtolower($this->tags['display-name']);
+        }
     }
 
     private function badges()

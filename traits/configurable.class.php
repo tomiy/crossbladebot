@@ -12,4 +12,8 @@ abstract class Configurable
         $filepath = getcwd() . '/config/' . $subfolder . $class . '.json';
         $this->config = json_decode(file_get_contents($filepath), false, 512, JSON_FORCE_OBJECT);
     }
+
+    public function getConfig() {
+        return $this->config;
+    }
 }

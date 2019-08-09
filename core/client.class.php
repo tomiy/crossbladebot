@@ -26,7 +26,7 @@ class Client extends Configurable
         $this->eventhandler = $eventhandler;
         $this->loader = $loader;
 
-        $this->loader->register($eventhandler);
+        $this->loader->register($eventhandler, $this);
     }
 
     public function connect()
@@ -332,8 +332,6 @@ class Client extends Configurable
                             break;
                     }
                 } else {
-                    $message->user = substr($message->from, 0, strpos($message->from, '!'));
-
                     switch ($message->type) {
                         case '353':
                             break;
