@@ -22,10 +22,10 @@ class Loader
         }
     }
 
-    public function register($eventhandler)
+    public function register($eventhandler, $client)
     {
         foreach ($this->components as $component) {
-            $component->register($eventhandler);
+            $component->register($eventhandler, $client);
         }
     }
 }

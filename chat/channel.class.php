@@ -64,7 +64,7 @@ class Channel extends RateLimit
     }
 
     private function isBroadcaster($message) {
-        return $this->name === '#' . strtolower($message->tags['display-name']);
+        return $this->name === '#' . $message->user;
     }
 
     public function getUserLevel($message) {
