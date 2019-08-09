@@ -341,7 +341,8 @@ class Client extends Configurable
                             break;
                         case 'JOIN':
                             if ($this->isme($message->user)) {
-                                $channel = $this->channels[$message->params[0]] = new Channel($this->logger, $message);
+                                $channel = new Channel($this->logger, $this->socket, $message);
+                                $this->channels[$message->params[0]] = $channel;
                                 $this->eventhandler->trigger('join', $channel);
                             } else {
                                 //another user joined

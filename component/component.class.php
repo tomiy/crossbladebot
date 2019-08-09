@@ -6,12 +6,10 @@ use CrossbladeBot\Traits\Configurable;
 
 class Component extends Configurable
 {
-    private $socket;
 
-    public function __construct($socket)
+    public function __construct()
     {
         parent::__construct('components/');
-        $this->socket = $socket;
     }
 
     public function register($eventhandler)
@@ -31,6 +29,6 @@ class Component extends Configurable
     }
 
     public function send($data, $channel) {
-        $channel->send($data, $this->socket);
+        $channel->send($data);
     }
 }
