@@ -3,6 +3,7 @@
 namespace CrossbladeBot\Chat;
 
 use CrossbladeBot\Traits\RateLimit;
+use CrossbladeBot\Chat\Message;
 
 class Whisper extends RateLimit
 {
@@ -16,7 +17,7 @@ class Whisper extends RateLimit
         parent::__construct(1.6, 1);
     }
 
-    public function send($message)
+    public function send(Message $message): void
     {
         $this->limit();
         //send the message

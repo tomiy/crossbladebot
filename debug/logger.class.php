@@ -18,7 +18,7 @@ class Logger extends Configurable
         file_put_contents($this->config->log, '');
     }
 
-    private function write($line, $level)
+    private function write(string $line, int $level): void
     {
 
         if ($level <= $this->config->level) {
@@ -30,17 +30,17 @@ class Logger extends Configurable
         }
     }
 
-    public function info($line)
+    public function info(string $line): void
     {
         $this->write('[INFO] ' . $line, self::$LEVEL_INFO);
     }
 
-    public function warning($line)
+    public function warning(string $line): void
     {
         $this->write('[WARNING] ' . $line, self::$LEVEL_WARNING);
     }
 
-    public function error($line)
+    public function error(string $line): void
     {
         $this->write('[ERROR] ' . $line, self::$LEVEL_ERROR);
     }

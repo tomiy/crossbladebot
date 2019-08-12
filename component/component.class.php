@@ -3,6 +3,10 @@
 namespace CrossbladeBot\Component;
 
 use CrossbladeBot\Traits\Configurable;
+use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Core\Client;
+use CrossbladeBot\Debug\Logger;
 
 class Component extends Configurable
 {
@@ -13,22 +17,25 @@ class Component extends Configurable
     ];
 
     protected $logger;
+    protected $client;
 
-    public function __construct($logger)
+    public function __construct(Logger $logger)
     {
         parent::__construct('components/');
         $this->logger = $logger;
     }
 
-    public function register($eventhandler, $client)
+    public function register(EventHandler $eventhandler, Client $client): void
     {
-        if(isset($this->config->events)) {
+        $this->client = $client;
+
+        if (isset($this->config->events)) {
             foreach ($this->config->events as $event => $callback) {
                 $eventhandler->register($event, [$this, $callback]);
             }
         }
 
-        if(isset($this->config->commands)) {
+        if (isset($this->config->commands)) {
             foreach ($this->config->commands as $command => $cmdinfo) {
                 $eventhandler->register('command', function ($message, $channel, ...$data) use ($command, $cmdinfo) {
                     if ($message->getCommand() === null) return;
@@ -42,7 +49,8 @@ class Component extends Configurable
         }
     }
 
-    public function send($data, $channel) {
+    public function send(string $data, Channel $channel): void
+    {
         $channel->send($data);
     }
 }

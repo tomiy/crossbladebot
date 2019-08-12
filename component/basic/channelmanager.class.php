@@ -3,18 +3,22 @@
 namespace CrossbladeBot\Component\Basic;
 
 use CrossbladeBot\Component\Component;
+use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Core\Client;
+use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Chat\Channel;
 
 class ChannelManager extends Component
 {
     private $defaultchannel;
 
-    public function register($eventhandler, $client)
+    public function register(EventHandler $eventhandler, Client $client): void
     {
         parent::register($eventhandler, $client);
         $this->defaultchannel = '#' . $client->getConfig()->channel;
     }
 
-    public function join($message, $channel)
+    public function join(Message $message, Channel $channel): void
     {
         if ($channel->getName() === $this->defaultchannel) {
             $channel->send('Joining channel #' . $message->getUser());
@@ -22,7 +26,7 @@ class ChannelManager extends Component
         }
     }
 
-    public function part($message, $channel)
+    public function part(Message $message, Channel $channel): void
     {
         if ($channel->getName() !== $this->defaultchannel) {
             $channel->send('Leaving channel #' . $message->getUser());

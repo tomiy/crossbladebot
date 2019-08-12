@@ -21,7 +21,7 @@ class Message
     private $params;
     private $id;
 
-    public function __construct($string)
+    public function __construct(string $string)
     {
         $this->raw = trim($string);
         $this->parse();
@@ -30,7 +30,7 @@ class Message
         $this->emotes();
     }
 
-    private function parse()
+    private function parse(): bool
     {
         $regex = implode('', [
             'open' => '/^',
@@ -77,27 +77,29 @@ class Message
             $this->nick = $user[0];
             $this->user = $user[1];
             $this->host = $user[2];
-        } else if(isset($this->tags['display-name'])) {
+        } else if (isset($this->tags['display-name'])) {
             $this->user = strtolower($this->tags['display-name']);
         }
+
+        return true;
     }
 
-    private function badges()
+    private function badges(): void
     {
         $this->parsetag('badges');
     }
 
-    private function badgeinfo()
+    private function badgeinfo(): void
     {
         $this->parsetag('badge-info');
     }
 
-    private function emotes()
+    private function emotes(): void
     {
         $this->parsetag('emotes', '/', ':', ',');
     }
 
-    private function parsetag($index, $delim1 = ',', $delim2 = '/', $delim3 = null)
+    private function parsetag(string $index, string $delim1 = ',', string $delim2 = '/', string $delim3 = null): void
     {
 
         if (!isset($this->tags[$index])) {
@@ -129,77 +131,77 @@ class Message
         }
     }
 
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getParams()
+    public function getParams(): array
     {
         return $this->params;
     }
 
-    public function getParam($key)
+    public function getParam(int $key): string
     {
         return $this->params[$key];
     }
 
-    public function getFrom()
+    public function getFrom(): string
     {
         return $this->from;
     }
 
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
 
-    public function getNick()
+    public function getNick(): string
     {
         return $this->nick;
     }
 
-    public function getUser()
+    public function getUser(): string
     {
         return $this->user;
     }
 
-    public function getCommand()
+    public function getCommand(): string
     {
         return $this->command;
     }
 
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
-    public function getChannel()
+    public function getChannel(): string
     {
         return $this->channel;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function getTags()
+    public function getTags(): array
     {
         return $this->tags;
     }
 
-    public function getTag($key)
+    public function getTag(string $key): string
     {
         return $this->tags[$key];
     }
 
-    public function getRaw()
+    public function getRaw(): string
     {
         return $this->raw;
     }
 
-    public function setCommand($command)
+    public function setCommand(string $command): void
     {
         $this->command = $command;
     }

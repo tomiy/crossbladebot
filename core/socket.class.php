@@ -11,14 +11,14 @@ class Socket extends Configurable
     private $socket;
     private $logger;
 
-    public function __construct($logger)
+    public function __construct(Logger $logger)
     {
         parent::__construct();
 
         $this->logger = $logger;
     }
 
-    public function connect()
+    public function connect(): void
     {
         $this->socket = fsockopen($this->config->address, $this->config->port, $errno, $errstr, 30);
         if (!$this->socket) {
@@ -29,19 +29,19 @@ class Socket extends Configurable
         $this->logger->info('Socket created');
     }
 
-    public function getNext()
+    public function getNext(): string
     {
-        if (!$this->socket) return;
+        if (!$this->socket) return false;
         $line = fgets($this->socket);
 
-        if($line) {
+        if ($line) {
             $this->logger->info('> ' . $line);
         }
 
         return $line;
     }
 
-    public function send($data)
+    public function send(string $data): void
     {
         if (!$this->socket) return;
         fputs($this->socket, $data . NL);
@@ -49,7 +49,7 @@ class Socket extends Configurable
         $this->logger->info('< ' . $data);
     }
 
-    public function close()
+    public function close(): void
     {
         if ($this->socket) {
             fclose($this->socket);

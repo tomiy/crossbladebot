@@ -5,6 +5,10 @@ namespace CrossbladeBot\Core;
 use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Debug\Logger;
+use CrossbladeBot\Core\Socket;
+use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Component\Loader;
 
 class Client extends Configurable
 {
@@ -17,7 +21,7 @@ class Client extends Configurable
     private $name;
     private $channels;
 
-    public function __construct($logger, $socket, $eventhandler, $loader)
+    public function __construct(Logger $logger, Socket $socket, EventHandler $eventhandler, Loader $loader)
     {
         parent::__construct();
 
@@ -29,7 +33,7 @@ class Client extends Configurable
         $this->loader->register($eventhandler, $this);
     }
 
-    public function connect()
+    public function connect(): void
     {
         $this->socket->connect();
 
@@ -39,7 +43,7 @@ class Client extends Configurable
         $this->socket->send('JOIN #' . $this->config->channel);
     }
 
-    public function serve()
+    public function serve(): void
     {
         $this->connect();
 
@@ -371,12 +375,12 @@ class Client extends Configurable
         }
     }
 
-    private function isme($user)
+    private function isme(string $user): bool
     {
         return $user === $this->name;
     }
 
-    private function getChannel($name)
+    private function getChannel(string $name): Channel
     {
         if (isset($this->channels[$name])) {
             return $this->channels[$name];
@@ -385,12 +389,12 @@ class Client extends Configurable
         return false;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getChannels()
+    public function getChannels(): array
     {
         return $this->channels;
     }
