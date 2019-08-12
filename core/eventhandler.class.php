@@ -10,14 +10,14 @@ class EventHandler
     private $ids;
     private $logger;
 
-    public function __construct($logger)
+    public function __construct(Logger $logger)
     {
         $this->events = [];
         $this->ids = [];
         $this->logger = $logger;
     }
 
-    public function register($event, $callback)
+    public function register(string $event, callable $callback): string
     {
         $id = uniqid();
 
@@ -33,7 +33,7 @@ class EventHandler
         return $id;
     }
 
-    public function trigger($event, ...$data)
+    public function trigger(string $event, ...$data): void
     {
         if (!isset($this->events[$event])) return;
 
@@ -44,7 +44,7 @@ class EventHandler
         }
     }
 
-    public function clear($id)
+    public function clear(string $id): void
     {
         if (!isset($this->ids[$id])) return;
         unset($this->events[$this->ids[$id]][$id]);

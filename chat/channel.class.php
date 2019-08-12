@@ -4,6 +4,8 @@ namespace CrossbladeBot\Chat;
 
 use CrossbladeBot\Traits\RateLimit;
 use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Core\Socket;
+use CrossbladeBot\Debug\Logger;
 
 class Channel extends RateLimit
 {
@@ -14,7 +16,7 @@ class Channel extends RateLimit
     private $isop;
     private $modRequested;
 
-    public function __construct($logger, $socket, Message $join)
+    public function __construct(Logger $logger, Socket $socket, Message $join)
     {
         parent::__construct(20, 30);
         $this->logger = $logger;
@@ -24,7 +26,7 @@ class Channel extends RateLimit
         $this->logger->info('Joined channel ' . $this->name);
     }
 
-    public function userstate(Message $userstate)
+    public function userstate(Message $userstate): void
     {
         if ($this->isOp($userstate) && !$this->isop) {
             $this->isop = true;
@@ -44,41 +46,46 @@ class Channel extends RateLimit
         }
     }
 
-    public function send($message)
+    public function send(string $message): void
     {
         $this->logger->info('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
         $this->limit();
         $this->socket->send('PRIVMSG ' . $this->name . ' :' . $message);
     }
 
-    public function sendRaw($message) {
+    public function sendRaw(string $message): void
+    {
         $this->socket->send($message);
     }
 
-    private function isOp($message) {
+    private function isOp(Message $message): bool
+    {
         return $this->isMod($message) || $this->isBroadcaster($message);
     }
 
-    private function isMod($message) {
-        return $message->getTag('mod');
+    private function isMod(Message $message): bool
+    {
+        return $message->getTag('mod') == 1;
     }
 
-    private function isBroadcaster($message) {
+    private function isBroadcaster(Message $message): bool
+    {
         return $this->name === '#' . $message->getUser();
     }
 
-    public function getUserLevel($message) {
+    public function getUserLevel(Message $message): int
+    {
         $userlevel = 0;
-        if($this->isOp($message)) {
+        if ($this->isOp($message)) {
             $userlevel++;
         }
-        if($this->isBroadcaster($message)) {
+        if ($this->isBroadcaster($message)) {
             $userlevel++;
         }
         return $userlevel;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

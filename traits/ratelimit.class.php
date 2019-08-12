@@ -10,19 +10,20 @@ class RateLimit
     private $span;
     private $allowance;
 
-    public function __construct($rate, $span)
+    public function __construct(float $rate, int $span)
     {
         $this->last = microtime(true);
         $this->setRate($rate, $span);
     }
-    
-    protected function setRate($rate, $span) {
+
+    protected function setRate(float $rate, int $span): void
+    {
         $this->rate = $rate;
         $this->allowance = $rate;
         $this->span = $span;
     }
 
-    public function limit($consumed = 1)
+    public function limit(int $consumed = 1): void
     {
         $current = microtime(True);
         $time_passed = $current - $this->last;
