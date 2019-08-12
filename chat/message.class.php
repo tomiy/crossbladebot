@@ -5,21 +5,21 @@ namespace CrossbladeBot\Chat;
 class Message
 {
 
-    public $raw;
-    public $tags;
-    public $type;
+    private $raw;
+    private $tags;
+    private $type;
 
-    public $channel;
-    public $message;
-    public $command;
+    private $channel;
+    private $message;
+    private $command;
 
-    public $user;
-    public $nick;
-    public $host;
+    private $user;
+    private $nick;
+    private $host;
 
-    public $from;
-    public $params;
-    public $id;
+    private $from;
+    private $params;
+    private $id;
 
     public function __construct($string)
     {
@@ -127,5 +127,80 @@ class Message
                 }
             }
         }
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    public function getParam($key)
+    {
+        return $this->params[$key];
+    }
+
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    public function getNick()
+    {
+        return $this->nick;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function getCommand()
+    {
+        return $this->command;
+    }
+
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    public function getChannel()
+    {
+        return $this->channel;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    public function getTag($key)
+    {
+        return $this->tags[$key];
+    }
+
+    public function getRaw()
+    {
+        return $this->raw;
+    }
+
+    public function setCommand($command)
+    {
+        $this->command = $command;
     }
 }

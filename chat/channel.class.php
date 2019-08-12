@@ -10,7 +10,7 @@ class Channel extends RateLimit
     private $logger;
     private $socket;
 
-    public $name;
+    private $name;
     private $isop;
     private $modRequested;
 
@@ -19,7 +19,7 @@ class Channel extends RateLimit
         parent::__construct(20, 30);
         $this->logger = $logger;
         $this->socket = $socket;
-        $this->name = $join->params[0];
+        $this->name = $join->getParam(0);
 
         $this->logger->info('Joined channel ' . $this->name);
     }
@@ -60,11 +60,11 @@ class Channel extends RateLimit
     }
 
     private function isMod($message) {
-        return $message->tags['mod'];
+        return $message->getTag('mod');
     }
 
     private function isBroadcaster($message) {
-        return $this->name === '#' . $message->user;
+        return $this->name === '#' . $message->getUser();
     }
 
     public function getUserLevel($message) {
@@ -76,5 +76,10 @@ class Channel extends RateLimit
             $userlevel++;
         }
         return $userlevel;
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 }

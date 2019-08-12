@@ -16,17 +16,17 @@ class ChannelManager extends Component
 
     public function join($message, $channel)
     {
-        if ($channel->name === $this->defaultchannel) {
-            $channel->send('Joining channel #' . $message->user);
-            $channel->sendRaw('JOIN #' . $message->user);
+        if ($channel->getName() === $this->defaultchannel) {
+            $channel->send('Joining channel #' . $message->getUser());
+            $channel->sendRaw('JOIN #' . $message->getUser());
         }
     }
 
     public function part($message, $channel)
     {
-        if ($channel->name !== $this->defaultchannel) {
-            $channel->send('Leaving channel #' . $message->user);
-            $channel->sendRaw('PART #' . $message->user);
+        if ($channel->getName() !== $this->defaultchannel) {
+            $channel->send('Leaving channel #' . $message->getUser());
+            $channel->sendRaw('PART #' . $message->getUser());
         }
     }
 }
