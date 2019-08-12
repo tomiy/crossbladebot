@@ -9,7 +9,7 @@
         },
         "anothertest": {
             "userlevel": "mod",
-            "command": "command"
+            "callback": "command"
         }
     }
 }

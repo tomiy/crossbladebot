@@ -63,11 +63,11 @@ class Client extends Configurable
                 $cost = microtime(true);
                 $message = new Message($data);
 
-                if (empty($message->from)) {
-                    switch ($message->type) {
+                if (empty($message->getFrom())) {
+                    switch ($message->getType()) {
                         case 'PING':
                             $lastping = time();
-                            $this->socket->send('PONG :' . $message->params[0]);
+                            $this->socket->send('PONG :' . $message->getParam(0));
 
                             //pong event
                             $this->eventhandler->trigger('pong');
@@ -77,11 +77,11 @@ class Client extends Configurable
                             $this->logger->info('Current latency: ' . $latency);
                             break;
                         default:
-                            $this->logger->warning('Could not parse message: ' . $message->raw);
+                            $this->logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
-                } else if ($message->from === 'tmi.twitch.tv') {
-                    switch ($message->type) {
+                } else if ($message->getFrom() === 'tmi.twitch.tv') {
+                    switch ($message->getType()) {
                         case '002':
                         case '003':
                         case '004':
@@ -90,7 +90,7 @@ class Client extends Configurable
                         case 'CAP':
                             break;
                         case '001':
-                            $this->name = $message->params[0];
+                            $this->name = $message->getParam(0);
                             break;
                         case '372':
                             $this->logger->info('Client connected');
@@ -98,7 +98,7 @@ class Client extends Configurable
                             $this->eventhandler->trigger('connect');
                             break;
                         case 'NOTICE':
-                            switch ($message->id) {
+                            switch ($message->getId()) {
                                 case "subs_on":
                                     break;
                                 case "subs_off":
@@ -276,7 +276,7 @@ class Client extends Configurable
                             }
                             break;
                         case 'USERNOTICE':
-                            switch ($message->id) {
+                            switch ($message->getId()) {
                                 case "resub":
                                     break;
                                 case "sub":
@@ -308,7 +308,7 @@ class Client extends Configurable
                         case 'RECONNECT':
                             break;
                         case 'USERSTATE':
-                            $channel = $this->getChannel($message->params[0]);
+                            $channel = $this->getChannel($message->getParam(0));
                             if ($channel) {
                                 $channel->userstate($message);
                             }
@@ -320,27 +320,27 @@ class Client extends Configurable
                         case 'SERVERCHANGE':
                             break;
                         default:
-                            $this->logger->warning('Could not parse message: ' . $message->raw);
+                            $this->logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
-                } else if ($message->from === 'jtv') {
-                    switch ($message->type) {
+                } else if ($message->getFrom() === 'jtv') {
+                    switch ($message->getType()) {
                         case 'MODE':
                             break;
                         default:
-                            $this->logger->warning('Could not parse message: ' . $message->raw);
+                            $this->logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
                 } else {
-                    switch ($message->type) {
+                    switch ($message->getType()) {
                         case '353':
                             break;
                         case '366':
                             break;
                         case 'JOIN':
-                            if ($this->isme($message->user)) {
+                            if ($this->isme($message->getUser())) {
                                 $channel = new Channel($this->logger, $this->socket, $message);
-                                $this->channels[$message->params[0]] = $channel;
+                                $this->channels[$message->getParam(0)] = $channel;
                                 $this->eventhandler->trigger('join', $channel);
                             } else {
                                 //another user joined
@@ -351,18 +351,18 @@ class Client extends Configurable
                         case 'WHISPER':
                             break;
                         case 'PRIVMSG':
-                            if ($this->isme($message->user)) break;
-                            $channel = $this->getChannel($message->channel);
-                            if (substr($message->message, 0, $prefixlen) === $prefix) {
-                                $messagearr = explode(' ', $message->message);
-                                $message->command = substr(array_shift($messagearr), 1);
+                            if ($this->isme($message->getUser())) break;
+                            $channel = $this->getChannel($message->getChannel());
+                            if (substr($message->getMessage(), 0, $prefixlen) === $prefix) {
+                                $messagearr = explode(' ', $message->getMessage());
+                                $message->setCommand(substr(array_shift($messagearr), 1));
                                 $this->eventhandler->trigger('command', $message, $channel);
                             } else {
                                 $this->eventhandler->trigger('message', $message, $channel);
                             }
                             break;
                         default:
-                            $this->logger->warning('Could not parse message: ' . $message->raw);
+                            $this->logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
                 }
@@ -383,5 +383,15 @@ class Client extends Configurable
         }
         $this->logger->warning('Call to a nonexistant channel');
         return false;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getChannels()
+    {
+        return $this->channels;
     }
 }

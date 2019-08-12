@@ -28,4 +28,9 @@ class Loader
             $component->register($eventhandler, $client);
         }
     }
+
+    public function getComponents()
+    {
+        return $this->components;
+    }
 }

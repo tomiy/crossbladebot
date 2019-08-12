@@ -31,9 +31,9 @@ class Component extends Configurable
         if(isset($this->config->commands)) {
             foreach ($this->config->commands as $command => $cmdinfo) {
                 $eventhandler->register('command', function ($message, $channel, ...$data) use ($command, $cmdinfo) {
-                    if (!isset($message->command)) return;
+                    if ($message->getCommand() === null) return;
 
-                    if ($message->command === $command) {
+                    if ($message->getCommand() === $command) {
                         if ($channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return;
                         $this->{$cmdinfo->callback}($message, $channel, ...$data);
                     }
