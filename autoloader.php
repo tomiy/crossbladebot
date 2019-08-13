@@ -3,7 +3,7 @@ define('NL', "\r\n");
 define('DS', DIRECTORY_SEPARATOR);
 define('CLASS_DIR', relativePath(getcwd(), dirname(__DIR__)) . DS);
 
-function relativePath($source, $destin)
+function relativePath(string $source, string $destin): string
 {
     $arFrom = explode(DS, rtrim($source, DS));
     $arTo = explode(DS, rtrim($destin, DS));

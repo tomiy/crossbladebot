@@ -4,23 +4,22 @@ namespace CrossbladeBot\Chat;
 
 use CrossbladeBot\Traits\RateLimit;
 use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Core\Socket;
 use CrossbladeBot\Debug\Logger;
 
-class Channel extends RateLimit
+class Channel
 {
+    use RateLimit;
+
     private $logger;
     private $socket;
 
     private $name;
-    private $isop;
     private $modRequested;
 
-    public function __construct(Logger $logger, Socket $socket, Message $join)
+    public function __construct(Logger $logger, Message $join)
     {
-        parent::__construct(20, 30);
+        $this->initRate(1, 3);
         $this->logger = $logger;
-        $this->socket = $socket;
         $this->name = $join->getParam(0);
 
         $this->logger->info('Joined channel ' . $this->name);
@@ -28,34 +27,22 @@ class Channel extends RateLimit
 
     public function userstate(Message $userstate): void
     {
-        if ($this->isOp($userstate) && !$this->isop) {
-            $this->isop = true;
-            $this->logger->info('Setting rate limit to moderator settings');
-            $this->setRate(100, 30);
-        }
-        if (!$this->isOp($userstate)) {
-            if ($this->isop) {
-                $this->isop = false;
-                $this->logger->info('Setting rate limit to user settings');
-                $this->setRate(20, 30);
-            }
-            if (!$this->modRequested) {
-                $this->modRequested = true;
-                $this->send('Pssst, you should mod me so that i\'m able to send stuff with more ease!');
-            }
+        if (!$this->isOp($userstate) && !$this->modRequested) {
+            $this->modRequested = true;
+            $this->send('Pssst, you should mod me so that i\'m able to use mod commands!');
         }
     }
 
-    public function send(string $message): void
+    public function send(string $message): string
     {
         $this->logger->info('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
         $this->limit();
-        $this->socket->send('PRIVMSG ' . $this->name . ' :' . $message);
+        return 'PRIVMSG ' . $this->name . ' :' . $message;
     }
 
-    public function sendRaw(string $message): void
+    public function sendRaw(string $message): string
     {
-        $this->socket->send($message);
+        return $message;
     }
 
     private function isOp(Message $message): bool
