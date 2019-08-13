@@ -23,11 +23,14 @@ class Client
 
     private $name;
     private $channels;
+    private $queue;
 
     public function __construct(Logger $logger, Socket $socket, EventHandler $eventhandler, Loader $loader)
     {
         $this->loadConfig();
         $this->initRate(20, 30);
+
+        $this->queue = [];
 
         $this->logger = $logger;
         $this->socket = $socket;
@@ -59,6 +62,7 @@ class Client
         $lastping = time();
 
         while ($connected) {
+            $cost = microtime(true);
             if ((time() - $lastping) > 300 or $this->socket === false) {
                 $this->logger->info('Restarting connection');
                 $this->connect();
@@ -68,7 +72,6 @@ class Client
             $data = $this->socket->getNext();
 
             if ($data) {
-                $cost = microtime(true);
                 $message = new Message($data);
 
                 if (empty($message->getFrom())) {
@@ -105,7 +108,7 @@ class Client
                             $this->logger->info('Client connected');
                             //connect event
                             $connect = $this->eventhandler->trigger('connect');
-                            $this->response($connect);
+                            $this->enqueue($connect);
                             break;
                         case 'NOTICE':
                             switch ($message->getId()) {
@@ -352,7 +355,7 @@ class Client
                                 $channel = new Channel($this->logger, $message);
                                 $this->channels[$channel->getName()] = $channel;
                                 $join = $this->eventhandler->trigger('join', $channel);
-                                $this->response($join);
+                                $this->enqueue($join);
                             } else {
                                 //another user joined
                             }
@@ -368,10 +371,10 @@ class Client
                                 $messagearr = explode(' ', $message->getMessage());
                                 $message->setCommand(substr(array_shift($messagearr), 1));
                                 $command = $this->eventhandler->trigger('command', $message, $channel);
-                                $this->response($command);
+                                $this->enqueue($command);
                             } else {
                                 $message = $this->eventhandler->trigger('message', $message, $channel);
-                                $this->response($message);
+                                $this->enqueue($message);
                             }
                             break;
                         default:
@@ -379,18 +382,38 @@ class Client
                             break;
                     }
                 }
-                print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
             }
+            $this->processqueue();
+            print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
         }
     }
 
-    private function response(array $data): void
+    private function enqueue(array $data): void
     {
         foreach ($data as $componentmessages) {
             foreach ($componentmessages as $message) {
-                $this->limit();
-                $this->socket->send($message);
+                $this->queue[microtime(true) * 1E4] = $message;
+                usleep(1);
             }
+        }
+        print_r($this->queue);
+    }
+
+    private function processqueue(): void
+    {
+        $threshold = microtime(true) * 1E4 - 5 * 1E9;
+        $this->queue = array_filter($this->queue, function ($key) use ($threshold) {
+            return $key > $threshold;
+        }, ARRAY_FILTER_USE_KEY);
+
+        while ($this->limit() && sizeof($this->queue) > 0) {
+            list($key) = array_keys($this->queue);
+            $message = $this->queue[$key];
+            unset($this->queue[$key]);
+            $notice = 'Sending message: "' . trim($message) . '" at time ' . time();
+            $this->logger->info($notice);
+            print_r($notice . NL);
+            $this->socket->send($message);
         }
     }
 

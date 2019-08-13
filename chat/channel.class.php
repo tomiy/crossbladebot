@@ -36,7 +36,7 @@ class Channel
     public function send(string $message): string
     {
         $this->logger->info('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
-        $this->limit();
+        if(!$this->limit()) sleep(3); //TODO: make channel queues
         return 'PRIVMSG ' . $this->name . ' :' . $message;
     }
 
