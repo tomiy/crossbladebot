@@ -11,7 +11,6 @@ class HelloWorld extends Component
     public function join(Channel $channel): array
     {
         $connectmsg = 'Connected to channel ' . $channel->getName();
-        print_r($connectmsg . NL);
         $this->logger->info($connectmsg);
         return [$this->send($connectmsg, $channel)];
     }

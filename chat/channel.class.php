@@ -5,8 +5,9 @@ namespace CrossbladeBot\Chat;
 use CrossbladeBot\Traits\RateLimit;
 use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Debug\Logger;
+use CrossbladeBot\Service\Queue;
 
-class Channel
+class Channel extends Queue
 {
     use RateLimit;
 
@@ -33,16 +34,15 @@ class Channel
         }
     }
 
-    public function send(string $message): string
+    public function send(string $message): void
     {
         $this->logger->info('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
-        if(!$this->limit()) sleep(3); //TODO: make channel queues
-        return 'PRIVMSG ' . $this->name . ' :' . $message;
+        $this->sendRaw('PRIVMSG ' . $this->name . ' :' . $message);
     }
 
-    public function sendRaw(string $message): string
+    public function sendRaw(string $message): void
     {
-        return $message;
+        $this->enqueue([$message]);
     }
 
     private function isOp(Message $message): bool

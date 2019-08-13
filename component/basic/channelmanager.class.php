@@ -20,23 +20,21 @@ class ChannelManager extends Component
 
     public function join(Message $message, Channel $channel): array
     {
-        $output = [];
         if ($channel->getName() === $this->defaultchannel) {
-            $output[] = $channel->send('Joining channel #' . $message->getUser());
-            $output[] = $channel->sendRaw('JOIN #' . $message->getUser());
+            return [
+                $channel->send('Joining channel #' . $message->getUser()),
+                $channel->sendRaw('JOIN #' . $message->getUser())
+            ];
         }
-
-        return $output;
     }
 
     public function part(Message $message, Channel $channel): array
     {
-        $output = [];
         if ($channel->getName() !== $this->defaultchannel) {
-            $output[] = $channel->send('Leaving channel #' . $message->getUser());
-            $output[] = $channel->sendRaw('PART #' . $message->getUser());
+            return [
+                $channel->send('Leaving channel #' . $message->getUser()),
+                $channel->sendRaw('PART #' . $message->getUser())
+            ];
         }
-
-        return $output;
     }
 }

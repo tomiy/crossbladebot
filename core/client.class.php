@@ -9,9 +9,10 @@ use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Core\Socket;
 use CrossbladeBot\Core\EventHandler;
 use CrossbladeBot\Component\Loader;
+use CrossbladeBot\Service\Queue;
 use CrossbladeBot\Traits\RateLimit;
 
-class Client
+class Client extends Queue
 {
     use Configurable;
     use RateLimit;
@@ -23,14 +24,11 @@ class Client
 
     private $name;
     private $channels;
-    private $queue;
 
     public function __construct(Logger $logger, Socket $socket, EventHandler $eventhandler, Loader $loader)
     {
         $this->loadConfig();
         $this->initRate(20, 30);
-
-        $this->queue = [];
 
         $this->logger = $logger;
         $this->socket = $socket;
@@ -38,21 +36,26 @@ class Client
         $this->loader = $loader;
 
         $this->loader->register($eventhandler, $this);
+
+        $this->channels = [];
     }
 
     public function connect(): void
     {
         $this->socket->connect();
 
-        $this->socket->send('CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership');
-        $this->socket->send('PASS ' . $this->config->password);
-        $this->socket->send('NICK ' . $this->config->name);
-        $this->socket->send('JOIN #' . $this->config->channel);
+        $this->enqueue([
+            'CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership',
+            'PASS ' . $this->config->password,
+            'NICK ' . $this->config->name,
+            'JOIN #' . $this->config->channel
+        ]);
     }
 
     public function serve(): void
     {
         $this->connect();
+        $this->processqueue([$this, 'sendtosocket']);
 
         $connected = true;
 
@@ -78,11 +81,10 @@ class Client
                     switch ($message->getType()) {
                         case 'PING':
                             $lastping = time();
-                            $this->socket->send('PONG :' . $message->getParam(0));
+                            $this->enqueue(['PONG :' . $message->getParam(0)]);
 
                             //pong event
-                            $pong = $this->eventhandler->trigger('pong');
-                            $this->reponse($pong);
+                            $this->eventhandler->trigger('pong');
                             break;
                         case 'PONG':
                             $latency = time() - $lastping;
@@ -107,185 +109,13 @@ class Client
                         case '372':
                             $this->logger->info('Client connected');
                             //connect event
-                            $connect = $this->eventhandler->trigger('connect');
-                            $this->enqueue($connect);
+                            $this->eventhandler->trigger('connect');
                             break;
                         case 'NOTICE':
-                            switch ($message->getId()) {
-                                case "subs_on":
-                                    break;
-                                case "subs_off":
-                                    break;
-                                case "emote_only_on":
-                                    break;
-                                case "emote_only_off":
-                                    break;
-                                case "slow_on":
-                                case "slow_off":
-                                    break;
-                                case "followers_on_zero":
-                                case "followers_on":
-                                case "followers_off":
-                                    break;
-                                case "r9k_on":
-                                    break;
-                                case "r9k_off":
-                                    break;
-                                case "room_mods":
-                                    break;
-                                case "no_mods":
-                                    break;
-                                case "vips_success":
-                                    break;
-                                case "no_vips":
-                                    break;
-                                case "already_banned":
-                                case "bad_ban_admin":
-                                case "bad_ban_broadcaster":
-                                case "bad_ban_global_mod":
-                                case "bad_ban_self":
-                                case "bad_ban_staff":
-                                case "usage_ban":
-                                    break;
-                                case "ban_success":
-                                    break;
-                                case "usage_clear":
-                                    break;
-                                case "usage_mods":
-                                    break;
-                                case "mod_success":
-                                    break;
-                                case "usage_vips":
-                                    break;
-                                case "usage_vip":
-                                case "bad_vip_grantee_banned":
-                                case "bad_vip_grantee_already_vip":
-                                    break;
-                                case "vip_success":
-                                    break;
-                                case "usage_mod":
-                                case "bad_mod_banned":
-                                case "bad_mod_mod":
-                                    break;
-                                case "unmod_success":
-                                    break;
-                                case "unvip_success":
-                                    break;
-                                case "usage_unmod":
-                                case "bad_unmod_mod":
-                                    break;
-                                case "usage_unvip":
-                                case "bad_unvip_grantee_not_vip":
-                                    break;
-                                case "color_changed":
-                                    break;
-                                case "usage_color":
-                                case "turbo_only_color":
-                                    break;
-                                case "commercial_success":
-                                    break;
-                                case "usage_commercial":
-                                case "bad_commercial_error":
-                                    break;
-                                case "hosts_remaining":
-                                    break;
-                                case "bad_host_hosting":
-                                case "bad_host_rate_exceeded":
-                                case "bad_host_error":
-                                case "usage_host":
-                                    break;
-                                case "already_r9k_on":
-                                case "usage_r9k_on":
-                                    break;
-                                case "already_r9k_off":
-                                case "usage_r9k_off":
-                                    break;
-                                case "timeout_success":
-                                    break;
-                                case "delete_message_success":
-                                case "already_subs_off":
-                                case "usage_subs_off":
-                                    break;
-                                case "already_subs_on":
-                                case "usage_subs_on":
-                                    break;
-                                case "already_emote_only_off":
-                                case "usage_emote_only_off":
-                                    break;
-                                case "already_emote_only_on":
-                                case "usage_emote_only_on":
-                                    break;
-                                case "usage_slow_on":
-                                    break;
-                                case "usage_slow_off":
-                                    break;
-                                case "usage_timeout":
-                                case "bad_timeout_admin":
-                                case "bad_timeout_broadcaster":
-                                case "bad_timeout_duration":
-                                case "bad_timeout_global_mod":
-                                case "bad_timeout_self":
-                                case "bad_timeout_staff":
-                                    break;
-                                case "untimeout_success":
-                                case "unban_success":
-                                    break;
-                                case "usage_unban":
-                                case "bad_unban_no_ban":
-                                    break;
-                                case "usage_delete":
-                                case "bad_delete_message_error":
-                                case "bad_delete_message_broadcaster":
-                                case "bad_delete_message_mod":
-                                    break;
-                                case "usage_unhost":
-                                case "not_hosting":
-                                    break;
-                                case "whisper_invalid_login":
-                                case "whisper_invalid_self":
-                                case "whisper_limit_per_min":
-                                case "whisper_limit_per_sec":
-                                case "whisper_restricted_recipient":
-                                    break;
-                                case "no_permission":
-                                case "msg_banned":
-                                case "msg_room_not_found":
-                                case "msg_channel_suspended":
-                                case "tos_ban":
-                                    break;
-                                case "msg_rejected":
-                                case "msg_rejected_mandatory":
-                                    break;
-                                case "unrecognized_cmd":
-                                    break;
-                                case "cmds_available":
-                                case "host_target_went_offline":
-                                case "msg_censored_broadcaster":
-                                case "msg_duplicate":
-                                case "msg_emoteonly":
-                                case "msg_verified_email":
-                                case "msg_ratelimit":
-                                case "msg_subsonly":
-                                case "msg_timedout":
-                                case "msg_bad_characters":
-                                case "msg_channel_blocked":
-                                case "msg_facebook":
-                                case "msg_followersonly":
-                                case "msg_followersonly_followed":
-                                case "msg_followersonly_zero":
-                                case "msg_slowmode":
-                                case "msg_suspended":
-                                case "no_help":
-                                case "usage_disconnect":
-                                case "usage_help":
-                                case "usage_me":
-                                    break;
-                                case "host_on":
-                                case "host_off":
-                                    break;
-                                default:
-                                    $this->logger->warning('Potential auth failure');
-                                    break;
+                            if (!in_array($message->getId(), [
+                                "subs_on", "subs_off", "emote_only_on", "emote_only_off", "slow_on", "slow_off", "followers_on_zero", "followers_on", "followers_off", "r9k_on", "r9k_off", "room_mods", "no_mods", "vips_success", "no_vips", "already_banned", "bad_ban_admin", "bad_ban_broadcaster", "bad_ban_global_mod", "bad_ban_self", "bad_ban_staff", "usage_ban", "ban_success", "usage_clear", "usage_mods", "mod_success", "usage_vips", "usage_vip", "bad_vip_grantee_banned", "bad_vip_grantee_already_vip", "vip_success", "usage_mod", "bad_mod_banned", "bad_mod_mod", "unmod_success", "unvip_success", "usage_unmod", "bad_unmod_mod", "usage_unvip", "bad_unvip_grantee_not_vip", "color_changed", "usage_color", "turbo_only_color", "commercial_success", "usage_commercial", "bad_commercial_error", "hosts_remaining", "bad_host_hosting", "bad_host_rate_exceeded", "bad_host_error", "usage_host", "already_r9k_on", "usage_r9k_on", "already_r9k_off", "usage_r9k_off", "timeout_success", "delete_message_success", "already_subs_off", "usage_subs_off", "already_subs_on", "usage_subs_on", "already_emote_only_off", "usage_emote_only_off", "already_emote_only_on", "usage_emote_only_on", "usage_slow_on", "usage_slow_off", "usage_timeout", "bad_timeout_admin", "bad_timeout_broadcaster", "bad_timeout_duration", "bad_timeout_global_mod", "bad_timeout_self", "bad_timeout_staff", "untimeout_success", "unban_success", "usage_unban", "bad_unban_no_ban", "usage_delete", "bad_delete_message_error", "bad_delete_message_broadcaster", "bad_delete_message_mod", "usage_unhost", "not_hosting", "whisper_invalid_login", "whisper_invalid_self", "whisper_limit_per_min", "whisper_limit_per_sec", "whisper_restricted_recipient", "no_permission", "msg_banned", "msg_room_not_found", "msg_channel_suspended", "tos_ban", "msg_rejected", "msg_rejected_mandatory", "unrecognized_cmd", "cmds_available", "host_target_went_offline", "msg_censored_broadcaster", "msg_duplicate", "msg_emoteonly", "msg_verified_email", "msg_ratelimit", "msg_subsonly", "msg_timedout", "msg_bad_characters", "msg_channel_blocked", "msg_facebook", "msg_followersonly", "msg_followersonly_followed", "msg_followersonly_zero", "msg_slowmode", "msg_suspended", "no_help", "usage_disconnect", "usage_help", "usage_me", "host_on", "host_off"
+                            ])) {
+                                $this->logger->warning('Potential auth failure');
                             }
                             break;
                         case 'USERNOTICE':
@@ -354,8 +184,7 @@ class Client
                             if ($this->isme($message->getUser())) {
                                 $channel = new Channel($this->logger, $message);
                                 $this->channels[$channel->getName()] = $channel;
-                                $join = $this->eventhandler->trigger('join', $channel);
-                                $this->enqueue($join);
+                                $this->eventhandler->trigger('join', $channel);
                             } else {
                                 //another user joined
                             }
@@ -370,11 +199,9 @@ class Client
                             if (substr($message->getMessage(), 0, $prefixlen) === $prefix) {
                                 $messagearr = explode(' ', $message->getMessage());
                                 $message->setCommand(substr(array_shift($messagearr), 1));
-                                $command = $this->eventhandler->trigger('command', $message, $channel);
-                                $this->enqueue($command);
+                                $this->eventhandler->trigger('command', $message, $channel);
                             } else {
-                                $message = $this->eventhandler->trigger('message', $message, $channel);
-                                $this->enqueue($message);
+                                $this->eventhandler->trigger('message', $message, $channel);
                             }
                             break;
                         default:
@@ -383,37 +210,24 @@ class Client
                     }
                 }
             }
-            $this->processqueue();
-            print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
-        }
-    }
-
-    private function enqueue(array $data): void
-    {
-        foreach ($data as $componentmessages) {
-            foreach ($componentmessages as $message) {
-                $this->queue[microtime(true) * 1E4] = $message;
-                usleep(1);
+            $this->pollchannels();
+            $this->processqueue([$this, 'sendtosocket']);
+            if($data) {
+                print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
             }
         }
-        print_r($this->queue);
     }
 
-    private function processqueue(): void
+    protected function sendtosocket(array $message): void
     {
-        $threshold = microtime(true) * 1E4 - 5 * 1E9;
-        $this->queue = array_filter($this->queue, function ($key) use ($threshold) {
-            return $key > $threshold;
-        }, ARRAY_FILTER_USE_KEY);
+        $this->logger->info('Sending message: "' . trim($message[0]) . '" at time ' . time());
+        $this->socket->send($message[0]);
+    }
 
-        while ($this->limit() && sizeof($this->queue) > 0) {
-            list($key) = array_keys($this->queue);
-            $message = $this->queue[$key];
-            unset($this->queue[$key]);
-            $notice = 'Sending message: "' . trim($message) . '" at time ' . time();
-            $this->logger->info($notice);
-            print_r($notice . NL);
-            $this->socket->send($message);
+    private function pollchannels(): void
+    {
+        foreach ($this->channels as $channel) {
+            $channel->processqueue([$this, 'enqueue']);
         }
     }
 
