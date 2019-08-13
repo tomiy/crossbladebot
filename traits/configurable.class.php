@@ -6,9 +6,9 @@ use stdClass;
 
 trait Configurable
 {
-    protected $config;
+    private $config;
 
-    public function loadConfig(string $subfolder = null)
+    public function loadConfig(string $subfolder = null): void
     {
         $class = strtolower((new \ReflectionClass($this))->getShortName());
         $filepath = getcwd() . '/config/' . $subfolder . $class . '.json';
