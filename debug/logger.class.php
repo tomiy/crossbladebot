@@ -4,8 +4,9 @@ namespace CrossbladeBot\Debug;
 
 use CrossbladeBot\Traits\Configurable;
 
-class Logger extends Configurable
+class Logger
 {
+    use Configurable;
 
     public static $LEVEL_ERROR = 1;
     public static $LEVEL_WARNING = 2;
@@ -13,7 +14,7 @@ class Logger extends Configurable
 
     public function __construct()
     {
-        parent::__construct();
+        $this->loadConfig();
 
         file_put_contents($this->config->log, '');
     }

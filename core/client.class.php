@@ -9,9 +9,12 @@ use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Core\Socket;
 use CrossbladeBot\Core\EventHandler;
 use CrossbladeBot\Component\Loader;
+use CrossbladeBot\Traits\RateLimit;
 
-class Client extends Configurable
+class Client
 {
+    use Configurable;
+    use RateLimit;
 
     private $logger;
     private $socket;
@@ -23,7 +26,8 @@ class Client extends Configurable
 
     public function __construct(Logger $logger, Socket $socket, EventHandler $eventhandler, Loader $loader)
     {
-        parent::__construct();
+        $this->loadConfig();
+        $this->initRate(20, 30);
 
         $this->logger = $logger;
         $this->socket = $socket;
@@ -74,7 +78,8 @@ class Client extends Configurable
                             $this->socket->send('PONG :' . $message->getParam(0));
 
                             //pong event
-                            $this->eventhandler->trigger('pong');
+                            $pong = $this->eventhandler->trigger('pong');
+                            $this->reponse($pong);
                             break;
                         case 'PONG':
                             $latency = time() - $lastping;
@@ -99,7 +104,8 @@ class Client extends Configurable
                         case '372':
                             $this->logger->info('Client connected');
                             //connect event
-                            $this->eventhandler->trigger('connect');
+                            $connect = $this->eventhandler->trigger('connect');
+                            $this->response($connect);
                             break;
                         case 'NOTICE':
                             switch ($message->getId()) {
@@ -343,9 +349,10 @@ class Client extends Configurable
                             break;
                         case 'JOIN':
                             if ($this->isme($message->getUser())) {
-                                $channel = new Channel($this->logger, $this->socket, $message);
-                                $this->channels[$message->getParam(0)] = $channel;
-                                $this->eventhandler->trigger('join', $channel);
+                                $channel = new Channel($this->logger, $message);
+                                $this->channels[$channel->getName()] = $channel;
+                                $join = $this->eventhandler->trigger('join', $channel);
+                                $this->response($join);
                             } else {
                                 //another user joined
                             }
@@ -360,9 +367,11 @@ class Client extends Configurable
                             if (substr($message->getMessage(), 0, $prefixlen) === $prefix) {
                                 $messagearr = explode(' ', $message->getMessage());
                                 $message->setCommand(substr(array_shift($messagearr), 1));
-                                $this->eventhandler->trigger('command', $message, $channel);
+                                $command = $this->eventhandler->trigger('command', $message, $channel);
+                                $this->response($command);
                             } else {
-                                $this->eventhandler->trigger('message', $message, $channel);
+                                $message = $this->eventhandler->trigger('message', $message, $channel);
+                                $this->response($message);
                             }
                             break;
                         default:
@@ -371,6 +380,16 @@ class Client extends Configurable
                     }
                 }
                 print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
+            }
+        }
+    }
+
+    private function response(array $data): void
+    {
+        foreach ($data as $componentmessages) {
+            foreach ($componentmessages as $message) {
+                $this->limit();
+                $this->socket->send($message);
             }
         }
     }

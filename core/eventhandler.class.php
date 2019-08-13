@@ -33,15 +33,19 @@ class EventHandler
         return $id;
     }
 
-    public function trigger(string $event, ...$data): void
+    public function trigger(string $event, ...$data): array
     {
-        if (!isset($this->events[$event])) return;
+        if (!isset($this->events[$event])) return [];
 
         $this->logger->info('Triggered event ' . $event);
 
+        $output = [];
         foreach ($this->events[$event] as $callback) {
-            call_user_func($callback, ...$data);
+            $response = call_user_func($callback, ...$data);
+            if ($response) $output[] = $response;
         }
+
+        return $output;
     }
 
     public function clear(string $id): void

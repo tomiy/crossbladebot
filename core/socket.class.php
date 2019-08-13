@@ -5,15 +5,16 @@ namespace CrossbladeBot\Core;
 use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Debug\Logger;
 
-class Socket extends Configurable
+class Socket
 {
+    use Configurable;
 
     private $socket;
     private $logger;
 
     public function __construct(Logger $logger)
     {
-        parent::__construct();
+        $this->loadConfig();
 
         $this->logger = $logger;
     }

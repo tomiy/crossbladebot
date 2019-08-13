@@ -2,7 +2,7 @@
 
 namespace CrossbladeBot\Traits;
 
-class RateLimit
+trait RateLimit
 {
 
     private $last;
@@ -10,7 +10,7 @@ class RateLimit
     private $span;
     private $allowance;
 
-    public function __construct(float $rate, int $span)
+    public function initRate(float $rate, int $span)
     {
         $this->last = microtime(true);
         $this->setRate($rate, $span);

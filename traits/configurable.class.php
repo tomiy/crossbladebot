@@ -4,11 +4,11 @@ namespace CrossbladeBot\Traits;
 
 use stdClass;
 
-abstract class Configurable
+trait Configurable
 {
     protected $config;
 
-    public function __construct(string $subfolder = null)
+    public function loadConfig(string $subfolder = null)
     {
         $class = strtolower((new \ReflectionClass($this))->getShortName());
         $filepath = getcwd() . '/config/' . $subfolder . $class . '.json';

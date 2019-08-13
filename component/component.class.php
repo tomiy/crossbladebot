@@ -8,8 +8,10 @@ use CrossbladeBot\Chat\Channel;
 use CrossbladeBot\Core\Client;
 use CrossbladeBot\Debug\Logger;
 
-class Component extends Configurable
+class Component
 {
+    use Configurable;
+
     protected static $USERLEVEL = [
         'user' => 0,
         'mod' => 1,
@@ -21,7 +23,7 @@ class Component extends Configurable
 
     public function __construct(Logger $logger)
     {
-        parent::__construct('components/');
+        $this->loadConfig('components/');
         $this->logger = $logger;
     }
 
@@ -41,16 +43,16 @@ class Component extends Configurable
                     if ($message->getCommand() === null) return;
 
                     if ($message->getCommand() === $command) {
-                        if ($channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return;
-                        $this->{$cmdinfo->callback}($message, $channel, ...$data);
+                        if ($channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return false;
+                        return $this->{$cmdinfo->callback}($message, $channel, ...$data);
                     }
                 });
             }
         }
     }
 
-    public function send(string $data, Channel $channel): void
+    public function send(string $data, Channel $channel): string
     {
-        $channel->send($data);
+        return $channel->send($data);
     }
 }
