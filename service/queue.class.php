@@ -11,7 +11,7 @@ class Queue
     protected static $queuetimeout = 5;
     private $queue;
 
-    protected function enqueue(array $data): void
+    public function enqueue(array $data): void
     {
         foreach ($data as $arrayormessage) {
             if (is_array($arrayormessage)) {

@@ -50,4 +50,17 @@ class Component
             }
         }
     }
+
+    public function send(string $message, Channel $channel = null, $raw = false): void
+    {
+        if($channel != null) {
+            if($raw) {
+                $channel->sendRaw($message);
+                return;
+            }
+            $channel->send($message);
+            return;
+        }
+        $this->client->enqueue([$message]);
+    }
 }

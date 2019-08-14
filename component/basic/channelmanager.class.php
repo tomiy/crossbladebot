@@ -22,8 +22,8 @@ class ChannelManager extends Component
     {
         if ($channel->getName() === $this->defaultchannel) {
             return [
-                $channel->send('Joining channel #' . $message->getUser()),
-                $channel->sendRaw('JOIN #' . $message->getUser())
+                $this->send('Joining channel #' . $message->getUser(), $channel),
+                $this->send('JOIN #' . $message->getUser())
             ];
         }
     }
@@ -32,8 +32,8 @@ class ChannelManager extends Component
     {
         if ($channel->getName() !== $this->defaultchannel) {
             return [
-                $channel->send('Leaving channel #' . $message->getUser()),
-                $channel->sendRaw('PART #' . $message->getUser())
+                $this->send('Leaving channel #' . $message->getUser(), $channel),
+                $this->send('PART #' . $message->getUser())
             ];
         }
     }

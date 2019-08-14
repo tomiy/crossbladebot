@@ -12,11 +12,11 @@ class HelloWorld extends Component
     {
         $connectmsg = 'Connected to channel ' . $channel->getName();
         $this->logger->info($connectmsg);
-        return [$channel->send($connectmsg)];
+        return [$this->send($connectmsg, $channel)];
     }
 
     public function command(Message $message, Channel $channel): array
     {
-        return [$channel->send('Command: ' . $message->getCommand())];
+        return [$this->send('Command: ' . $message->getCommand(), $channel)];
     }
 }
