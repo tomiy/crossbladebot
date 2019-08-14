@@ -17,15 +17,14 @@ class Queue
             if (is_array($arrayormessage)) {
                 $this->enqueue($arrayormessage);
             } else {
-                $this->queue[microtime(true) * 1E4] = $arrayormessage;
-                usleep(100);
+                $this->queue[microtime(true) * 1E6] = $arrayormessage;
             }
         }
     }
 
     protected function processqueue(array $callback): void
     {
-        $threshold = (microtime(true) - static::$queuetimeout) * 1E4;
+        $threshold = (microtime(true) - static::$queuetimeout) * 1E6;
         $this->queue = array_filter($this->queue, function ($key) use ($threshold) {
             return $key > $threshold;
         }, ARRAY_FILTER_USE_KEY);
