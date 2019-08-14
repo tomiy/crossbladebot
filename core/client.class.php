@@ -239,6 +239,11 @@ class Client extends Queue
         }
     }
 
+    public function send(string $message): void
+    {
+        $this->enqueue([$message]);
+    }
+
     private function isme(string $user): bool
     {
         return $user === $this->name;
