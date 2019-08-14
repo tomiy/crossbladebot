@@ -61,6 +61,6 @@ class Component
             $channel->send($message);
             return;
         }
-        $this->client->enqueue([$message]);
+        $this->client->send($message);
     }
 }
