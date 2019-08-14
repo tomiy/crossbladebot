@@ -112,10 +112,18 @@ class Client extends Queue
                             $this->eventhandler->trigger('connect');
                             break;
                         case 'NOTICE':
-                            if (!in_array($message->getId(), [
-                                "subs_on", "subs_off", "emote_only_on", "emote_only_off", "slow_on", "slow_off", "followers_on_zero", "followers_on", "followers_off", "r9k_on", "r9k_off", "room_mods", "no_mods", "vips_success", "no_vips", "already_banned", "bad_ban_admin", "bad_ban_broadcaster", "bad_ban_global_mod", "bad_ban_self", "bad_ban_staff", "usage_ban", "ban_success", "usage_clear", "usage_mods", "mod_success", "usage_vips", "usage_vip", "bad_vip_grantee_banned", "bad_vip_grantee_already_vip", "vip_success", "usage_mod", "bad_mod_banned", "bad_mod_mod", "unmod_success", "unvip_success", "usage_unmod", "bad_unmod_mod", "usage_unvip", "bad_unvip_grantee_not_vip", "color_changed", "usage_color", "turbo_only_color", "commercial_success", "usage_commercial", "bad_commercial_error", "hosts_remaining", "bad_host_hosting", "bad_host_rate_exceeded", "bad_host_error", "usage_host", "already_r9k_on", "usage_r9k_on", "already_r9k_off", "usage_r9k_off", "timeout_success", "delete_message_success", "already_subs_off", "usage_subs_off", "already_subs_on", "usage_subs_on", "already_emote_only_off", "usage_emote_only_off", "already_emote_only_on", "usage_emote_only_on", "usage_slow_on", "usage_slow_off", "usage_timeout", "bad_timeout_admin", "bad_timeout_broadcaster", "bad_timeout_duration", "bad_timeout_global_mod", "bad_timeout_self", "bad_timeout_staff", "untimeout_success", "unban_success", "usage_unban", "bad_unban_no_ban", "usage_delete", "bad_delete_message_error", "bad_delete_message_broadcaster", "bad_delete_message_mod", "usage_unhost", "not_hosting", "whisper_invalid_login", "whisper_invalid_self", "whisper_limit_per_min", "whisper_limit_per_sec", "whisper_restricted_recipient", "no_permission", "msg_banned", "msg_room_not_found", "msg_channel_suspended", "tos_ban", "msg_rejected", "msg_rejected_mandatory", "unrecognized_cmd", "cmds_available", "host_target_went_offline", "msg_censored_broadcaster", "msg_duplicate", "msg_emoteonly", "msg_verified_email", "msg_ratelimit", "msg_subsonly", "msg_timedout", "msg_bad_characters", "msg_channel_blocked", "msg_facebook", "msg_followersonly", "msg_followersonly_followed", "msg_followersonly_zero", "msg_slowmode", "msg_suspended", "no_help", "usage_disconnect", "usage_help", "usage_me", "host_on", "host_off"
-                            ])) {
-                                $this->logger->warning('Potential auth failure');
+                            foreach ([
+                                'Login unsuccessful',
+                                'Login authentication failed',
+                                'Error logging in',
+                                'Improperly formatted auth',
+                                'Invalid NICK'
+                            ] as $needle) {
+                                if (strpos($message->getMessage(), $needle) !== false) {
+                                    $this->logger->error('Potential auth failure');
+                                    $connected = false;
+                                    break;
+                                }
                             }
                             break;
                         case 'USERNOTICE':
@@ -212,7 +220,7 @@ class Client extends Queue
             }
             $this->pollchannels();
             $this->processqueue([$this, 'sendtosocket']);
-            if($data) {
+            if ($data) {
                 print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
             }
         }

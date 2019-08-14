@@ -50,9 +50,4 @@ class Component
             }
         }
     }
-
-    public function send(string $data, Channel $channel): void
-    {
-        $channel->send($data);
-    }
 }
