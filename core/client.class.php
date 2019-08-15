@@ -160,7 +160,9 @@ class Client extends Queue
                             break;
                         case 'USERSTATE':
                             $channel = $this->getChannel($message->getParam(0));
-                            if ($channel) {
+                            if ($channel->isParted() === true) {
+                                unset($this->channels[$channel->getName()]);
+                            } else {
                                 $channel->userstate($message);
                             }
                             break;
@@ -198,6 +200,8 @@ class Client extends Queue
                             }
                             break;
                         case 'PART':
+                            $this->getChannel($message->getChannel())->part();
+                            $this->eventhandler->trigger('part', $channel);
                             break;
                         case 'WHISPER':
                             break;
@@ -254,8 +258,6 @@ class Client extends Queue
         if (isset($this->channels[$name])) {
             return $this->channels[$name];
         }
-        $this->logger->warning('Call to a nonexistant channel');
-        return false;
     }
 
     public function getName(): string
