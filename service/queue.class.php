@@ -16,12 +16,10 @@ class Queue
             if (is_array($arrayormessage)) {
                 $this->enqueue($arrayormessage);
             } else {
-                print_r(microtime(true));
                 $this->queue[$this->queuetime(microtime(true))] = $arrayormessage;
                 usleep(1);
             }
         }
-        print_r($this->queue);
     }
 
     protected function processqueue(array $callback): void
@@ -40,7 +38,7 @@ class Queue
         }
     }
 
-    private function queuetime(float $time):string
+    private function queuetime(float $time): string
     {
         return number_format($time, 6);
     }

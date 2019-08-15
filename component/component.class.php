@@ -5,6 +5,7 @@ namespace CrossbladeBot\Component;
 use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Core\EventHandler;
 use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Core\Client;
 use CrossbladeBot\Debug\Logger;
 
@@ -39,12 +40,12 @@ class Component
 
         if (isset($this->config->commands)) {
             foreach ($this->config->commands as $command => $cmdinfo) {
-                $eventhandler->register('command', function ($message, $channel, ...$data) use ($command, $cmdinfo) {
+                $eventhandler->register('command', function (Message $message, Channel $channel, ...$data) use ($command, $cmdinfo) {
                     if ($message->getCommand() === null) return;
 
                     if ($message->getCommand() === $command) {
                         if ($channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return false;
-                        return $this->{$cmdinfo->callback}($message, $channel, ...$data);
+                        $this->{$cmdinfo->callback}($message, $channel, ...$data);
                     }
                 });
             }

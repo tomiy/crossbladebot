@@ -26,6 +26,7 @@ class ChannelManager extends Component
                 $this->send('JOIN #' . $message->getUser())
             ];
         }
+        return [];
     }
 
     public function part(Message $message, Channel $channel): array
@@ -36,5 +37,6 @@ class ChannelManager extends Component
                 $this->send('PART #' . $message->getUser())
             ];
         }
+        return [];
     }
 }
