@@ -8,7 +8,6 @@ class Queue
 {
     use RateLimit;
 
-    protected static $queuetimeout = 5;
     private $queue;
 
     protected function enqueue(array $data): void
@@ -17,14 +16,17 @@ class Queue
             if (is_array($arrayormessage)) {
                 $this->enqueue($arrayormessage);
             } else {
-                $this->queue[microtime(true) * 1E6] = $arrayormessage;
+                print_r(microtime(true));
+                $this->queue[$this->queuetime(microtime(true))] = $arrayormessage;
+                usleep(1);
             }
         }
+        print_r($this->queue);
     }
 
     protected function processqueue(array $callback): void
     {
-        $threshold = (microtime(true) - static::$queuetimeout) * 1E6;
+        $threshold = $this->queuetime(microtime(true) - 5);
         $this->queue = array_filter($this->queue, function ($key) use ($threshold) {
             return $key > $threshold;
         }, ARRAY_FILTER_USE_KEY);
@@ -36,5 +38,10 @@ class Queue
 
             call_user_func($callback, $message);
         }
+    }
+
+    private function queuetime(float $time):string
+    {
+        return number_format($time, 6);
     }
 }
