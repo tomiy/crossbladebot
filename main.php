@@ -1,4 +1,6 @@
 <?php
+ini_set('precision', 16);
+
 include_once 'autoloader.php';
 
 use CrossbladeBot\Debug\Logger;
