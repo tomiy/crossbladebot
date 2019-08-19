@@ -24,6 +24,7 @@ class Queue
 
     protected function processqueue(array $callback): void
     {
+        if(empty($this->queue)) return;
         $threshold = $this->queuetime(microtime(true) - 5);
         $this->queue = array_filter($this->queue, function ($key) use ($threshold) {
             return $key > $threshold;
