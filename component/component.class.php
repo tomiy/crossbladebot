@@ -41,10 +41,9 @@ class Component
         if (isset($this->config->commands)) {
             foreach ($this->config->commands as $command => $cmdinfo) {
                 $eventhandler->register('command', function (Message $message, Channel $channel, ...$data) use ($command, $cmdinfo) {
-                    if ($message->getCommand() === null) return;
+                    if ($message->getCommand() === null || $channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return;
 
                     if ($message->getCommand() === $command) {
-                        if ($channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return false;
                         $this->{$cmdinfo->callback}($message, $channel, ...$data);
                     }
                 });
@@ -54,8 +53,8 @@ class Component
 
     public function send(string $message, Channel $channel = null, $raw = false): void
     {
-        if($channel != null) {
-            if($raw) {
+        if ($channel != null) {
+            if ($raw) {
                 $channel->sendRaw($message);
                 return;
             }
