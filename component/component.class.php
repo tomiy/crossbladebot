@@ -9,17 +9,35 @@ use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Core\Client;
 use CrossbladeBot\Debug\Logger;
 
+/**
+ * The parent component. Holds callbacks to events bound in its config file.
+ */
 class Component
 {
     use Configurable;
 
+    /**
+     * Defines the corresponding index of user level strings.
+     *
+     * @var array
+     */
     protected static $USERLEVEL = [
         'user' => 0,
         'mod' => 1,
         'owner' => 2
     ];
 
+    /**
+     * The logger object.
+     *
+     * @var Logger
+     */
     protected $logger;
+    /**
+     * The client object.
+     *
+     * @var Client
+     */
     protected $client;
 
     public function __construct(Logger $logger)
@@ -28,6 +46,13 @@ class Component
         $this->logger = $logger;
     }
 
+    /**
+     * Registers events using bindings from the config
+     *
+     * @param EventHandler $eventhandler The event handler.
+     * @param Client $client The client object.
+     * @return void
+     */
     public function register(EventHandler $eventhandler, Client $client): void
     {
         $this->client = $client;
@@ -51,6 +76,14 @@ class Component
         }
     }
 
+    /**
+     * Send a message to a channel or to the client directly.
+     *
+     * @param string $message The message to send.
+     * @param Channel $channel The channel to send the message. If null, the message is sent to the client directly.
+     * @param boolean $raw Whether the message is sent as a chat message, or an IRC command.
+     * @return void
+     */
     public function send(string $message, Channel $channel = null, $raw = false): void
     {
         if ($channel != null) {

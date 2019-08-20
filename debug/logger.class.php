@@ -4,12 +4,31 @@ namespace CrossbladeBot\Debug;
 
 use CrossbladeBot\Traits\Configurable;
 
+/**
+ * Provides a set of functions to write to a log file with different levels of severity.
+ * Only one instance is necessary and can be passed to different classes.
+ */
 class Logger
 {
     use Configurable;
 
+    /**
+     * The index corresponding to the error level. Used to log when a critical failure happens in the program.
+     *
+     * @var integer
+     */
     public static $LEVEL_ERROR = 1;
+    /**
+     * The index corresponding to the warning level. Used to log when a non-blocking failure happens in the program.
+     *
+     * @var integer
+     */
     public static $LEVEL_WARNING = 2;
+    /**
+     * The index corresponding to the info level. Used to log when any kind of non-failure happens in the program.
+     *
+     * @var integer
+     */
     public static $LEVEL_INFO = 3;
 
     public function __construct()
@@ -19,6 +38,13 @@ class Logger
         file_put_contents($this->config->log, '');
     }
 
+    /**
+     * Write a line in the log file at the given level.
+     *
+     * @param string $line The line to write.
+     * @param integer $level The severity level.
+     * @return void
+     */
     private function write(string $line, int $level): void
     {
 
@@ -31,16 +57,34 @@ class Logger
         }
     }
 
+    /**
+     * Write a line in the log file for the info level.
+     *
+     * @param string $line The line to write.
+     * @return void
+     */
     public function info(string $line): void
     {
         $this->write('[INFO] ' . $line, self::$LEVEL_INFO);
     }
 
+    /**
+     * Write a line in the log file for the warning level.
+     *
+     * @param string $line The line to write.
+     * @return void
+     */
     public function warning(string $line): void
     {
         $this->write('[WARNING] ' . $line, self::$LEVEL_WARNING);
     }
 
+    /**
+     * Write a line in the log file for the error level.
+     *
+     * @param string $line The line to write.
+     * @return void
+     */
     public function error(string $line): void
     {
         $this->write('[ERROR] ' . $line, self::$LEVEL_ERROR);
