@@ -2,23 +2,86 @@
 
 namespace CrossbladeBot\Chat;
 
+/**
+ * The message object holding the parsed parts of an IRC message.
+ */
 class Message
 {
 
+    /**
+     * The raw IRC message.
+     *
+     * @var string
+     */
     private $raw;
+    /**
+     * The tags array holding info such as the display name.
+     *
+     * @var array
+     */
     private $tags;
+    /**
+     * The message type, usually PRIVMSG.
+     *
+     * @var string
+     */
     private $type;
 
+    /**
+     * The channel the message is sent to, if applicable.
+     *
+     * @var string
+     */
     private $channel;
+    /**
+     * The message contents, if applicable.
+     *
+     * @var string
+     */
     private $message;
+    /**
+     * The command, if the message has a command.
+     *
+     * @var string
+     */
     private $command;
 
+    /**
+     * The user sending the message, if applicable.
+     *
+     * @var string
+     */
     private $user;
+    /**
+     * The nickname of the user.
+     *
+     * @var string
+     */
     private $nick;
+    /**
+     * The hostname of the user.
+     *
+     * @var string
+     */
     private $host;
 
+    /**
+     * The sender of the message.
+     *
+     * @var string
+     */
     private $from;
+    /**
+     * The array of parameters, holding anything that isn't tags or type.
+     *
+     * @var array
+     */
     private $params;
+    /**
+     * The message id, if applicable. Used for notices.
+     *
+     * @var string
+     */
     private $id;
 
     public function __construct(string $string)
@@ -30,6 +93,11 @@ class Message
         $this->emotes();
     }
 
+    /**
+     * Parse a message string.
+     *
+     * @return boolean Whether the message was able to be parsed.
+     */
     private function parse(): bool
     {
         $regex = implode('', [
@@ -84,21 +152,45 @@ class Message
         return true;
     }
 
+    /**
+     * Parse the badges tag.
+     *
+     * @return void
+     */
     private function badges(): void
     {
         $this->parsetag('badges');
     }
 
+    /**
+     * Parse the badges-info tag.
+     *
+     * @return void
+     */
     private function badgeinfo(): void
     {
         $this->parsetag('badge-info');
     }
 
+    /**
+     * Parse the emotes tag.
+     *
+     * @return void
+     */
     private function emotes(): void
     {
         $this->parsetag('emotes', '/', ':', ',');
     }
 
+    /**
+     * Parse a tag with a set of delimiters.
+     * 
+     * @param string $index The tag to parse.
+     * @param string $delim1 The first delimiter to split the tag.
+     * @param string $delim2 The second delimiter to split the tag.
+     * @param string $delim3 (optional) The last delimiter if necessary.
+     * @return void
+     */
     private function parsetag(string $index, string $delim1 = ',', string $delim2 = '/', string $delim3 = null): void
     {
 

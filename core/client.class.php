@@ -12,17 +12,51 @@ use CrossbladeBot\Component\Loader;
 use CrossbladeBot\Service\Queue;
 use CrossbladeBot\Traits\RateLimit;
 
+/**
+ * The bot client.
+ * Handles the dispatching of events and messages to channels, and sends and recieve data to and from the socket.
+ */
 class Client extends Queue
 {
     use Configurable;
     use RateLimit;
 
+    /**
+     * The logger object.
+     *
+     * @var Logger
+     */
     private $logger;
+    /**
+     * The socket object handling the stream.
+     *
+     * @var Socket
+     */
     private $socket;
+    /**
+     * The event handler.
+     *
+     * @var EventHandler
+     */
     private $eventhandler;
+    /**
+     * The components' loader.
+     *
+     * @var Loader
+     */
     private $loader;
 
+    /**
+     * The name of the bot. Retrieved during runtime.
+     *
+     * @var string
+     */
     private $name;
+    /**
+     * The channels array holding Channel objects.
+     *
+     * @var array
+     */
     private $channels;
 
     public function __construct(Logger $logger, Socket $socket, EventHandler $eventhandler, Loader $loader)
@@ -40,6 +74,11 @@ class Client extends Queue
         $this->channels = [];
     }
 
+    /**
+     * Connect to the socket stream and to the irc and request capabilities.
+     *
+     * @return void
+     */
     public function connect(): void
     {
         $this->socket->connect();
@@ -52,6 +91,11 @@ class Client extends Queue
         ]);
     }
 
+    /**
+     * Connect to the irc and loop over the socket messages, dispatching events and messages to channel as necessary.
+     *
+     * @return void
+     */
     public function serve(): void
     {
         $this->connect();
@@ -82,8 +126,6 @@ class Client extends Queue
                         case 'PING':
                             $lastping = time();
                             $this->enqueue(['PONG :' . $message->getParam(0)]);
-
-                            //pong event
                             $this->eventhandler->trigger('pong');
                             break;
                         case 'PONG':
@@ -108,7 +150,6 @@ class Client extends Queue
                             break;
                         case '372':
                             $this->logger->info('Client connected');
-                            //connect event
                             $this->eventhandler->trigger('connect');
                             break;
                         case 'NOTICE':
@@ -230,12 +271,25 @@ class Client extends Queue
         }
     }
 
-    protected function sendtosocket(array $message): void
+    /**
+     * Send the messages extracted from the queue to the socket.
+     *
+     * @param array $messages The messages extracted from the queue
+     * @return void
+     */
+    protected function sendtosocket(array $messages): void
     {
-        $this->logger->info('Sending message: "' . trim($message[0]) . '" at time ' . time());
-        $this->socket->send($message[0]);
+        foreach($messages as $message) {
+            $this->logger->info('Sending message: "' . trim($message) . '" at time ' . time());
+            $this->socket->send($message);
+        }
     }
 
+    /**
+     * Process every channel's queue and queue the extracted messages into the client.
+     *
+     * @return void
+     */
     private function pollchannels(): void
     {
         foreach ($this->channels as $channel) {
@@ -243,16 +297,34 @@ class Client extends Queue
         }
     }
 
+    /**
+     * Queue a message into the socket.
+     *
+     * @param string $message The message to queue.
+     * @return void
+     */
     public function send(string $message): void
     {
         $this->enqueue([$message]);
     }
 
+    /**
+     * Check if the user is the client.
+     *
+     * @param string $user The username to check.
+     * @return boolean Whether the user is the client.
+     */
     private function isme(string $user): bool
     {
         return $user === $this->name;
     }
 
+    /**
+     * Get the channel object from the channel name.
+     *
+     * @param string $name The channel name.
+     * @return Channel The channel object.
+     */
     private function getChannel(string $name): Channel
     {
         if (isset($this->channels[$name])) {

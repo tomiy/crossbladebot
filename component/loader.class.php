@@ -6,9 +6,17 @@ use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Core\EventHandler;
 use CrossbladeBot\Core\Client;
 
+/**
+ * Dynamically loads every class from the component folders.
+ */
 class Loader
 {
 
+    /**
+     * The array of loaded components.
+     *
+     * @var array
+     */
     private $components;
 
     public function __construct(Logger $logger)
@@ -26,6 +34,13 @@ class Loader
         }
     }
 
+    /**
+     * Registers every component's events
+     *
+     * @param EventHandler $eventhandler The event handler to register into.
+     * @param Client $client The bot client, used to get referenced in the components.
+     * @return void
+     */
     public function register(EventHandler $eventhandler, Client $client): void
     {
         foreach ($this->components as $component) {
