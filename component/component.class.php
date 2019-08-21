@@ -59,19 +59,33 @@ class Component
 
         if (isset($this->config->events)) {
             foreach ($this->config->events as $event => $callback) {
-                $eventhandler->register($event, [$this, $callback]);
+                if (method_exists($this, $callback)) {
+                    $eventhandler->register($event, [$this, $callback]);
+                } else {
+                    $this->logger->warning(
+                        '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
+                        ' Invalid event callback: ' . $callback
+                    );
+                }
             }
         }
 
         if (isset($this->config->commands)) {
             foreach ($this->config->commands as $command => $cmdinfo) {
-                $eventhandler->register('command', function (Message $message, Channel $channel, ...$data) use ($command, $cmdinfo) {
-                    if ($message->getCommand() === null || $channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return;
+                if (method_exists($this, $cmdinfo->callback)) {
+                    $eventhandler->register('command', function (Message $message, Channel $channel, ...$data) use ($command, $cmdinfo) {
+                        if ($message->getCommand() === null || $channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return;
 
-                    if ($message->getCommand() === $command) {
-                        $this->{$cmdinfo->callback}($message, $channel, ...$data);
-                    }
-                });
+                        if ($message->getCommand() === $command) {
+                            $this->{$cmdinfo->callback}($message, $channel, ...$data);
+                        }
+                    });
+                } else {
+                    $this->logger->warning(
+                        '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
+                        ' Invalid event callback: ' . $cmdinfo->callback
+                    );
+                }
             }
         }
     }
