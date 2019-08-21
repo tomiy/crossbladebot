@@ -2,11 +2,11 @@
     "commands": {
         "join": {
             "userlevel": "user",
-            "callback": "join"
+            "callback": "cmdjoin"
         },
         "part": {
             "userlevel": "owner",
-            "callback": "part"
+            "callback": "cmdpart"
         }
     }
 }

@@ -8,15 +8,15 @@ use CrossbladeBot\Chat\Message;
 
 class HelloWorld extends Component
 {
-    public function join(Channel $channel): array
+    public function evtjoin(Channel $channel): void
     {
         $connectmsg = 'Connected to channel ' . $channel->getName();
         $this->logger->info($connectmsg);
-        return [$this->send($connectmsg, $channel)];
+        $this->send($connectmsg, $channel);
     }
 
-    public function command(Message $message, Channel $channel): array
+    public function cmdtest(Message $message, Channel $channel): void
     {
-        return [$this->send('Command: ' . $message->getCommand(), $channel)];
+        $this->send('Command: ' . $message->getCommand(), $channel);
     }
 }
