@@ -1,6 +1,6 @@
 {
     "events": {
-        "join": "join"
+        "join": "evtjoin"
     },
     "commands": {
         "usertest": {
