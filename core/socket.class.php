@@ -44,6 +44,7 @@ class Socket
             $this->logger->error('Couldn\'t create socket');
             die("errno: $errno, errstr: $errstr");
         }
+        stream_set_blocking($this->socket, 0);
         stream_set_timeout($this->socket, 1);
         $this->logger->info('Socket created');
     }
