@@ -73,7 +73,6 @@ class EventHandler
 
         $this->logger->info('Triggered event ' . $event);
 
-        $output = [];
         foreach ($this->events[$event] as $callback) {
             call_user_func($callback, ...$data);
         }
