@@ -28,29 +28,15 @@ class Command
     public function __construct(string $command, stdClass $params, Component $component)
     {
         $this->command = $command;
-        $this->userlevel = $params->userlevel;
+        $this->userlevel = static::$USERLEVEL[$params->userlevel];
         $this->callback = $params->callback;
         $this->component = $component;
     }
 
     public function execute(Message $message, Channel $channel, ...$data): void
     {
-        if ($message->getCommand() === null || $channel->getUserLevel($message) < static::$USERLEVEL[$this->userlevel]) {
-            return;
-        }
-
-        if ($message->getCommand() === $this->command) {
+        if ($message->getCommand() === $this->command && $channel->getUserLevel($message) >= $this->userlevel) {
             $this->component->{$this->callback}($message, $channel, ...$data);
         }
-    }
-
-    public function getCommand(): string
-    {
-        return $this->command;
-    }
-
-    public function getCallback(): string
-    {
-        return $this->callback;
     }
 }
