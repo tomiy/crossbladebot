@@ -50,7 +50,7 @@ class Channel extends Queue
         $this->logger->info('Joined channel ' . $this->name);
     }
 
-    private function __destruct()
+    public function __destruct()
     {
         $this->logger->info('Parted channel ' . $this->name);
     }
