@@ -52,11 +52,13 @@ class Socket
     /**
      * Polls the socket stream for data.
      *
-     * @return string The data returned by the stream if there is something to return. 
+     * @return string The data returned by the stream if there is something to return.
      */
     public function getNext(): string
     {
-        if (!$this->socket) return false;
+        if (!$this->socket) {
+            return false;
+        }
         $line = fgets($this->socket);
 
         if ($line) {
@@ -74,7 +76,9 @@ class Socket
      */
     public function send(string $data): void
     {
-        if (!$this->socket) return;
+        if (!$this->socket) {
+            return;
+        }
         fputs($this->socket, $data . NL);
 
         $this->logger->info('< ' . $data);

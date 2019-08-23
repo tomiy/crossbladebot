@@ -21,7 +21,7 @@ trait RateLimit
      */
     private $rate;
     /**
-     * The amount of time in seconds in which the rate is constrained. 
+     * The amount of time in seconds in which the rate is constrained.
      *
      * @var int
      */
@@ -64,7 +64,7 @@ trait RateLimit
      * Limit the number of actions.
      *
      * @param integer $consumed The number of actions consumed. Defaults to 1.
-     * @return boolean Whether you can perform your action. 
+     * @return boolean Whether you can perform your action.
      */
     public function limit(int $consumed = 1): bool
     {

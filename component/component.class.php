@@ -74,7 +74,9 @@ class Component
             foreach ($this->config->commands as $command => $cmdinfo) {
                 if (method_exists($this, $cmdinfo->callback)) {
                     $eventhandler->register('command', function (Message $message, Channel $channel, ...$data) use ($command, $cmdinfo) {
-                        if ($message->getCommand() === null || $channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) return;
+                        if ($message->getCommand() === null || $channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) {
+                            return;
+                        }
 
                         if ($message->getCommand() === $command) {
                             $this->{$cmdinfo->callback}($message, $channel, ...$data);

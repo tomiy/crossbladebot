@@ -21,16 +21,16 @@ class ChannelManager extends Component
     public function cmdjoin(Message $message, Channel $channel): void
     {
         if ($channel->getName() === $this->defaultchannel) {
-                $this->send('Joining channel #' . $message->getUser(), $channel);
-                $this->send('JOIN #' . $message->getUser());
+            $this->send('Joining channel #' . $message->getUser(), $channel);
+            $this->send('JOIN #' . $message->getUser());
         }
     }
 
     public function cmdpart(Message $message, Channel $channel): void
     {
         if ($channel->getName() !== $this->defaultchannel) {
-                $this->send('Leaving channel #' . $message->getUser(), $channel);
-                $this->send('PART #' . $message->getUser());
+            $this->send('Leaving channel #' . $message->getUser(), $channel);
+            $this->send('PART #' . $message->getUser());
         }
     }
 }

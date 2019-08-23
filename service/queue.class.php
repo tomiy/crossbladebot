@@ -15,7 +15,7 @@ class Queue
     /**
      * The queue array that holds the data to process.
      * [microtime => 'message']
-     * 
+     *
      * @var array
      */
     private $queue;
@@ -42,11 +42,13 @@ class Queue
      * Processes the data in the queue and pushes it to a callback.
      *
      * @param array $callback a [class, function] callback array
-     * @return void
+     * @return int the number of units of data processed
      */
-    protected function processqueue(array $callback): void
+    protected function processqueue(array $callback): int
     {
-        if(empty($this->queue)) return;
+        if (empty($this->queue)) {
+            return 0;
+        }
         $threshold = $this->queuetime(microtime(true) - 5);
         $this->queue = array_filter($this->queue, function ($key) use ($threshold) {
             return $key > $threshold;
@@ -57,11 +59,13 @@ class Queue
             list($key) = array_keys($this->queue);
             $data[] = $this->queue[$key];
             unset($this->queue[$key]);
-
         }
-        if(sizeof($data) > 0) {
+        $datasize = sizeof($data);
+        if ($datasize > 0) {
             call_user_func($callback, $data);
         }
+
+        return $datasize;
     }
 
     /**
