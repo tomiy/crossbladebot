@@ -55,7 +55,7 @@ class EventHandler
         $this->events[$event][$id] = $callback;
         $this->ids[$id] = $event;
 
-        $this->logger->info('Registered event ' . $id);
+        $this->logger->debug('Registered event ' . $id);
 
         return $id;
     }
@@ -73,7 +73,7 @@ class EventHandler
             return;
         }
 
-        $this->logger->info('Triggered event ' . $event);
+        $this->logger->debug('Triggered event ' . $event);
 
         foreach ($this->events[$event] as $callback) {
             call_user_func($callback, ...$data);
@@ -94,6 +94,6 @@ class EventHandler
         unset($this->events[$this->ids[$id]][$id]);
         unset($this->ids[$id]);
 
-        $this->logger->info('Cleared event ' . $id);
+        $this->logger->debug('Cleared event ' . $id);
     }
 }

@@ -46,7 +46,7 @@ class Socket
         }
         stream_set_blocking($this->socket, 0);
         stream_set_timeout($this->socket, 1);
-        $this->logger->info('Socket created');
+        $this->logger->debug('Socket created');
     }
 
     /**
@@ -62,7 +62,7 @@ class Socket
         $line = fgets($this->socket);
 
         if ($line) {
-            $this->logger->info('> ' . $line);
+            $this->logger->debug('> ' . $line);
         }
 
         return $line;
@@ -81,7 +81,7 @@ class Socket
         }
         fputs($this->socket, $data . NL);
 
-        $this->logger->info('< ' . $data);
+        $this->logger->debug('< ' . $data);
     }
 
     /**

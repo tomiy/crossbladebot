@@ -149,7 +149,7 @@ class Client extends Queue
                             $this->name = $message->getParam(0);
                             break;
                         case '372':
-                            $this->logger->info('Client connected');
+                            $this->logger->debug('Client connected');
                             $this->eventhandler->trigger('connect');
                             break;
                         case 'NOTICE':
@@ -203,6 +203,8 @@ class Client extends Queue
                             $channel = $this->getChannel($message->getParam(0));
                             if ($channel->isParted() === true) {
                                 unset($this->channels[$channel->getName()]);
+                                $this->logger->debug('Removed channel ' . $channel->getName() . ' from client');
+                                unset($channel);
                             } else {
                                 $channel->userstate($message);
                             }
@@ -235,6 +237,7 @@ class Client extends Queue
                             if ($this->isme($message->getUser())) {
                                 $channel = new Channel($this->logger, $message);
                                 $this->channels[$channel->getName()] = $channel;
+                                $this->logger->debug('Added channel ' . $channel->getName() . ' to client');
                                 $this->eventhandler->trigger('join', $channel);
                             } else {
                                 //another user joined
@@ -269,7 +272,7 @@ class Client extends Queue
             $processed += $this->processqueue([$this, 'sendtosocket']);
             if ($data || $processed > 0) {
                 if ($processed > 0) {
-                    $this->logger->info('Processed ' . $processed . ' messages from the client queue');
+                    $this->logger->debug('Processed ' . $processed . ' messages from the client queue');
                 }
                 print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
                 $processed = 0;
@@ -286,7 +289,7 @@ class Client extends Queue
     protected function sendtosocket(array $messages): void
     {
         foreach ($messages as $message) {
-            $this->logger->info('Sending message: "' . trim($message) . '" at time ' . time());
+            $this->logger->debug('Sending message: "' . trim($message) . '" at time ' . time());
             $this->socket->send($message);
         }
     }
@@ -304,7 +307,7 @@ class Client extends Queue
         }
 
         if ($processed > 0) {
-            $this->logger->info('Processed ' . $processed . ' messages from the channel queues');
+            $this->logger->debug('Processed ' . $processed . ' messages from the channel queues');
         }
         return $processed;
     }

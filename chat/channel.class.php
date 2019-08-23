@@ -87,7 +87,7 @@ class Channel extends Queue
      */
     public function send(string $message): void
     {
-        $this->logger->info('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
+        $this->logger->debug('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
         $this->sendRaw('PRIVMSG ' . $this->name . ' :' . $message);
     }
 
