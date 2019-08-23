@@ -4,9 +4,10 @@ namespace CrossbladeBot\Component;
 
 use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Core\Client;
 use CrossbladeBot\Chat\Channel;
 use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Core\Client;
+use CrossbladeBot\Chat\Command;
 use CrossbladeBot\Debug\Logger;
 
 /**
@@ -15,17 +16,6 @@ use CrossbladeBot\Debug\Logger;
 class Component
 {
     use Configurable;
-
-    /**
-     * Defines the corresponding index of user level strings.
-     *
-     * @var array
-     */
-    protected static $USERLEVEL = [
-        'user' => 0,
-        'mod' => 1,
-        'owner' => 2
-    ];
 
     /**
      * The logger object.
@@ -40,10 +30,41 @@ class Component
      */
     protected $client;
 
+    protected $events;
+    protected $commands;
+
     public function __construct(Logger $logger)
     {
         $this->loadConfig('components/');
         $this->logger = $logger;
+
+        $this->events = [];
+        if (isset($this->config->events)) {
+            foreach ($this->config->events as $event => $callback) {
+                if (method_exists($this, $callback)) {
+                    $this->events[$event] = $callback;
+                } else {
+                    $this->logger->warning(
+                        '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
+                        ' Invalid event callback: ' . $callback
+                    );
+                }
+            }
+        }
+
+        $this->commands = [];
+        if (isset($this->config->commands)) {
+            foreach ($this->config->commands as $command => $cmdinfo) {
+                if (method_exists($this, $cmdinfo->callback)) {
+                    $this->commands[$command] = new Command($command, $cmdinfo, $this);
+                } else {
+                    $this->logger->warning(
+                        '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
+                            ' Invalid event callback: ' . $cmdinfo->callback
+                        );
+                }
+            }
+        }
     }
 
     /**
@@ -57,38 +78,14 @@ class Component
     {
         $this->client = $client;
 
-        if (isset($this->config->events)) {
-            foreach ($this->config->events as $event => $callback) {
-                if (method_exists($this, $callback)) {
-                    $eventhandler->register($event, [$this, $callback]);
-                } else {
-                    $this->logger->warning(
-                        '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
-                        ' Invalid event callback: ' . $callback
-                    );
-                }
-            }
+        foreach ($this->events as $event => $callback) {
+            $eventhandler->register($event, [$this, $callback]);
         }
 
-        if (isset($this->config->commands)) {
-            foreach ($this->config->commands as $command => $cmdinfo) {
-                if (method_exists($this, $cmdinfo->callback)) {
-                    $eventhandler->register('command', function (Message $message, Channel $channel, ...$data) use ($command, $cmdinfo) {
-                        if ($message->getCommand() === null || $channel->getUserLevel($message) < static::$USERLEVEL[$cmdinfo->userlevel]) {
-                            return;
-                        }
-
-                        if ($message->getCommand() === $command) {
-                            $this->{$cmdinfo->callback}($message, $channel, ...$data);
-                        }
-                    });
-                } else {
-                    $this->logger->warning(
-                        '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
-                        ' Invalid event callback: ' . $cmdinfo->callback
-                    );
-                }
-            }
+        foreach ($this->commands as $command => $cmdobj) {
+            $eventhandler->register('command', function (Message $message, Channel $channel, ...$data) use($cmdobj) {
+                $cmdobj->execute($message, $channel, ...$data);
+            });
         }
     }
 
