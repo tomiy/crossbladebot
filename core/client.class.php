@@ -109,6 +109,8 @@ class Client extends Queue
         $lastping = time();
 
         while ($connected) {
+            list($message, $channel) = null;
+
             $cost = microtime(true);
             if ((time() - $lastping) > 300 or $this->socket === false) {
                 $this->logger->info('Restarting connection');
@@ -204,7 +206,6 @@ class Client extends Queue
                             if ($channel->isParted() === true) {
                                 unset($this->channels[$channel->getName()]);
                                 $this->logger->debug('Removed channel ' . $channel->getName() . ' from client');
-                                unset($channel);
                             } else {
                                 $channel->userstate($message);
                             }
@@ -273,9 +274,9 @@ class Client extends Queue
             if ($data || $processed > 0) {
                 if ($processed > 0) {
                     $this->logger->debug('Processed ' . $processed . ' messages from the client queue');
+                    $processed = 0;
                 }
                 print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
-                $processed = 0;
             }
         }
     }
