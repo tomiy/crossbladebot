@@ -30,6 +30,12 @@ class Logger
      * @var integer
      */
     public static $LEVEL_INFO = 3;
+    /**
+     * The index corresponding to the debug level. Used to log during debugging, not to be used when running the program normally.
+     *
+     * @var integer
+     */
+    public static $LEVEL_DEBUG = 4;
 
     public function __construct()
     {
@@ -54,6 +60,17 @@ class Logger
             $class = $backtrace[2]['class'];
             file_put_contents($this->config->log, trim("$date$class:$at $line") . PHP_EOL, FILE_APPEND);
         }
+    }
+
+    /**
+     * Write a line in the log file for the debug level.
+     *
+     * @param string $line The line to write.
+     * @return void
+     */
+    public function debug(string $line): void
+    {
+        $this->write('[DEBUG] ' . $line, self::$LEVEL_DEBUG);
     }
 
     /**
