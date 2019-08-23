@@ -47,7 +47,6 @@ class Logger
      */
     private function write(string $line, int $level): void
     {
-
         if ($level <= $this->config->level) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
             $date = date('[d/m/y G:i:s] ');

@@ -99,7 +99,7 @@ class Client extends Queue
     public function serve(): void
     {
         $this->connect();
-        $this->processqueue([$this, 'sendtosocket']);
+        $processed = $this->processqueue([$this, 'sendtosocket']);
 
         $connected = true;
 
@@ -136,7 +136,7 @@ class Client extends Queue
                             $this->logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
-                } else if ($message->getFrom() === 'tmi.twitch.tv') {
+                } elseif ($message->getFrom() === 'tmi.twitch.tv') {
                     switch ($message->getType()) {
                         case '002':
                         case '003':
@@ -217,7 +217,7 @@ class Client extends Queue
                             $this->logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
-                } else if ($message->getFrom() === 'jtv') {
+                } elseif ($message->getFrom() === 'jtv') {
                     switch ($message->getType()) {
                         case 'MODE':
                             break;
@@ -247,7 +247,9 @@ class Client extends Queue
                         case 'WHISPER':
                             break;
                         case 'PRIVMSG':
-                            if ($this->isme($message->getUser())) break;
+                            if ($this->isme($message->getUser())) {
+                                break;
+                            }
                             $channel = $this->getChannel($message->getChannel());
                             if (substr($message->getMessage(), 0, $prefixlen) === $prefix) {
                                 $messagearr = explode(' ', $message->getMessage());
@@ -264,9 +266,13 @@ class Client extends Queue
                 }
             }
             $this->pollchannels();
-            $this->processqueue([$this, 'sendtosocket']);
-            if ($data) {
+            $processed += $this->processqueue([$this, 'sendtosocket']);
+            if ($data || $processed > 0) {
+                if ($processed > 0) {
+                    $this->logger->info('Processed ' . $processed . ' messages from the client queue');
+                }
                 print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
+                $processed = 0;
             }
         }
     }
@@ -279,7 +285,7 @@ class Client extends Queue
      */
     protected function sendtosocket(array $messages): void
     {
-        foreach($messages as $message) {
+        foreach ($messages as $message) {
             $this->logger->info('Sending message: "' . trim($message) . '" at time ' . time());
             $this->socket->send($message);
         }
@@ -288,13 +294,19 @@ class Client extends Queue
     /**
      * Process every channel's queue and queue the extracted messages into the client.
      *
-     * @return void
+     * @return int the number of processed messages
      */
-    private function pollchannels(): void
+    private function pollchannels(): int
     {
+        $processed = 0;
         foreach ($this->channels as $channel) {
-            $channel->processqueue([$this, 'enqueue']);
+            $processed += $channel->processqueue([$this, 'enqueue']);
         }
+
+        if ($processed > 0) {
+            $this->logger->info('Processed ' . $processed . ' messages from the channel queues');
+        }
+        return $processed;
     }
 
     /**

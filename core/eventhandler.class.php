@@ -69,7 +69,9 @@ class EventHandler
      */
     public function trigger(string $event, ...$data): void
     {
-        if (!isset($this->events[$event])) return;
+        if (!isset($this->events[$event])) {
+            return;
+        }
 
         $this->logger->info('Triggered event ' . $event);
 
@@ -86,7 +88,9 @@ class EventHandler
      */
     public function clear(string $id): void
     {
-        if (!isset($this->ids[$id])) return;
+        if (!isset($this->ids[$id])) {
+            return;
+        }
         unset($this->events[$this->ids[$id]][$id]);
         unset($this->ids[$id]);
 

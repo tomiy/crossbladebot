@@ -112,7 +112,9 @@ class Message
 
         $match = preg_match($regex, $this->raw, $matches);
 
-        if (!$match) return false;
+        if (!$match) {
+            return false;
+        }
 
         if ($this->raw[0] === '@') {
             $rawtags = explode(';', $matches['tags']);
@@ -145,7 +147,7 @@ class Message
             $this->nick = $user[0];
             $this->user = $user[1];
             $this->host = $user[2];
-        } else if (isset($this->tags['display-name'])) {
+        } elseif (isset($this->tags['display-name'])) {
             $this->user = strtolower($this->tags['display-name']);
         }
 
@@ -184,7 +186,7 @@ class Message
 
     /**
      * Parse a tag with a set of delimiters.
-     * 
+     *
      * @param string $index The tag to parse.
      * @param string $delim1 The first delimiter to split the tag.
      * @param string $delim2 The second delimiter to split the tag.
@@ -193,7 +195,6 @@ class Message
      */
     private function parsetag(string $index, string $delim1 = ',', string $delim2 = '/', string $delim3 = null): void
     {
-
         if (!isset($this->tags[$index])) {
             return;
         }
