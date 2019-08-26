@@ -83,9 +83,7 @@ class Component
         }
 
         foreach ($this->commands as $command => $cmdobj) {
-            $eventhandler->register('command', function (Message $message, Channel $channel, ...$data) use($cmdobj) {
-                $cmdobj->execute($message, $channel, ...$data);
-            });
+            $eventhandler->register('command', [$cmdobj, 'execute']);
         }
     }
 
