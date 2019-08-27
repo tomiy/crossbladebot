@@ -22,29 +22,29 @@ class Component
      *
      * @var Logger
      */
-    protected $logger;
+    protected $_logger;
     /**
      * The client object.
      *
      * @var Client
      */
-    protected $client;
+    protected $_client;
 
-    protected $events;
-    protected $commands;
+    protected $_events;
+    protected $_commands;
 
     public function __construct(Logger $logger)
     {
         $this->loadConfig('components/');
-        $this->logger = $logger;
+        $this->_logger = $logger;
 
-        $this->events = [];
-        if (isset($this->config->events)) {
-            foreach ($this->config->events as $event => $callback) {
+        $this->_events = [];
+        if (isset($this->_config->events)) {
+            foreach ($this->_config->events as $event => $callback) {
                 if (method_exists($this, $callback)) {
-                    $this->events[$event] = $callback;
+                    $this->_events[$event] = $callback;
                 } else {
-                    $this->logger->warning(
+                    $this->_logger->warning(
                         '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
                         ' Invalid event callback: ' . $callback
                     );
@@ -52,15 +52,15 @@ class Component
             }
         }
 
-        $this->commands = [];
-        if (isset($this->config->commands)) {
-            foreach ($this->config->commands as $command => $cmdinfo) {
-                if (method_exists($this, $cmdinfo->callback)) {
-                    $this->commands[$command] = new Command($command, $cmdinfo, $this);
+        $this->_commands = [];
+        if (isset($this->_config->commands)) {
+            foreach ($this->_config->commands as $command => $cmdInfo) {
+                if (method_exists($this, $cmdInfo->callback)) {
+                    $this->_commands[$command] = new Command($command, $cmdInfo, $this);
                 } else {
-                    $this->logger->warning(
+                    $this->_logger->warning(
                         '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
-                            ' Invalid event callback: ' . $cmdinfo->callback
+                            ' Invalid command callback: ' . $cmdInfo->callback
                         );
                 }
             }
@@ -74,16 +74,16 @@ class Component
      * @param Client $client The client object.
      * @return void
      */
-    public function register(EventHandler $eventhandler, Client $client): void
+    public function register(EventHandler $eventHandler, Client $client): void
     {
-        $this->client = $client;
+        $this->_client = $client;
 
-        foreach ($this->events as $event => $callback) {
-            $eventhandler->register($event, [$this, $callback]);
+        foreach ($this->_events as $event => $callback) {
+            $eventHandler->register($event, [$this, $callback]);
         }
 
-        foreach ($this->commands as $command => $cmdobj) {
-            $eventhandler->register('command', [$cmdobj, 'execute']);
+        foreach ($this->_commands as $command => $cmdObj) {
+            $eventHandler->register('command', [$cmdObj, 'execute']);
         }
     }
 
@@ -105,6 +105,6 @@ class Component
             $channel->send($message);
             return;
         }
-        $this->client->send($message);
+        $this->_client->send($message);
     }
 }

@@ -19,40 +19,40 @@ class Channel extends Queue
      *
      * @var Logger
      */
-    private $logger;
+    private $_logger;
 
     /**
      * The name of the channel.
      *
      * @var string
      */
-    private $name;
+    private $_name;
     /**
      * Whether the channel has been parted from.
      *
      * @var boolean
      */
-    private $part;
+    private $_part;
     /**
      * Whether the client has requested the mod status.
      *
      * @var boolean
      */
-    private $modRequested;
+    private $_modRequested;
 
     public function __construct(Logger $logger, Message $join)
     {
         $this->initRate(1, 3);
-        $this->logger = $logger;
-        $this->name = $join->getParam(0);
-        $this->part = false;
+        $this->_logger = $logger;
+        $this->_name = $join->getParam(0);
+        $this->_part = false;
 
-        $this->logger->info('Joined channel ' . $this->name);
+        $this->_logger->info('Joined channel ' . $this->_name);
     }
 
     public function __destruct()
     {
-        $this->logger->info('Parted channel ' . $this->name);
+        $this->_logger->info('Parted channel ' . $this->_name);
     }
 
     /**
@@ -61,10 +61,10 @@ class Channel extends Queue
      * @param Message $userstate The message to handle.
      * @return void
      */
-    public function userstate(Message $userstate): void
+    public function userState(Message $userState): void
     {
-        if (!$this->isOp($userstate) && !$this->modRequested) {
-            $this->modRequested = true;
+        if (!$this->_isOp($userState) && !$this->_modRequested) {
+            $this->_modRequested = true;
             $this->send('Pssst, you should mod me so that i\'m able to use mod commands!');
         }
     }
@@ -76,7 +76,7 @@ class Channel extends Queue
      */
     public function part(): void
     {
-        $this->part = true;
+        $this->_part = true;
     }
 
     /**
@@ -87,10 +87,10 @@ class Channel extends Queue
      */
     public function send(string $message): void
     {
-        $this->logger->debug('Sending message: "' . trim($message) . '" to channel: ' . $this->name);
-        $this->sendRaw('PRIVMSG ' . $this->name . ' :' . $message);
+        $this->_logger->debug('Sending message: "' . trim($message) . '" to channel: ' . $this->_name);
+        $this->sendRaw('PRIVMSG ' . $this->_name . ' :' . $message);
     }
-
+    
     /**
      * Queues a message in the channel queue.
      *
@@ -99,6 +99,7 @@ class Channel extends Queue
      */
     public function sendRaw(string $message): void
     {
+        $this->_logger->debug('Sending raw message: "' . trim($message) . '" to channel: ' . $this->_name);
         $this->enqueue([$message]);
     }
 
@@ -108,9 +109,9 @@ class Channel extends Queue
      * @param Message $message The message to check.
      * @return boolean Whether the user is mod or owner.
      */
-    private function isOp(Message $message): bool
+    private function _isOp(Message $message): bool
     {
-        return $this->isMod($message) || $this->isBroadcaster($message);
+        return $this->_isMod($message) || $this->_isBroadcaster($message);
     }
 
     /**
@@ -119,7 +120,7 @@ class Channel extends Queue
      * @param Message $message The message to check.
      * @return boolean Whether the user is a mod.
      */
-    private function isMod(Message $message): bool
+    private function _isMod(Message $message): bool
     {
         return $message->getTag('mod') == 1;
     }
@@ -130,9 +131,9 @@ class Channel extends Queue
      * @param Message $message The message to check.
      * @return boolean Whether the user is the owner.
      */
-    private function isBroadcaster(Message $message): bool
+    private function _isBroadcaster(Message $message): bool
     {
-        return $this->name === '#' . $message->getUser();
+        return $this->_name === '#' . $message->getUser();
     }
 
     /**
@@ -145,10 +146,10 @@ class Channel extends Queue
     public function getUserLevel(Message $message): int
     {
         $userlevel = 0;
-        if ($this->isOp($message)) {
+        if ($this->_isOp($message)) {
             $userlevel++;
         }
-        if ($this->isBroadcaster($message)) {
+        if ($this->_isBroadcaster($message)) {
             $userlevel++;
         }
         return $userlevel;
@@ -156,11 +157,11 @@ class Channel extends Queue
 
     public function getName(): string
     {
-        return $this->name;
+        return $this->_name;
     }
 
     public function isParted(): bool
     {
-        return $this->part;
+        return $this->_part;
     }
 }

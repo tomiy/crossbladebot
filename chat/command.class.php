@@ -14,29 +14,29 @@ class Command
      *
      * @var array
      */
-    protected static $USERLEVEL = [
+    private static $_USERLEVEL = [
         'user' => 0,
         'mod' => 1,
         'owner' => 2
     ];
 
-    private $command;
-    private $userlevel;
-    private $callback;
-    private $component;
+    private $_command;
+    private $_userLevel;
+    private $_callback;
+    private $_component;
 
     public function __construct(string $command, stdClass $params, Component $component)
     {
-        $this->command = $command;
-        $this->userlevel = static::$USERLEVEL[$params->userlevel];
-        $this->callback = $params->callback;
-        $this->component = $component;
+        $this->_command = $command;
+        $this->_userLevel = static::$_USERLEVEL[$params->userLevel];
+        $this->_callback = $params->callback;
+        $this->_component = $component;
     }
 
     public function execute(Message $message, Channel $channel, ...$data): void
     {
-        if ($message->getCommand() === $this->command && $channel->getUserLevel($message) >= $this->userlevel) {
-            $this->component->{$this->callback}($message, $channel, ...$data);
+        if ($message->getCommand() === $this->_command && $channel->getUserLevel($message) >= $this->_userLevel) {
+            $this->_component->{$this->_callback}($message, $channel, ...$data);
         }
     }
 }

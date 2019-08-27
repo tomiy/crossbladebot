@@ -1,19 +1,19 @@
 {
     "events": {
-        "join": "evtjoin"
+        "join": "evtJoin"
     },
     "commands": {
         "usertest": {
-            "userlevel": "user",
-            "callback": "cmdtest"
+            "userLevel": "user",
+            "callback": "cmdTest"
         },
         "modtest": {
-            "userlevel": "mod",
-            "callback": "cmdtest"
+            "userLevel": "mod",
+            "callback": "cmdTest"
         },
         "ownertest": {
-            "userlevel": "owner",
-            "callback": "cmdtest"
+            "userLevel": "owner",
+            "callback": "cmdTest"
         }
     }
 }

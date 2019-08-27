@@ -26,52 +26,52 @@ class Client extends Queue
      *
      * @var Logger
      */
-    private $logger;
+    private $_logger;
     /**
      * The socket object handling the stream.
      *
      * @var Socket
      */
-    private $socket;
+    private $_socket;
     /**
      * The event handler.
      *
      * @var EventHandler
      */
-    private $eventhandler;
+    private $_eventHandler;
     /**
      * The components' loader.
      *
      * @var Loader
      */
-    private $loader;
+    private $_loader;
 
     /**
      * The name of the bot. Retrieved during runtime.
      *
      * @var string
      */
-    private $name;
+    private $_name;
     /**
      * The channels array holding Channel objects.
      *
      * @var array
      */
-    private $channels;
+    private $_channels;
 
-    public function __construct(Logger $logger, Socket $socket, EventHandler $eventhandler, Loader $loader)
+    public function __construct(Logger $logger, Socket $socket, EventHandler $eventHandler, Loader $loader)
     {
         $this->loadConfig();
         $this->initRate(20, 30);
 
-        $this->logger = $logger;
-        $this->socket = $socket;
-        $this->eventhandler = $eventhandler;
-        $this->loader = $loader;
+        $this->_logger = $logger;
+        $this->_socket = $socket;
+        $this->_eventHandler = $eventHandler;
+        $this->_loader = $loader;
 
-        $this->loader->register($eventhandler, $this);
+        $this->_loader->register($eventHandler, $this);
 
-        $this->channels = [];
+        $this->_channels = [];
     }
 
     /**
@@ -81,13 +81,13 @@ class Client extends Queue
      */
     public function connect(): void
     {
-        $this->socket->connect();
+        $this->_socket->connect();
 
         $this->enqueue([
             'CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership',
-            'PASS ' . $this->config->password,
-            'NICK ' . $this->config->name,
-            'JOIN #' . $this->config->channel
+            'PASS ' . $this->_config->password,
+            'NICK ' . $this->_config->name,
+            'JOIN #' . $this->_config->channel
         ]);
     }
 
@@ -99,26 +99,27 @@ class Client extends Queue
     public function serve(): void
     {
         $this->connect();
-        $processed = $this->processqueue([$this, 'sendtosocket']);
+        $processed = $this->processQueue([$this, 'sendToSocket']);
 
         $connected = true;
 
-        $prefix = $this->config->prefix;
-        $prefixlen = strlen($prefix);
+        $prefix = $this->_config->prefix;
+        $prefixLen = strlen($prefix);
 
-        $lastping = time();
+        $lastPing = time();
 
         while ($connected) {
-            list($message, $channel) = null;
+            $message =
+            $channel = null;
 
             $cost = microtime(true);
-            if ((time() - $lastping) > 300 or $this->socket === false) {
-                $this->logger->info('Restarting connection');
+            if ((time() - $lastPing) > 300 or $this->_socket === false) {
+                $this->_logger->info('Restarting connection');
                 $this->connect();
-                $lastping = time();
+                $lastPing = time();
             }
 
-            $data = $this->socket->getNext();
+            $data = $this->_socket->getNext();
 
             if ($data) {
                 $message = new Message($data);
@@ -126,16 +127,16 @@ class Client extends Queue
                 if (empty($message->getFrom())) {
                     switch ($message->getType()) {
                         case 'PING':
-                            $lastping = time();
+                            $lastPing = time();
                             $this->enqueue(['PONG :' . $message->getParam(0)]);
-                            $this->eventhandler->trigger('pong');
+                            $this->_eventHandler->trigger('pong');
                             break;
                         case 'PONG':
-                            $latency = time() - $lastping;
-                            $this->logger->info('Current latency: ' . $latency);
+                            $latency = time() - $lastPing;
+                            $this->_logger->info('Current latency: ' . $latency);
                             break;
                         default:
-                            $this->logger->warning('Could not parse message: ' . $message->getRaw());
+                            $this->_logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
                 } elseif ($message->getFrom() === 'tmi.twitch.tv') {
@@ -148,11 +149,11 @@ class Client extends Queue
                         case 'CAP':
                             break;
                         case '001':
-                            $this->name = $message->getParam(0);
+                            $this->_name = $message->getParam(0);
                             break;
                         case '372':
-                            $this->logger->debug('Client connected');
-                            $this->eventhandler->trigger('connect');
+                            $this->_logger->debug('Client connected');
+                            $this->_eventHandler->trigger('connect');
                             break;
                         case 'NOTICE':
                             foreach ([
@@ -163,7 +164,7 @@ class Client extends Queue
                                 'Invalid NICK'
                             ] as $needle) {
                                 if (strpos($message->getMessage(), $needle) !== false) {
-                                    $this->logger->error('Potential auth failure');
+                                    $this->_logger->error('Potential auth failure');
                                     $connected = false;
                                     break;
                                 }
@@ -202,12 +203,12 @@ class Client extends Queue
                         case 'RECONNECT':
                             break;
                         case 'USERSTATE':
-                            $channel = $this->getChannel($message->getParam(0));
+                            $channel = $this->_getChannel($message->getParam(0));
                             if ($channel->isParted() === true) {
-                                unset($this->channels[$channel->getName()]);
-                                $this->logger->debug('Removed channel ' . $channel->getName() . ' from client');
+                                unset($this->_channels[$channel->getName()]);
+                                $this->_logger->debug('Removed channel ' . $channel->getName() . ' from client');
                             } else {
-                                $channel->userstate($message);
+                                $channel->userState($message);
                             }
                             break;
                         case 'GLOBALUSERSTATE':
@@ -217,7 +218,7 @@ class Client extends Queue
                         case 'SERVERCHANGE':
                             break;
                         default:
-                            $this->logger->warning('Could not parse message: ' . $message->getRaw());
+                            $this->_logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
                 } elseif ($message->getFrom() === 'jtv') {
@@ -225,7 +226,7 @@ class Client extends Queue
                         case 'MODE':
                             break;
                         default:
-                            $this->logger->warning('Could not parse message: ' . $message->getRaw());
+                            $this->_logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
                 } else {
@@ -235,45 +236,45 @@ class Client extends Queue
                         case '366':
                             break;
                         case 'JOIN':
-                            if ($this->isme($message->getUser())) {
-                                $channel = new Channel($this->logger, $message);
-                                $this->channels[$channel->getName()] = $channel;
-                                $this->logger->debug('Added channel ' . $channel->getName() . ' to client');
-                                $this->eventhandler->trigger('join', $channel);
+                            if ($this->_isMe($message->getUser())) {
+                                $channel = new Channel($this->_logger, $message);
+                                $this->_channels[$channel->getName()] = $channel;
+                                $this->_logger->debug('Added channel ' . $channel->getName() . ' to client');
+                                $this->_eventHandler->trigger('join', $channel);
                             } else {
                                 //another user joined
                             }
                             break;
                         case 'PART':
-                            $this->getChannel($message->getChannel())->part();
-                            $this->eventhandler->trigger('part', $channel);
+                            $this->_getChannel($message->getChannel())->part();
+                            $this->_eventHandler->trigger('part', $channel);
                             break;
                         case 'WHISPER':
                             break;
                         case 'PRIVMSG':
-                            if ($this->isme($message->getUser())) {
+                            if ($this->_isMe($message->getUser())) {
                                 break;
                             }
-                            $channel = $this->getChannel($message->getChannel());
-                            if (substr($message->getMessage(), 0, $prefixlen) === $prefix) {
+                            $channel = $this->_getChannel($message->getChannel());
+                            if (substr($message->getMessage(), 0, $prefixLen) === $prefix) {
                                 $messagearr = explode(' ', $message->getMessage());
                                 $message->setCommand(substr(array_shift($messagearr), 1));
-                                $this->eventhandler->trigger('command', $message, $channel);
+                                $this->_eventHandler->trigger('command', $message, $channel);
                             } else {
-                                $this->eventhandler->trigger('message', $message, $channel);
+                                $this->_eventHandler->trigger('message', $message, $channel);
                             }
                             break;
                         default:
-                            $this->logger->warning('Could not parse message: ' . $message->getRaw());
+                            $this->_logger->warning('Could not parse message: ' . $message->getRaw());
                             break;
                     }
                 }
             }
-            $this->pollchannels();
-            $processed += $this->processqueue([$this, 'sendtosocket']);
+            $this->_pollChannels();
+            $processed += $this->processQueue([$this, 'sendToSocket']);
             if ($data || $processed > 0) {
                 if ($processed > 0) {
-                    $this->logger->debug('Processed ' . $processed . ' messages from the client queue');
+                    $this->_logger->debug('Processed ' . $processed . ' messages from the client queue');
                     $processed = 0;
                 }
                 print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
@@ -287,11 +288,11 @@ class Client extends Queue
      * @param array $messages The messages extracted from the queue
      * @return void
      */
-    protected function sendtosocket(array $messages): void
+    protected function sendToSocket(array $messages): void
     {
         foreach ($messages as $message) {
-            $this->logger->debug('Sending message: "' . trim($message) . '" at time ' . time());
-            $this->socket->send($message);
+            $this->_logger->debug('Sending message: "' . trim($message) . '" at time ' . time());
+            $this->_socket->send($message);
         }
     }
 
@@ -300,15 +301,15 @@ class Client extends Queue
      *
      * @return int the number of processed messages
      */
-    private function pollchannels(): int
+    private function _pollChannels(): int
     {
         $processed = 0;
-        foreach ($this->channels as $channel) {
-            $processed += $channel->processqueue([$this, 'enqueue']);
+        foreach ($this->_channels as $channel) {
+            $processed += $channel->processQueue([$this, 'enqueue']);
         }
 
         if ($processed > 0) {
-            $this->logger->debug('Processed ' . $processed . ' messages from the channel queues');
+            $this->_logger->debug('Processed ' . $processed . ' messages from the channel queues');
         }
         return $processed;
     }
@@ -330,9 +331,9 @@ class Client extends Queue
      * @param string $user The username to check.
      * @return boolean Whether the user is the client.
      */
-    private function isme(string $user): bool
+    private function _isMe(string $user): bool
     {
-        return $user === $this->name;
+        return $user === $this->_name;
     }
 
     /**
@@ -341,20 +342,20 @@ class Client extends Queue
      * @param string $name The channel name.
      * @return Channel The channel object.
      */
-    private function getChannel(string $name): Channel
+    private function _getChannel(string $name): Channel
     {
-        if (isset($this->channels[$name])) {
-            return $this->channels[$name];
+        if (isset($this->_channels[$name])) {
+            return $this->_channels[$name];
         }
     }
 
     public function getName(): string
     {
-        return $this->name;
+        return $this->_name;
     }
 
     public function getChannels(): array
     {
-        return $this->channels;
+        return $this->_channels;
     }
 }

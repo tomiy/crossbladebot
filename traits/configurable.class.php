@@ -14,7 +14,7 @@ trait Configurable
      *
      * @var stdClass
      */
-    private $config;
+    private $_config;
 
     /**
      * Load and parses the json file
@@ -23,11 +23,11 @@ trait Configurable
      * If empty, defaults to the config folder at the root of the project.
      * @return void
      */
-    public function loadConfig(string $subfolder = null): void
+    public function loadConfig(string $subFolder = null): void
     {
         $class = strtolower((new \ReflectionClass($this))->getShortName());
-        $filepath = getcwd() . '/config/' . $subfolder . $class . '.json';
-        $this->config = json_decode(file_get_contents($filepath), false, 512, JSON_FORCE_OBJECT);
+        $filePath = getcwd() . '/config/' . $subFolder . $class . '.json';
+        $this->_config = json_decode(file_get_contents($filePath), false, 512, JSON_FORCE_OBJECT);
     }
 
     /**
@@ -37,6 +37,6 @@ trait Configurable
      */
     public function getConfig(): stdClass
     {
-        return $this->config;
+        return $this->_config;
     }
 }
