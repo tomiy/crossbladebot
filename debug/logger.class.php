@@ -41,7 +41,7 @@ class Logger
     {
         $this->loadConfig();
 
-        file_put_contents($this->config->log, '');
+        file_put_contents($this->_config->log, '');
     }
 
     /**
@@ -51,14 +51,14 @@ class Logger
      * @param integer $level The severity level.
      * @return void
      */
-    private function write(string $line, int $level): void
+    private function _write(string $line, int $level): void
     {
-        if ($level <= $this->config->level) {
+        if ($level <= $this->_config->level) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
             $date = date('[d/m/y G:i:s] ');
             $at = $backtrace[1]['line'];
             $class = $backtrace[2]['class'];
-            file_put_contents($this->config->log, trim("$date$class:$at $line") . PHP_EOL, FILE_APPEND);
+            file_put_contents($this->_config->log, trim("$date$class:$at $line") . PHP_EOL, FILE_APPEND);
         }
     }
 
@@ -70,7 +70,7 @@ class Logger
      */
     public function debug(string $line): void
     {
-        $this->write('[DEBUG] ' . $line, self::$LEVEL_DEBUG);
+        $this->_write('[DEBUG] ' . $line, self::$LEVEL_DEBUG);
     }
 
     /**
@@ -81,7 +81,7 @@ class Logger
      */
     public function info(string $line): void
     {
-        $this->write('[INFO] ' . $line, self::$LEVEL_INFO);
+        $this->_write('[INFO] ' . $line, self::$LEVEL_INFO);
     }
 
     /**
@@ -92,7 +92,7 @@ class Logger
      */
     public function warning(string $line): void
     {
-        $this->write('[WARNING] ' . $line, self::$LEVEL_WARNING);
+        $this->_write('[WARNING] ' . $line, self::$LEVEL_WARNING);
     }
 
     /**
@@ -103,6 +103,6 @@ class Logger
      */
     public function error(string $line): void
     {
-        $this->write('[ERROR] ' . $line, self::$LEVEL_ERROR);
+        $this->_write('[ERROR] ' . $line, self::$LEVEL_ERROR);
     }
 }

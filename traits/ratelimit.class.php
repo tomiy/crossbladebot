@@ -13,25 +13,25 @@ trait RateLimit
      *
      * @var float
      */
-    private $last;
+    private $_last;
     /**
      * The number of actions that can be performed during the span.
      *
      * @var float
      */
-    private $rate;
+    private $_rate;
     /**
      * The amount of time in seconds in which the rate is constrained.
      *
      * @var int
      */
-    private $span;
+    private $_span;
     /**
      * The remaining number of actions that can be performed.
      *
      * @var float
      */
-    private $allowance;
+    private $_allowance;
 
     /**
      * Set the last to now, and set the rate limit.
@@ -42,7 +42,7 @@ trait RateLimit
      */
     public function initRate(float $rate, int $span): void
     {
-        $this->last = microtime(true);
+        $this->_last = microtime(true);
         $this->setRate($rate, $span);
     }
 
@@ -55,9 +55,9 @@ trait RateLimit
      */
     protected function setRate(float $rate, int $span): void
     {
-        $this->rate = $rate;
-        $this->allowance = $rate;
-        $this->span = $span;
+        $this->_rate = $rate;
+        $this->_allowance = $rate;
+        $this->_span = $span;
     }
 
     /**
@@ -69,18 +69,18 @@ trait RateLimit
     public function limit(int $consumed = 1): bool
     {
         $current = microtime(true);
-        $timepassed = $current - $this->last;
-        $this->last = $current;
+        $timePassed = $current - $this->_last;
+        $this->_last = $current;
 
-        $this->allowance += $timepassed * ($this->rate / $this->span);
-        if ($this->allowance > $this->rate) {
-            $this->allowance = $this->rate;
+        $this->_allowance += $timePassed * ($this->_rate / $this->_span);
+        if ($this->_allowance > $this->_rate) {
+            $this->_allowance = $this->_rate;
         }
 
-        if ($this->allowance < $consumed) {
+        if ($this->_allowance < $consumed) {
             return false;
         }
-        $this->allowance -= $consumed;
+        $this->_allowance -= $consumed;
         return true;
     }
 }

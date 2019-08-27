@@ -9,13 +9,13 @@ class Whisper
 {
     use RateLimit;
 
-    private $accounts;
-    private $accountcap;
+    private $_accounts;
+    private $_accountcap;
 
     public function __construct()
     {
-        $this->accounts = [];
-        $this->accountcap = 40;
+        $this->_accounts = [];
+        $this->_accountcap = 40;
         $this->initRate(1.6, 1);
     }
 

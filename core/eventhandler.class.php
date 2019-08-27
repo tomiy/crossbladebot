@@ -15,26 +15,26 @@ class EventHandler
      *
      * @var array
      */
-    private $events;
+    private $_events;
     /**
      * The event ids, useful for clearing events instead of travelling the multi-dimensional event array.
      * ['id1' => 'eventName1', 'id2' => 'eventName2']
      *
      * @var array
      */
-    private $ids;
+    private $_ids;
     /**
      * The logger object.
      *
      * @var Logger
      */
-    private $logger;
+    private $_logger;
 
     public function __construct(Logger $logger)
     {
-        $this->events = [];
-        $this->ids = [];
-        $this->logger = $logger;
+        $this->_events = [];
+        $this->_ids = [];
+        $this->_logger = $logger;
     }
 
     /**
@@ -48,14 +48,14 @@ class EventHandler
     {
         $id = uniqid();
 
-        if (!isset($this->events[$event])) {
-            $this->events[$event] = [];
+        if (!isset($this->_events[$event])) {
+            $this->_events[$event] = [];
         }
 
-        $this->events[$event][$id] = $callback;
-        $this->ids[$id] = $event;
+        $this->_events[$event][$id] = $callback;
+        $this->_ids[$id] = $event;
 
-        $this->logger->debug('Registered event ' . $id);
+        $this->_logger->debug('Registered event ' . $id);
 
         return $id;
     }
@@ -69,13 +69,13 @@ class EventHandler
      */
     public function trigger(string $event, ...$data): void
     {
-        if (!isset($this->events[$event])) {
+        if (!isset($this->_events[$event])) {
             return;
         }
 
-        $this->logger->debug('Triggered event ' . $event);
+        $this->_logger->debug('Triggered event ' . $event);
 
-        foreach ($this->events[$event] as $callback) {
+        foreach ($this->_events[$event] as $callback) {
             call_user_func($callback, ...$data);
         }
     }
@@ -88,12 +88,12 @@ class EventHandler
      */
     public function clear(string $id): void
     {
-        if (!isset($this->ids[$id])) {
+        if (!isset($this->_ids[$id])) {
             return;
         }
-        unset($this->events[$this->ids[$id]][$id]);
-        unset($this->ids[$id]);
+        unset($this->_events[$this->_ids[$id]][$id]);
+        unset($this->_ids[$id]);
 
-        $this->logger->debug('Cleared event ' . $id);
+        $this->_logger->debug('Cleared event ' . $id);
     }
 }

@@ -17,19 +17,19 @@ class Socket
      *
      * @var resource
      */
-    private $socket;
+    private $_socket;
     /**
      * The logger object.
      *
      * @var Logger
      */
-    private $logger;
+    private $_logger;
 
     public function __construct(Logger $logger)
     {
         $this->loadConfig();
 
-        $this->logger = $logger;
+        $this->_logger = $logger;
     }
 
     /**
@@ -39,14 +39,14 @@ class Socket
      */
     public function connect(): void
     {
-        $this->socket = fsockopen($this->config->address, $this->config->port, $errno, $errstr, 30);
-        if (!$this->socket) {
-            $this->logger->error('Couldn\'t create socket');
+        $this->_socket = fsockopen($this->_config->address, $this->_config->port, $errno, $errstr, 30);
+        if (!$this->_socket) {
+            $this->_logger->error('Couldn\'t create socket');
             die("errno: $errno, errstr: $errstr");
         }
-        stream_set_blocking($this->socket, 0);
-        stream_set_timeout($this->socket, 1);
-        $this->logger->debug('Socket created');
+        stream_set_blocking($this->_socket, 0);
+        stream_set_timeout($this->_socket, 1);
+        $this->_logger->debug('Socket created');
     }
 
     /**
@@ -56,13 +56,13 @@ class Socket
      */
     public function getNext(): string
     {
-        if (!$this->socket) {
+        if (!$this->_socket) {
             return false;
         }
-        $line = fgets($this->socket);
+        $line = fgets($this->_socket);
 
         if ($line) {
-            $this->logger->debug('> ' . $line);
+            $this->_logger->debug('> ' . $line);
         }
 
         return $line;
@@ -76,12 +76,12 @@ class Socket
      */
     public function send(string $data): void
     {
-        if (!$this->socket) {
+        if (!$this->_socket) {
             return;
         }
-        fputs($this->socket, $data . NL);
+        fputs($this->_socket, $data . NL);
 
-        $this->logger->debug('< ' . $data);
+        $this->_logger->debug('< ' . $data);
     }
 
     /**
@@ -91,8 +91,8 @@ class Socket
      */
     public function close(): void
     {
-        if ($this->socket) {
-            fclose($this->socket);
+        if ($this->_socket) {
+            fclose($this->_socket);
         }
     }
 }

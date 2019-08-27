@@ -13,84 +13,84 @@ class Message
      *
      * @var string
      */
-    private $raw;
+    private $_raw;
     /**
      * The tags array holding info such as the display name.
      *
      * @var array
      */
-    private $tags;
+    private $_tags;
     /**
      * The message type, usually PRIVMSG.
      *
      * @var string
      */
-    private $type;
+    private $_type;
 
     /**
      * The channel the message is sent to, if applicable.
      *
      * @var string
      */
-    private $channel;
+    private $_channel;
     /**
      * The message contents, if applicable.
      *
      * @var string
      */
-    private $message;
+    private $_message;
     /**
      * The command, if the message has a command.
      *
      * @var string
      */
-    private $command;
+    private $_command;
 
     /**
      * The user sending the message, if applicable.
      *
      * @var string
      */
-    private $user;
+    private $_user;
     /**
      * The nickname of the user.
      *
      * @var string
      */
-    private $nick;
+    private $_nick;
     /**
      * The hostname of the user.
      *
      * @var string
      */
-    private $host;
+    private $_host;
 
     /**
      * The sender of the message.
      *
      * @var string
      */
-    private $from;
+    private $_from;
     /**
      * The array of parameters, holding anything that isn't tags or type.
      *
      * @var array
      */
-    private $params;
+    private $_params;
     /**
      * The message id, if applicable. Used for notices.
      *
      * @var string
      */
-    private $id;
+    private $_id;
 
     public function __construct(string $string)
     {
-        $this->raw = trim($string);
-        $this->parse();
-        $this->badges();
-        $this->badgeinfo();
-        $this->emotes();
+        $this->_raw = trim($string);
+        $this->_parse();
+        $this->_badges();
+        $this->_badgeInfo();
+        $this->_emotes();
     }
 
     /**
@@ -98,7 +98,7 @@ class Message
      *
      * @return boolean Whether the message was able to be parsed.
      */
-    private function parse(): bool
+    private function _parse(): bool
     {
         $regex = implode('', [
             'open' => '/^',
@@ -110,45 +110,45 @@ class Message
             'close' => '$/'
         ]);
 
-        $match = preg_match($regex, $this->raw, $matches);
+        $match = preg_match($regex, $this->_raw, $matches);
 
         if (!$match) {
             return false;
         }
 
-        if ($this->raw[0] === '@') {
-            $rawtags = explode(';', $matches['tags']);
+        if ($this->_raw[0] === '@') {
+            $rawTags = explode(';', $matches['tags']);
 
-            for ($i = 0; $i < sizeof($rawtags); $i++) {
-                $tag = $rawtags[$i];
+            for ($i = 0; $i < sizeof($rawTags); $i++) {
+                $tag = $rawTags[$i];
                 $pair = explode('=', $tag);
-                $this->tags[$pair[0]] = $pair[1];
+                $this->_tags[$pair[0]] = $pair[1];
             }
         }
 
-        $this->type = $matches['type'];
+        $this->_type = $matches['type'];
 
         if (!empty($matches['params'])) {
-            $this->params = explode(' ', $matches['params']);
+            $this->_params = explode(' ', $matches['params']);
         }
 
         if (isset($matches['trailing'])) {
-            $this->params[] = $matches['trailing'];
+            $this->_params[] = $matches['trailing'];
         }
 
-        $this->from = $matches['from'] ?? null;
-        $this->channel = $this->params[0][0] == '#' ? $this->params[0] : null;
-        $this->message = $this->params[1] ?? null;
-        $this->id = $this->tags['msg-id'] ?? null;
+        $this->_from = $matches['from'] ?? null;
+        $this->_channel = $this->_params[0][0] == '#' ? $this->_params[0] : null;
+        $this->_message = $this->_params[1] ?? null;
+        $this->_id = $this->_tags['msg-id'] ?? null;
 
-        $usermatch = preg_match('/(.*)!(.*)@(.*)/', $this->from, $user);
+        $userMatch = preg_match('/(.*)!(.*)@(.*)/', $this->_from, $user);
 
-        if ($usermatch) {
-            $this->nick = $user[0];
-            $this->user = $user[1];
-            $this->host = $user[2];
-        } elseif (isset($this->tags['display-name'])) {
-            $this->user = strtolower($this->tags['display-name']);
+        if ($userMatch) {
+            $this->_nick = $user[0];
+            $this->_user = $user[1];
+            $this->_host = $user[2];
+        } elseif (isset($this->_tags['display-name'])) {
+            $this->_user = strtolower($this->_tags['display-name']);
         }
 
         return true;
@@ -159,9 +159,9 @@ class Message
      *
      * @return void
      */
-    private function badges(): void
+    private function _badges(): void
     {
-        $this->parsetag('badges');
+        $this->_parseTag('badges');
     }
 
     /**
@@ -169,9 +169,9 @@ class Message
      *
      * @return void
      */
-    private function badgeinfo(): void
+    private function _badgeInfo(): void
     {
-        $this->parsetag('badge-info');
+        $this->_parseTag('badge-info');
     }
 
     /**
@@ -179,9 +179,9 @@ class Message
      *
      * @return void
      */
-    private function emotes(): void
+    private function _emotes(): void
     {
-        $this->parsetag('emotes', '/', ':', ',');
+        $this->_parseTag('emotes', '/', ':', ',');
     }
 
     /**
@@ -193,20 +193,20 @@ class Message
      * @param string $delim3 (optional) The last delimiter if necessary.
      * @return void
      */
-    private function parsetag(string $index, string $delim1 = ',', string $delim2 = '/', string $delim3 = null): void
+    private function _parseTag(string $index, string $delim1 = ',', string $delim2 = '/', string $delim3 = null): void
     {
-        if (!isset($this->tags[$index])) {
+        if (!isset($this->_tags[$index])) {
             return;
         }
 
-        $raw = $this->tags[$index];
+        $raw = $this->_tags[$index];
 
         if ($raw === true) {
-            $this->tags[$index] = null;
+            $this->_tags[$index] = null;
             return;
         }
 
-        $this->tags[$index] = [];
+        $this->_tags[$index] = [];
 
         if (is_string($raw)) {
             $spl = explode($delim1, $raw);
@@ -218,7 +218,7 @@ class Message
                     if ($delim3 && $val) {
                         $val = explode($delim3, $val);
                     }
-                    $this->tags[$index][$parts[0]] = $val ?? null;
+                    $this->_tags[$index][$parts[0]] = $val ?? null;
                 }
             }
         }
@@ -226,37 +226,37 @@ class Message
 
     public function getId(): string
     {
-        return $this->id;
+        return $this->_id;
     }
 
     public function getParams(): array
     {
-        return $this->params;
+        return $this->_params;
     }
 
     public function getParam(int $key): string
     {
-        return $this->params[$key];
+        return $this->_params[$key];
     }
 
     public function getFrom(): string
     {
-        return $this->from;
+        return $this->_from;
     }
 
     public function getHost(): string
     {
-        return $this->host;
+        return $this->_host;
     }
 
     public function getNick(): string
     {
-        return $this->nick;
+        return $this->_nick;
     }
 
     public function getUser(): string
     {
-        return $this->user;
+        return $this->_user;
     }
 
     public function getCommand(): string
@@ -266,32 +266,32 @@ class Message
 
     public function getMessage(): string
     {
-        return $this->message;
+        return $this->_message;
     }
 
     public function getChannel(): string
     {
-        return $this->channel;
+        return $this->_channel;
     }
 
     public function getType(): string
     {
-        return $this->type;
+        return $this->_type;
     }
 
     public function getTags(): array
     {
-        return $this->tags;
+        return $this->_tags;
     }
 
     public function getTag(string $key): string
     {
-        return $this->tags[$key];
+        return $this->_tags[$key];
     }
 
     public function getRaw(): string
     {
-        return $this->raw;
+        return $this->_raw;
     }
 
     public function setCommand(string $command): void

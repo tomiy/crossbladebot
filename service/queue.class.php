@@ -18,7 +18,7 @@ class Queue
      *
      * @var array
      */
-    private $queue;
+    private $_queue;
 
     /**
      * Pushes data into the queue.
@@ -28,11 +28,11 @@ class Queue
      */
     protected function enqueue(array $data): void
     {
-        foreach ($data as $arrayordata) {
-            if (is_array($arrayordata)) {
-                $this->enqueue($arrayordata);
+        foreach ($data as $arrayOrData) {
+            if (is_array($arrayOrData)) {
+                $this->enqueue($arrayOrData);
             } else {
-                $this->queue[$this->queuetime(microtime(true))] = $arrayordata;
+                $this->_queue[$this->_queueTime(microtime(true))] = $arrayOrData;
                 usleep(1);
             }
         }
@@ -44,28 +44,28 @@ class Queue
      * @param array $callback a [class, function] callback array
      * @return int the number of units of data processed
      */
-    protected function processqueue(array $callback): int
+    protected function processQueue(array $callback): int
     {
-        if (empty($this->queue)) {
+        if (empty($this->_queue)) {
             return 0;
         }
-        $threshold = $this->queuetime(microtime(true) - 5);
-        $this->queue = array_filter($this->queue, function ($key) use ($threshold) {
+        $threshold = $this->_queueTime(microtime(true) - 5);
+        $this->_queue = array_filter($this->_queue, function ($key) use ($threshold) {
             return $key > $threshold;
         }, ARRAY_FILTER_USE_KEY);
 
         $data = [];
-        while (sizeof($this->queue) > 0 && $this->limit()) {
-            list($key) = array_keys($this->queue);
-            $data[] = $this->queue[$key];
-            unset($this->queue[$key]);
+        while (sizeof($this->_queue) > 0 && $this->limit()) {
+            list($key) = array_keys($this->_queue);
+            $data[] = $this->_queue[$key];
+            unset($this->_queue[$key]);
         }
-        $datasize = sizeof($data);
-        if ($datasize > 0) {
+        $dataSize = sizeof($data);
+        if ($dataSize > 0) {
             call_user_func($callback, $data);
         }
 
-        return $datasize;
+        return $dataSize;
     }
 
     /**
@@ -74,7 +74,7 @@ class Queue
      * @param float $time the time to process.
      * @return string the processed time string.
      */
-    private function queuetime(float $time): string
+    private function _queueTime(float $time): string
     {
         return number_format($time, 6);
     }
