@@ -36,7 +36,7 @@ class HelloWorld extends Component
     public function evtJoin(Channel $channel): void
     {
         $connectMsg = 'Connected to channel ' . $channel->getName();
-        $this->_logger->debug($connectMsg);
+        $this->logger->debug($connectMsg);
         $this->send($connectMsg, $channel);
     }
 

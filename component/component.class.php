@@ -59,8 +59,8 @@ class Component
         $this->logger = $logger;
 
         $this->events = [];
-        if (isset($this->config->events)) {
-            foreach ($this->config->events as $event => $callback) {
+        if (isset($this->_config->events)) {
+            foreach ($this->_config->events as $event => $callback) {
                 if (method_exists($this, $callback)) {
                     $this->events[$event] = $callback;
                     continue;
@@ -78,8 +78,8 @@ class Component
         }
 
         $this->commands = [];
-        if (isset($this->config->commands)) {
-            foreach ($this->config->commands as $cmd => $cmdInfo) {
+        if (isset($this->_config->commands)) {
+            foreach ($this->_config->commands as $cmd => $cmdInfo) {
                 if (method_exists($this, $cmdInfo->callback)) {
                     $this->commands[$cmd] = new Command($cmd, $cmdInfo, $this);
                     continue;
@@ -112,7 +112,7 @@ class Component
         foreach ($this->events as $event => $callback) {
             $eventHandler->register($event, [$this, $callback]);
         }
-
+        
         foreach ($this->commands as $cmdObj) {
             $eventHandler->register('command', [$cmdObj, 'execute']);
         }
