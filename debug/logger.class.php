@@ -80,11 +80,11 @@ class Logger
         if ($level <= $this->_config->level) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
             $date = date('[d/m/y G:i:s] ');
-            $at = $backtrace[1]['line'];
+            $lineNumber = $backtrace[1]['line'];
             $class = $backtrace[2]['class'];
             file_put_contents(
                 $this->_config->log,
-                trim("$date$class:$at $line") . PHP_EOL,
+                trim("$date$class:$lineNumber $line") . PHP_EOL,
                 FILE_APPEND
             );
         }

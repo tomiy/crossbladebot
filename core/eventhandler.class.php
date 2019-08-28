@@ -42,7 +42,7 @@ class EventHandler
      *
      * @var array
      */
-    private $_ids;
+    private $_uids;
     /**
      * The logger object.
      *
@@ -58,7 +58,7 @@ class EventHandler
     public function __construct(Logger $logger)
     {
         $this->_events = [];
-        $this->_ids = [];
+        $this->_uids = [];
         $this->_logger = $logger;
     }
 
@@ -72,18 +72,18 @@ class EventHandler
      */
     public function register(string $event, callable $callback): string
     {
-        $id = uniqid();
+        $uid = uniqid();
 
         if (!isset($this->_events[$event])) {
             $this->_events[$event] = [];
         }
 
-        $this->_events[$event][$id] = $callback;
-        $this->_ids[$id] = $event;
+        $this->_events[$event][$uid] = $callback;
+        $this->_uids[$uid] = $event;
 
-        $this->_logger->debug('Registered event ' . $id);
+        $this->_logger->debug('Registered event ' . $uid);
 
-        return $id;
+        return $uid;
     }
 
     /**
@@ -110,18 +110,18 @@ class EventHandler
     /**
      * Removes an event from the pool.
      *
-     * @param string $id The event id to remove.
+     * @param string $uid The event id to remove.
      * 
      * @return void
      */
-    public function clear(string $id): void
+    public function clear(string $uid): void
     {
-        if (!isset($this->_ids[$id])) {
+        if (!isset($this->_uids[$uid])) {
             return;
         }
-        unset($this->_events[$this->_ids[$id]][$id]);
-        unset($this->_ids[$id]);
+        unset($this->_events[$this->_uids[$uid]][$uid]);
+        unset($this->_uids[$uid]);
 
-        $this->_logger->debug('Cleared event ' . $id);
+        $this->_logger->debug('Cleared event ' . $uid);
     }
 }

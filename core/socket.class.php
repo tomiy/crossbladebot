@@ -13,6 +13,7 @@ namespace CrossbladeBot\Core;
 
 use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Debug\Logger;
+use Exception;
 
 /**
  * Reads and writes from a socket at the given adress and port.
@@ -68,7 +69,12 @@ class Socket
         );
         if (!$this->_socket) {
             $this->_logger->error('Couldn\'t create socket');
-            die("errno: $errno, errstr: $errstr");
+            throw new Exception(
+                'Couldn\'t create socket: ' .
+                $errno .
+                ' ' .
+                $errstr
+            );
         }
         stream_set_blocking($this->_socket, 0);
         stream_set_timeout($this->_socket, 1);

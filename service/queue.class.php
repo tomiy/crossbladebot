@@ -49,10 +49,10 @@ class Queue
         foreach ($data as $arrayOrData) {
             if (is_array($arrayOrData)) {
                 $this->enqueue($arrayOrData);
-            } else {
-                $this->_queue[$this->_queueTime(microtime(true))] = $arrayOrData;
-                usleep(1);
+                continue;
             }
+            $this->_queue[$this->_queueTime(microtime(true))] = $arrayOrData;
+            usleep(1);
         }
     }
 
@@ -78,12 +78,12 @@ class Queue
         );
 
         $data = [];
-        while (sizeof($this->_queue) > 0 && $this->limit()) {
+        while (count($this->_queue) > 0 && $this->limit()) {
             list($key) = array_keys($this->_queue);
             $data[] = $this->_queue[$key];
             unset($this->_queue[$key]);
         }
-        $dataSize = sizeof($data);
+        $dataSize = count($data);
         if ($dataSize > 0) {
             call_user_func($callback, $data);
         }
