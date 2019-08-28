@@ -1,4 +1,13 @@
 <?php
+/**
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
 
 namespace CrossbladeBot\Component;
 
@@ -12,6 +21,12 @@ use CrossbladeBot\Debug\Logger;
 
 /**
  * The parent component. Holds callbacks to events bound in its config file.
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
  */
 class Component
 {
@@ -22,46 +37,61 @@ class Component
      *
      * @var Logger
      */
-    protected $_logger;
+    protected $logger;
     /**
      * The client object.
      *
      * @var Client
      */
-    protected $_client;
+    protected $client;
 
-    protected $_events;
-    protected $_commands;
+    protected $events;
+    protected $commands;
 
+    /**
+     * Instantiate a component.
+     *
+     * @param Logger $logger The logger object.
+     */
     public function __construct(Logger $logger)
     {
         $this->loadConfig('components/');
-        $this->_logger = $logger;
+        $this->logger = $logger;
 
-        $this->_events = [];
-        if (isset($this->_config->events)) {
-            foreach ($this->_config->events as $event => $callback) {
+        $this->events = [];
+        if (isset($this->config->events)) {
+            foreach ($this->config->events as $event => $callback) {
                 if (method_exists($this, $callback)) {
-                    $this->_events[$event] = $callback;
+                    $this->events[$event] = $callback;
                 } else {
-                    $this->_logger->warning(
-                        '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
+                    $this->logger->warning(
+                        '@' .
+                        get_class(
+                            debug_backtrace(
+                                DEBUG_BACKTRACE_PROVIDE_OBJECT, 1
+                            )[0]['object']
+                        ) .
                         ' Invalid event callback: ' . $callback
                     );
                 }
             }
         }
 
-        $this->_commands = [];
-        if (isset($this->_config->commands)) {
-            foreach ($this->_config->commands as $command => $cmdInfo) {
+        $this->commands = [];
+        if (isset($this->config->commands)) {
+            foreach ($this->config->commands as $cmd => $cmdInfo) {
                 if (method_exists($this, $cmdInfo->callback)) {
-                    $this->_commands[$command] = new Command($command, $cmdInfo, $this);
+                    $this->commands[$cmd] = new Command($cmd, $cmdInfo, $this);
                 } else {
-                    $this->_logger->warning(
-                        '@' . get_class(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1)[0]['object']) .
-                            ' Invalid command callback: ' . $cmdInfo->callback
-                        );
+                    $this->logger->warning(
+                        '@' .
+                        get_class(
+                            debug_backtrace(
+                                DEBUG_BACKTRACE_PROVIDE_OBJECT, 1
+                            )[0]['object']
+                        ) .
+                        ' Invalid command callback: ' . $cmdInfo->callback
+                    );
                 }
             }
         }
@@ -70,19 +100,20 @@ class Component
     /**
      * Registers events using bindings from the config
      *
-     * @param EventHandler $eventhandler The event handler.
-     * @param Client $client The client object.
+     * @param EventHandler $eventHandler The event handler.
+     * @param Client       $client       The client object.
+     * 
      * @return void
      */
     public function register(EventHandler $eventHandler, Client $client): void
     {
-        $this->_client = $client;
+        $this->client = $client;
 
-        foreach ($this->_events as $event => $callback) {
+        foreach ($this->events as $event => $callback) {
             $eventHandler->register($event, [$this, $callback]);
         }
 
-        foreach ($this->_commands as $command => $cmdObj) {
+        foreach ($this->commands as $command => $cmdObj) {
             $eventHandler->register('command', [$cmdObj, 'execute']);
         }
     }
@@ -90,21 +121,23 @@ class Component
     /**
      * Send a message to a channel or to the client directly.
      *
-     * @param string $message The message to send.
-     * @param Channel $channel The channel to send the message. If null, the message is sent to the client directly.
-     * @param boolean $raw Whether the message is sent as a chat message, or an IRC command.
+     * @param string  $message The message to send.
+     * @param Channel $channel The channel to send the message.
+     *                         If null, the message is sent to the client directly.
+     * @param boolean $sr      Whether it is sent as chat message, or IRC command.
+     * 
      * @return void
      */
-    public function send(string $message, Channel $channel = null, $raw = false): void
+    public function send(string $message, Channel $channel = null, $sr = false): void
     {
         if ($channel != null) {
-            if ($raw) {
+            if ($sr) {
                 $channel->sendRaw($message);
                 return;
             }
             $channel->send($message);
             return;
         }
-        $this->_client->send($message);
+        $this->client->send($message);
     }
 }

@@ -1,5 +1,15 @@
 <?php
 /**
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
+
+/**
  * IRC only accepts \r\n (not \n) so on Windows systems you can't use PHP_EOL.
  * Use this constant instead to signify an EOL in messages. (handled by the socket)
  */
@@ -12,6 +22,7 @@ define('CLASS_DIR', relativePath(getcwd(), dirname(__DIR__)) . DS);
  *
  * @param string $source The source folder.
  * @param string $destin The destination folder.
+ * 
  * @return string The relative path between the 2.
  */
 function relativePath(string $source, string $destin): string
@@ -22,12 +33,15 @@ function relativePath(string $source, string $destin): string
         array_shift($arFrom);
         array_shift($arTo);
     }
-    return rtrim(str_pad('', count($arFrom) * 3, '..' . DS) . implode(DS, $arTo), DS);
+    return rtrim(
+        str_pad('', count($arFrom) * 3, '..' . DS) . implode(DS, $arTo),
+        DS
+    );
 }
 
 /**
- * Add the parent directory to the include path for the default autoloader to register it.
- * The classes will have .class.php as an extension, to differentiate them from normal PHP.
+ * Add the parent directory to the include path.
+ * The classes have class.php as an extension, to differentiate them from normal PHP.
  * Register the built-in autoloader. (pure C, faster)
  */
 set_include_path(get_include_path() . PATH_SEPARATOR . CLASS_DIR);

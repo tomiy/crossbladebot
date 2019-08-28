@@ -1,4 +1,13 @@
 <?php
+/**
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
 
 namespace CrossbladeBot\Chat;
 
@@ -9,6 +18,12 @@ use CrossbladeBot\Service\Queue;
 
 /**
  * Handles a channel specific rate limit, and processes userstates and messages.
+ *  
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
  */
 class Channel extends Queue
 {
@@ -40,6 +55,12 @@ class Channel extends Queue
      */
     private $_modRequested;
 
+    /**
+     * Instantiate a channel.
+     *
+     * @param Logger  $logger The logger object.
+     * @param Message $join   The join message received from the IRC.
+     */
     public function __construct(Logger $logger, Message $join)
     {
         $this->initRate(1, 3);
@@ -50,6 +71,9 @@ class Channel extends Queue
         $this->_logger->info('Joined channel ' . $this->_name);
     }
 
+    /**
+     * Destroys the channel. Used only for logging.
+     */
     public function __destruct()
     {
         $this->_logger->info('Parted channel ' . $this->_name);
@@ -58,14 +82,15 @@ class Channel extends Queue
     /**
      * Handles an userstate message.
      *
-     * @param Message $userstate The message to handle.
+     * @param Message $userState The message to handle.
+     * 
      * @return void
      */
     public function userState(Message $userState): void
     {
         if (!$this->_isOp($userState) && !$this->_modRequested) {
             $this->_modRequested = true;
-            $this->send('Pssst, you should mod me so that i\'m able to use mod commands!');
+            $this->send('Pssst, you should mod me so i\'m can use mod commands!');
         }
     }
 
@@ -83,11 +108,14 @@ class Channel extends Queue
      * Send a chat message to the channel.
      *
      * @param string $message The message to send.
+     * 
      * @return void
      */
     public function send(string $message): void
     {
-        $this->_logger->debug('Sending message: "' . trim($message) . '" to channel: ' . $this->_name);
+        $this->_logger->debug(
+            'Sending message: "' . trim($message) . '" to channel: ' . $this->_name
+        );
         $this->sendRaw('PRIVMSG ' . $this->_name . ' :' . $message);
     }
     
@@ -95,18 +123,22 @@ class Channel extends Queue
      * Queues a message in the channel queue.
      *
      * @param string $message The message to queue.
+     * 
      * @return void
      */
     public function sendRaw(string $message): void
     {
-        $this->_logger->debug('Sending raw message: "' . trim($message) . '" to channel: ' . $this->_name);
+        $this->_logger->debug(
+            'Sending raw: "' . trim($message) . '" to channel: ' . $this->_name
+        );
         $this->enqueue([$message]);
     }
 
     /**
-     * Checks if a message is sent from someone that is moderator or owner of the channel.
+     * Checks if a message is sent from someone that is mod or owner of the channel.
      *
      * @param Message $message The message to check.
+     * 
      * @return boolean Whether the user is mod or owner.
      */
     private function _isOp(Message $message): bool
@@ -118,6 +150,7 @@ class Channel extends Queue
      * Checks if a message is sent from a moderator of the channel.
      *
      * @param Message $message The message to check.
+     * 
      * @return boolean Whether the user is a mod.
      */
     private function _isMod(Message $message): bool
@@ -129,6 +162,7 @@ class Channel extends Queue
      * Checks if a message is sent from the owner of the channel.
      *
      * @param Message $message The message to check.
+     * 
      * @return boolean Whether the user is the owner.
      */
     private function _isBroadcaster(Message $message): bool
@@ -141,6 +175,7 @@ class Channel extends Queue
      * 0 = user, 1 = moderator, 2 = owner
      *
      * @param Message $message The message to check.
+     * 
      * @return integer The index corresponding to the user level.
      */
     public function getUserLevel(Message $message): int
@@ -155,11 +190,21 @@ class Channel extends Queue
         return $userlevel;
     }
 
+    /**
+     * Get the name of the channel.
+     *
+     * @return string
+     */
     public function getName(): string
     {
         return $this->_name;
     }
 
+    /**
+     * Whether the channel is parted from.
+     *
+     * @return boolean
+     */
     public function isParted(): bool
     {
         return $this->_part;

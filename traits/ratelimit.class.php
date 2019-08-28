@@ -1,9 +1,24 @@
 <?php
+/**
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
 
 namespace CrossbladeBot\Traits;
 
 /**
  * Provides a set of functions to limit incoming actions.
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
  */
 trait RateLimit
 {
@@ -36,8 +51,9 @@ trait RateLimit
     /**
      * Set the last to now, and set the rate limit.
      *
-     * @param float $rate The number of actions that can be performed during the span.
-     * @param integer $span The amount of time in seconds in which the rate is constrained.
+     * @param float   $rate # of actions that can be performed during the span.
+     * @param integer $span Time in seconds in which the rate is constrained.
+     * 
      * @return void
      */
     public function initRate(float $rate, int $span): void
@@ -49,8 +65,9 @@ trait RateLimit
     /**
      * Set the rate limit.
      *
-     * @param float $rate The number of actions that can be performed during the span.
-     * @param integer $span The amount of time in seconds in which the rate is constrained.
+     * @param float   $rate # of actions that can be performed during the span.
+     * @param integer $span Time in seconds in which the rate is constrained.
+     * 
      * @return void
      */
     protected function setRate(float $rate, int $span): void
@@ -64,6 +81,7 @@ trait RateLimit
      * Limit the number of actions.
      *
      * @param integer $consumed The number of actions consumed. Defaults to 1.
+     * 
      * @return boolean Whether you can perform your action.
      */
     public function limit(int $consumed = 1): bool

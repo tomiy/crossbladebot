@@ -1,4 +1,13 @@
 <?php
+/**
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
 
 namespace CrossbladeBot\Core;
 
@@ -6,19 +15,30 @@ use CrossbladeBot\Debug\Logger;
 
 /**
  * Registers and triggers callbacks for the defined events.
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
  */
 class EventHandler
 {
     /**
      * The event array.
-     * @example['eventName1' => ['id1' => callback1, 'id2' => callback2], 'eventName2' => ['id3' => callback3, 'id4' => callback4]]
+     * 
+     * [
+     * 'eventName1' => ['id1' => callback1, 'id2' => callback2],
+     * 'eventName2' => ['id3' => callback3, 'id4' => callback4]
+     * ]
      *
      * @var array
      */
     private $_events;
     /**
-     * The event ids, useful for clearing events instead of travelling the multi-dimensional event array.
-     * ['id1' => 'eventName1', 'id2' => 'eventName2']
+     * The event ids.
+     * Useful for clearing events instead of travelling the event array.
+     * ['id1' => 'eventName1', 'id3' => 'eventName2']
      *
      * @var array
      */
@@ -30,6 +50,11 @@ class EventHandler
      */
     private $_logger;
 
+    /**
+     * Instantiate a new event handler.
+     *
+     * @param Logger $logger The logger object.
+     */
     public function __construct(Logger $logger)
     {
         $this->_events = [];
@@ -40,8 +65,9 @@ class EventHandler
     /**
      * Registers an event into the pool.
      *
-     * @param string $event The event name to register to.
+     * @param string   $event    The event name to register to.
      * @param callable $callback The callback to call on trigger.
+     * 
      * @return string The event id.
      */
     public function register(string $event, callable $callback): string
@@ -63,8 +89,9 @@ class EventHandler
     /**
      * Triggers an event and processes every attached callback.
      *
-     * @param string $event The event name to trigger.
-     * @param mixed ...$data The data to pass to the callbacks
+     * @param string $event   The event name to trigger.
+     * @param mixed  ...$data The data to pass to the callbacks.
+     * 
      * @return void
      */
     public function trigger(string $event, ...$data): void
@@ -84,6 +111,7 @@ class EventHandler
      * Removes an event from the pool.
      *
      * @param string $id The event id to remove.
+     * 
      * @return void
      */
     public function clear(string $id): void
