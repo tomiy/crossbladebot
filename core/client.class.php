@@ -317,13 +317,13 @@ class Client extends Queue
                                 $message,
                                 $channel
                             );
-                        } else {
-                            $this->_eventHandler->trigger(
-                                'message',
-                                $message,
-                                $channel
-                            );
+                            break;
                         }
+                        $this->_eventHandler->trigger(
+                            'message',
+                            $message,
+                            $channel
+                        );
                         break;
                     default:
                         $this->_logger->warning(

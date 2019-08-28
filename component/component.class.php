@@ -63,17 +63,17 @@ class Component
             foreach ($this->config->events as $event => $callback) {
                 if (method_exists($this, $callback)) {
                     $this->events[$event] = $callback;
-                } else {
-                    $this->logger->warning(
-                        '@' .
-                        get_class(
-                            debug_backtrace(
-                                DEBUG_BACKTRACE_PROVIDE_OBJECT, 1
-                            )[0]['object']
-                        ) .
-                        ' Invalid event callback: ' . $callback
-                    );
+                    continue;
                 }
+                $this->logger->warning(
+                    '@' .
+                    get_class(
+                        debug_backtrace(
+                            DEBUG_BACKTRACE_PROVIDE_OBJECT, 1
+                        )[0]['object']
+                    ) .
+                    ' Invalid event callback: ' . $callback
+                );
             }
         }
 
@@ -82,17 +82,17 @@ class Component
             foreach ($this->config->commands as $cmd => $cmdInfo) {
                 if (method_exists($this, $cmdInfo->callback)) {
                     $this->commands[$cmd] = new Command($cmd, $cmdInfo, $this);
-                } else {
-                    $this->logger->warning(
-                        '@' .
-                        get_class(
-                            debug_backtrace(
-                                DEBUG_BACKTRACE_PROVIDE_OBJECT, 1
-                            )[0]['object']
-                        ) .
-                        ' Invalid command callback: ' . $cmdInfo->callback
-                    );
+                    continue;
                 }
+                $this->logger->warning(
+                    '@' .
+                    get_class(
+                        debug_backtrace(
+                            DEBUG_BACKTRACE_PROVIDE_OBJECT, 1
+                        )[0]['object']
+                    ) .
+                    ' Invalid command callback: ' . $cmdInfo->callback
+                );
             }
         }
     }
@@ -113,7 +113,7 @@ class Component
             $eventHandler->register($event, [$this, $callback]);
         }
 
-        foreach ($this->commands as $command => $cmdObj) {
+        foreach ($this->commands as $cmdObj) {
             $eventHandler->register('command', [$cmdObj, 'execute']);
         }
     }
@@ -124,14 +124,17 @@ class Component
      * @param string  $message The message to send.
      * @param Channel $channel The channel to send the message.
      *                         If null, the message is sent to the client directly.
-     * @param boolean $sr      Whether it is sent as chat message, or IRC command.
+     * @param boolean $raw     Whether it is sent as chat message, or IRC command.
      * 
      * @return void
      */
-    public function send(string $message, Channel $channel = null, $sr = false): void
-    {
+    public function send(
+        string $message,
+        Channel $channel = null,
+        $raw = false
+    ): void {
         if ($channel != null) {
-            if ($sr) {
+            if ($raw) {
                 $channel->sendRaw($message);
                 return;
             }

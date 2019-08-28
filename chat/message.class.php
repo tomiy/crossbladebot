@@ -141,8 +141,9 @@ class Message
 
         if ($this->_raw[0] === '@') {
             $rawTags = explode(';', $matches['tags']);
+            $rawTagsSize = count($rawTags);
 
-            for ($i = 0; $i < sizeof($rawTags); $i++) {
+            for ($i = 0; $i < $rawTagsSize; $i++) {
                 $tag = $rawTags[$i];
                 $pair = explode('=', $tag);
                 $this->_tags[$pair[0]] = $pair[1];
@@ -238,8 +239,9 @@ class Message
 
         if (is_string($raw)) {
             $spl = explode($delim1, $raw);
+            $splSize = count($spl);
 
-            for ($i = 0; $i < sizeof($spl); $i++) {
+            for ($i = 0; $i < $splSize; $i++) {
                 $parts = explode($delim2, $spl[$i]);
                 if ($parts[0]) {
                     $val = $parts[1];
