@@ -1,4 +1,13 @@
 <?php
+/**
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
 
 namespace CrossbladeBot\Core;
 
@@ -7,6 +16,12 @@ use CrossbladeBot\Debug\Logger;
 
 /**
  * Reads and writes from a socket at the given adress and port.
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
  */
 class Socket
 {
@@ -25,6 +40,11 @@ class Socket
      */
     private $_logger;
 
+    /**
+     * Instantiate a new socket object.
+     *
+     * @param Logger $logger The logger object.
+     */
     public function __construct(Logger $logger)
     {
         $this->loadConfig();
@@ -39,7 +59,13 @@ class Socket
      */
     public function connect(): void
     {
-        $this->_socket = fsockopen($this->_config->address, $this->_config->port, $errno, $errstr, 30);
+        $this->_socket = fsockopen(
+            $this->_config->address,
+            $this->_config->port,
+            $errno,
+            $errstr,
+            30
+        );
         if (!$this->_socket) {
             $this->_logger->error('Couldn\'t create socket');
             die("errno: $errno, errstr: $errstr");
@@ -52,7 +78,7 @@ class Socket
     /**
      * Polls the socket stream for data.
      *
-     * @return string The data returned by the stream if there is something to return.
+     * @return string The data returned by the stream.
      */
     public function getNext(): string
     {
@@ -72,6 +98,7 @@ class Socket
      * Sends data to the socket stream.
      *
      * @param string $data The data to send.
+     * 
      * @return void
      */
     public function send(string $data): void

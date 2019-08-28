@@ -1,42 +1,65 @@
 <?php
+/**
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
 
 namespace CrossbladeBot\Debug;
 
 use CrossbladeBot\Traits\Configurable;
 
 /**
- * Provides a set of functions to write to a log file with different levels of severity.
+ * Provides functions to write to a log file with different levels of severity.
  * Only one instance is necessary and can be passed to different classes.
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
  */
 class Logger
 {
     use Configurable;
 
     /**
-     * The index corresponding to the error level. Used to log when a critical failure happens in the program.
+     * The index corresponding to the error level.
+     * Used to log when a critical failure happens in the program.
      *
      * @var integer
      */
     public static $LEVEL_ERROR = 1;
     /**
-     * The index corresponding to the warning level. Used to log when a non-blocking failure happens in the program.
+     * The index corresponding to the warning level.
+     * Used to log when a non-blocking failure happens in the program.
      *
      * @var integer
      */
     public static $LEVEL_WARNING = 2;
     /**
-     * The index corresponding to the info level. Used to log when any kind of non-failure happens in the program.
+     * The index corresponding to the info level.
+     * Used to log when any kind of non-failure happens in the program.
      *
      * @var integer
      */
     public static $LEVEL_INFO = 3;
     /**
-     * The index corresponding to the debug level. Used to log during debugging, not to be used when running the program normally.
+     * The index corresponding to the debug level.
+     * Used to log during debugging.
+     * Not to be used when running the program normally.
      *
      * @var integer
      */
     public static $LEVEL_DEBUG = 4;
 
+    /**
+     * Instantiate a new logger.
+     */
     public function __construct()
     {
         $this->loadConfig();
@@ -47,8 +70,9 @@ class Logger
     /**
      * Write a line in the log file at the given level.
      *
-     * @param string $line The line to write.
+     * @param string  $line  The line to write.
      * @param integer $level The severity level.
+     * 
      * @return void
      */
     private function _write(string $line, int $level): void
@@ -58,7 +82,11 @@ class Logger
             $date = date('[d/m/y G:i:s] ');
             $at = $backtrace[1]['line'];
             $class = $backtrace[2]['class'];
-            file_put_contents($this->_config->log, trim("$date$class:$at $line") . PHP_EOL, FILE_APPEND);
+            file_put_contents(
+                $this->_config->log,
+                trim("$date$class:$at $line") . PHP_EOL,
+                FILE_APPEND
+            );
         }
     }
 
@@ -66,6 +94,7 @@ class Logger
      * Write a line in the log file for the debug level.
      *
      * @param string $line The line to write.
+     * 
      * @return void
      */
     public function debug(string $line): void
@@ -77,6 +106,7 @@ class Logger
      * Write a line in the log file for the info level.
      *
      * @param string $line The line to write.
+     * 
      * @return void
      */
     public function info(string $line): void
@@ -88,6 +118,7 @@ class Logger
      * Write a line in the log file for the warning level.
      *
      * @param string $line The line to write.
+     * 
      * @return void
      */
     public function warning(string $line): void
@@ -99,6 +130,7 @@ class Logger
      * Write a line in the log file for the error level.
      *
      * @param string $line The line to write.
+     * 
      * @return void
      */
     public function error(string $line): void

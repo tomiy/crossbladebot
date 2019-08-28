@@ -1,4 +1,13 @@
 <?php
+/**
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
 
 namespace CrossbladeBot\Component;
 
@@ -8,6 +17,12 @@ use CrossbladeBot\Core\Client;
 
 /**
  * Dynamically loads every class from the component folders.
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
  */
 class Loader
 {
@@ -19,6 +34,11 @@ class Loader
      */
     private $_components;
 
+    /**
+     * Instantiate the loader and all its components.
+     *
+     * @param Logger $logger The logger object.
+     */
     public function __construct(Logger $logger)
     {
         foreach (glob('./component/basic/*.class.php') as $file) {
@@ -37,8 +57,9 @@ class Loader
     /**
      * Registers every component's events
      *
-     * @param EventHandler $eventhandler The event handler to register into.
-     * @param Client $client The bot client, used to get referenced in the components.
+     * @param EventHandler $eventHandler The event handler to register into.
+     * @param Client       $client       The bot client, used in the components.
+     * 
      * @return void
      */
     public function register(EventHandler $eventHandler, Client $client): void
@@ -48,6 +69,11 @@ class Loader
         }
     }
 
+    /**
+     * Get the list of components.
+     *
+     * @return array
+     */
     public function getComponents(): array
     {
         return $this->_components;

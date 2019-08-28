@@ -1,14 +1,24 @@
 <?php
 /**
- * The message queue is based on microtime which stops at 4 decimals with a default PHP install.
- * We bump it up to 6 to have actual microseconds so we can process messages as quickly as we can.
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
+
+/**
+ * The message queue is based on microtime which stops at 4 decimals by default.
+ * We bump it up to 6 to have actual microseconds so we can process messages.
  */
 ini_set('precision', 16);
 
 /**
  * Include the autoloader to be able to do oop PHP.
  */
-include_once 'autoloader.php';
+require_once 'autoloader.php';
 
 use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Core\Socket;

@@ -1,12 +1,29 @@
 <?php
+/**
+ * PHP version 7
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
+ */
 
 namespace CrossbladeBot\Service;
 
 use CrossbladeBot\Traits\RateLimit;
 
 /**
- * Provides a queue system to limit and process messages in the least possible blocking way.
- * As PHP is a (mostly) synchronous stack, and Windows doesn't have process forking, a queue system is preferrable.
+ * Provides a queue system to process messages in the least possible blocking way.
+ * As PHP is a (mostly) synchronous stack,
+ * and Windows doesn't have process forking,
+ * a queue system is preferrable.
+ * 
+ * @category PHP
+ * @package  CrossbladeBot
+ * @author   tomiy <tom@tomiy.me>
+ * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
+ * @link     https://github.com/tomiy/crossbladebot
  */
 class Queue
 {
@@ -24,6 +41,7 @@ class Queue
      * Pushes data into the queue.
      *
      * @param array $data the data to push.
+     * 
      * @return void
      */
     protected function enqueue(array $data): void
@@ -41,7 +59,8 @@ class Queue
     /**
      * Processes the data in the queue and pushes it to a callback.
      *
-     * @param array $callback a [class, function] callback array
+     * @param array $callback a [class, function] callback array.
+     * 
      * @return int the number of units of data processed
      */
     protected function processQueue(array $callback): int
@@ -50,9 +69,13 @@ class Queue
             return 0;
         }
         $threshold = $this->_queueTime(microtime(true) - 5);
-        $this->_queue = array_filter($this->_queue, function ($key) use ($threshold) {
-            return $key > $threshold;
-        }, ARRAY_FILTER_USE_KEY);
+        $this->_queue = array_filter(
+            $this->_queue,
+            function ($key) use ($threshold) {
+                return $key > $threshold;
+            },
+            ARRAY_FILTER_USE_KEY
+        );
 
         $data = [];
         while (sizeof($this->_queue) > 0 && $this->limit()) {
@@ -72,6 +95,7 @@ class Queue
      * Formats the time to have microseconds properly padded. (for Windows)
      *
      * @param float $time the time to process.
+     * 
      * @return string the processed time string.
      */
     private function _queueTime(float $time): string
