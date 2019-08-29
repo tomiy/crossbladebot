@@ -261,13 +261,14 @@ class Processor
             $this->_prefixLen
         ) === $this->_prefix
         ) {
-            $messagearr = explode(' ', $message->getMessage());
+            $args = explode(' ', $message->getMessage());
             $message->setCommand(
-                substr(
-                    array_shift($messagearr),
-                    $this->_prefixLen
-                )
+                substr(array_shift($args), $this->_prefixLen)
             );
+            if (!empty($args)) {
+                $this->_eventHandler->trigger('command', $message, $channel, $args);
+                return;
+            }
             $this->_eventHandler->trigger('command', $message, $channel);
             return;
         }
