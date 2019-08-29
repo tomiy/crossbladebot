@@ -68,7 +68,9 @@ class Processor
      * @param Client       $client       The client object.
      */
     public function __construct(
-        Logger $logger, EventHandler $eventHandler, Client $client
+        Logger $logger,
+        EventHandler $eventHandler,
+        Client $client
     ) {
         $this->_logger = $logger;
         $this->_eventHandler = $eventHandler;
@@ -82,7 +84,7 @@ class Processor
      * Handle ping messages (coming directly from the stream)
      *
      * @param Message $message The message to handle.
-     * 
+     *
      * @return void
      */
     public function handlePing(Message $message): void
@@ -107,7 +109,7 @@ class Processor
      * Handle messages coming from tmi.twitch.tv.
      *
      * @param Message $message The message to handle.
-     * 
+     *
      * @return void
      */
     public function handleTmi(Message $message): void
@@ -160,7 +162,7 @@ class Processor
      * Handle messages coming from jtv.
      *
      * @param Message $message The message to handle.
-     * 
+     *
      * @return void
      */
     public function handleJtv(Message $message): void
@@ -178,7 +180,7 @@ class Processor
      * Handle messages coming from users (<user>!<user>@<user>.tmi.twitch.tv)
      *
      * @param Message $message The message to handle.
-     * 
+     *
      * @return void
      */
     public function handleUserMessage(Message $message): void
@@ -260,7 +262,12 @@ class Processor
         ) === $this->_prefix
         ) {
             $messagearr = explode(' ', $message->getMessage());
-            $message->setCommand(substr(array_shift($messagearr), 1));
+            $message->setCommand(
+                substr(
+                    array_shift($messagearr),
+                    $this->_prefixLen
+                )
+            );
             $this->_eventHandler->trigger('command', $message, $channel);
             return;
         }
@@ -350,7 +357,7 @@ class Processor
      * Log the message that can't be parsed at warning level.
      *
      * @param Message $message The message to log.
-     * 
+     *
      * @return void
      */
     private function _cantParse(Message $message): void

@@ -103,7 +103,10 @@ class Client extends Queue
      * @param Loader       $loader       The loader holding the components.
      */
     public function __construct(
-        Logger $logger, Socket $socket, EventHandler $eventHandler, Loader $loader
+        Logger $logger,
+        Socket $socket,
+        EventHandler $eventHandler,
+        Loader $loader
     ) {
         $this->loadConfig();
         $this->initRate(20, 30);
@@ -123,9 +126,9 @@ class Client extends Queue
     /**
      * Connect to the socket stream and to the irc and request capabilities.
      *
-     * @return void
+     * @return int
      */
-    public function connect(): void
+    public function connect(): int
     {
         $this->_socket->connect();
 
@@ -137,6 +140,8 @@ class Client extends Queue
             'JOIN #' . $this->getConfig()->channel
             ]
         );
+
+        return $this->processQueue([$this, 'sendToSocket']);
     }
 
     /**
@@ -147,20 +152,18 @@ class Client extends Queue
      */
     public function serve(): void
     {
-        $this->connect();
-        $processed = $this->processQueue([$this, 'sendToSocket']);
-
+        $processed = $this->connect();
+        
         $this->setConnected(true);
-
         $this->setLastPing(time());
-
+        
         while ($this->isConnected()) {
             $message = null;
-
+            
             $cost = microtime(true);
-            if ((time() - $this->getLastPing()) > 300 or $this->_socket === false) {
+            if ((time() - $this->getLastPing()) > 300 || $this->_socket === false) {
                 $this->_logger->info('Restarting connection');
-                $this->connect();
+                $processed = $this->connect();
                 $this->setLastPing(time());
             }
 
@@ -169,7 +172,7 @@ class Client extends Queue
             if ($data) {
                 $message = new Message($data);
 
-                switch($message->getFrom()) {
+                switch ($message->getFrom()) {
                 case null:
                 case '':
                     $this->_processor->handlePing($message);
@@ -311,7 +314,7 @@ class Client extends Queue
      * Set the name of the client.
      *
      * @param string $name The name to set.
-     * 
+     *
      * @return void
      */
     public function setName(string $name): void
@@ -355,7 +358,7 @@ class Client extends Queue
      * Set the last ping time.
      *
      * @param integer $lastPing The time to set.
-     * 
+     *
      * @return void
      */
     public function setLastPing(int $lastPing): void
