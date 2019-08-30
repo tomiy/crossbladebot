@@ -12,7 +12,7 @@ Then, in a console, run `php main.php` from the root folder.
 
 ### Prerequisites
 
-* PHP 7 and up
+  * PHP 7 and up
 
 ### Installing
 
@@ -20,7 +20,7 @@ Clone the repo. There is nothing else to do (for now).
 
 ## Running the tests
 
-In config/components/logger.json, set the level to 4 (debug). The crossbladebot.log file should show much more info about what's going on.
+In config/logger.json, set the level to 4 (debug). The crossbladebot.log file should show much more info about what's going on.
 
 I have no coverage right now but i'm planning to add some in the future.
 
@@ -34,7 +34,7 @@ Just make a PR and i'll check it out, i'm not really into big books of rules.
 
 ## Authors
 
-* **Tom Chappaz** - *Initial work* - [tomiy](https://github.com/tomiy)
+  * **Tom Chappaz** - *Initial work* - [tomiy](https://github.com/tomiy)
 
 See also the list of [contributors](https://github.com/tomiy/crossbladebot/contributors) who participated in this project.
 
@@ -44,4 +44,4 @@ This project is licensed under the GPL 3.0 License - see the LICENSE file for de
 
 ## Acknowledgments
 
-* tmi.js for the initial structure
+  * tmi.js for the initial structure
