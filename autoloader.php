@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -22,7 +23,7 @@ define('CLASS_DIR', relativePath(getcwd(), dirname(__DIR__)) . DS);
  *
  * @param string $source The source folder.
  * @param string $destin The destination folder.
- * 
+ *
  * @return string The relative path between the 2.
  */
 function relativePath(string $source, string $destin): string

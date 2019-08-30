@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -16,7 +17,7 @@ use CrossbladeBot\Traits\Configurable;
 /**
  * Provides functions to write to a log file with different levels of severity.
  * Only one instance is necessary and can be passed to different classes.
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -72,7 +73,7 @@ class Logger
      *
      * @param string  $line  The line to write.
      * @param integer $level The severity level.
-     * 
+     *
      * @return void
      */
     private function _write(string $line, int $level): void
@@ -94,7 +95,7 @@ class Logger
      * Write a line in the log file for the debug level.
      *
      * @param string $line The line to write.
-     * 
+     *
      * @return void
      */
     public function debug(string $line): void
@@ -106,7 +107,7 @@ class Logger
      * Write a line in the log file for the info level.
      *
      * @param string $line The line to write.
-     * 
+     *
      * @return void
      */
     public function info(string $line): void
@@ -118,7 +119,7 @@ class Logger
      * Write a line in the log file for the warning level.
      *
      * @param string $line The line to write.
-     * 
+     *
      * @return void
      */
     public function warning(string $line): void
@@ -130,7 +131,7 @@ class Logger
      * Write a line in the log file for the error level.
      *
      * @param string $line The line to write.
-     * 
+     *
      * @return void
      */
     public function error(string $line): void

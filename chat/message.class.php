@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -13,7 +14,7 @@ namespace CrossbladeBot\Chat;
 
 /**
  * The message object holding the parsed parts of an IRC message.
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -121,12 +122,13 @@ class Message
     private function _parse(): bool
     {
         $regex = implode(
-            '', [
+            '',
+            [
             'open' => '/^',
             'tags' => '(?:@(?P<tags>[^\r\n ]*) +|())',
             'from' => '(?::(?P<from>[^\r\n ]+) +|())',
             'type' => '(?P<type>[^\r\n ]+)',
-            'params' => 
+            'params' =>
             '(?: +(?P<params>[^:\r\n ]+[^\r\n ]*(?: +[^:\r\n ]+[^\r\n ]*)*)|())?',
             'trailing' => '(?: +:(?P<trailing>[^\r\n]*)| +())?[\r\n]*',
             'close' => '$/'
@@ -215,7 +217,7 @@ class Message
      * @param string $delim1 The first delimiter to split the tag.
      * @param string $delim2 The second delimiter to split the tag.
      * @param string $delim3 (optional) The last delimiter if necessary.
-     * 
+     *
      * @return void
      */
     private function _parseTag(
@@ -278,7 +280,7 @@ class Message
      * Get a parameter of the message.
      *
      * @param integer $key The parameter name.
-     * 
+     *
      * @return string
      */
     public function getParam(int $key): string
@@ -380,7 +382,7 @@ class Message
      * Get a tag of the message.
      *
      * @param string $key The tag name.
-     * 
+     *
      * @return string
      */
     public function getTag(string $key): string
@@ -402,7 +404,7 @@ class Message
      * Set the command name of the message.
      *
      * @param string $command The command name.
-     * 
+     *
      * @return void
      */
     public function setCommand(string $command): void

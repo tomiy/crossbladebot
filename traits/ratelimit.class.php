@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -13,7 +14,7 @@ namespace CrossbladeBot\Traits;
 
 /**
  * Provides a set of functions to limit incoming actions.
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -53,7 +54,7 @@ trait RateLimit
      *
      * @param float   $rate # of actions that can be performed during the span.
      * @param integer $span Time in seconds in which the rate is constrained.
-     * 
+     *
      * @return void
      */
     public function initRate(float $rate, int $span): void
@@ -67,7 +68,7 @@ trait RateLimit
      *
      * @param float   $rate # of actions that can be performed during the span.
      * @param integer $span Time in seconds in which the rate is constrained.
-     * 
+     *
      * @return void
      */
     protected function setRate(float $rate, int $span): void
@@ -81,7 +82,7 @@ trait RateLimit
      * Limit the number of actions.
      *
      * @param integer $consumed The number of actions consumed. Defaults to 1.
-     * 
+     *
      * @return boolean Whether you can perform your action.
      */
     public function limit(int $consumed = 1): bool

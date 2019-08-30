@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -18,7 +19,7 @@ use stdClass;
 
 /**
  * Provides an extensible object to hold commands and callbacks.
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -64,7 +65,7 @@ class Command
      * @param Message $message The message that calls a command.
      * @param Channel $channel The channel the message is from.
      * @param mixed   ...$data Additional data that can be passed to the command
-     * 
+     *
      * @return void
      */
     public function execute(Message $message, Channel $channel, ...$data): void

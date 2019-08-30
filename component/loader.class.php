@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -17,7 +18,7 @@ use CrossbladeBot\Core\Client;
 
 /**
  * Dynamically loads every class from the component folders.
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -59,7 +60,7 @@ class Loader
      *
      * @param EventHandler $eventHandler The event handler to register into.
      * @param Client       $client       The bot client, used in the components.
-     * 
+     *
      * @return void
      */
     public function register(EventHandler $eventHandler, Client $client): void

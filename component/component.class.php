@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -21,7 +22,7 @@ use CrossbladeBot\Debug\Logger;
 
 /**
  * The parent component. Holds callbacks to events bound in its config file.
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -69,7 +70,8 @@ class Component
                     '@' .
                     get_class(
                         debug_backtrace(
-                            DEBUG_BACKTRACE_PROVIDE_OBJECT, 1
+                            DEBUG_BACKTRACE_PROVIDE_OBJECT,
+                            1
                         )[0]['object']
                     ) .
                     ' Invalid event callback: ' . $callback
@@ -88,7 +90,8 @@ class Component
                     '@' .
                     get_class(
                         debug_backtrace(
-                            DEBUG_BACKTRACE_PROVIDE_OBJECT, 1
+                            DEBUG_BACKTRACE_PROVIDE_OBJECT,
+                            1
                         )[0]['object']
                     ) .
                     ' Invalid command callback: ' . $cmdInfo->callback
@@ -102,7 +105,7 @@ class Component
      *
      * @param EventHandler $eventHandler The event handler.
      * @param Client       $client       The client object.
-     * 
+     *
      * @return void
      */
     public function register(EventHandler $eventHandler, Client $client): void
@@ -125,7 +128,7 @@ class Component
      * @param Channel $channel The channel to send the message.
      *                         If null, the message is sent to the client directly.
      * @param boolean $raw     Whether it is sent as chat message, or IRC command.
-     * 
+     *
      * @return void
      */
     public function send(

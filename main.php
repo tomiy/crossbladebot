@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
  *
@@ -13,7 +14,7 @@
  * The message queue is based on microtime which stops at 4 decimals by default.
  * We bump it up to 6 to have actual microseconds so we can process messages.
  */
-ini_set('precision', 16);
+ini_set('precision', '16');
 
 /**
  * Include the autoloader to be able to do oop PHP.

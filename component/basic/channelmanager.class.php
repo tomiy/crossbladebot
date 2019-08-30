@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -19,7 +20,7 @@ use CrossbladeBot\Chat\Channel;
 
 /**
  * Component responsible for joining and parting channels.
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -35,7 +36,7 @@ class ChannelManager extends Component
      *
      * @param EventHandler $eventHandler The event handler to register in.
      * @param Client       $client       The client object.
-     * 
+     *
      * @return void
      */
     public function register(EventHandler $eventHandler, Client $client): void
@@ -49,7 +50,7 @@ class ChannelManager extends Component
      *
      * @param Message $message The message requesting to join.
      * @param Channel $channel The channel the message is from.
-     * 
+     *
      * @return void
      */
     public function cmdJoin(Message $message, Channel $channel): void
@@ -65,7 +66,7 @@ class ChannelManager extends Component
      *
      * @param Message $message The message requesting to part.
      * @param Channel $channel The channel the message is from.
-     * 
+     *
      * @return void
      */
     public function cmdPart(Message $message, Channel $channel): void

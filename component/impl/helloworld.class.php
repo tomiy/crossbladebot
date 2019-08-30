@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -17,7 +18,7 @@ use CrossbladeBot\Chat\Message;
 
 /**
  * Example component to demonstrate events and commands.
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -30,7 +31,7 @@ class HelloWorld extends Component
      * Messages the channel when it joins it.
      *
      * @param Channel $channel The channel joined.
-     * 
+     *
      * @return void
      */
     public function evtJoin(Channel $channel): void
@@ -45,7 +46,7 @@ class HelloWorld extends Component
      *
      * @param Message $message The message triggering the command.
      * @param Channel $channel The channel the message is from.
-     * 
+     *
      * @return void
      */
     public function cmdTest(Message $message, Channel $channel): void

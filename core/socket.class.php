@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -17,7 +18,7 @@ use Exception;
 
 /**
  * Reads and writes from a socket at the given adress and port.
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -76,7 +77,7 @@ class Socket
                 $errstr
             );
         }
-        stream_set_blocking($this->_socket, 0);
+        stream_set_blocking($this->_socket, false);
         stream_set_timeout($this->_socket, 1);
         $this->_logger->debug('Socket created');
     }
@@ -89,7 +90,7 @@ class Socket
     public function getNext(): string
     {
         if (!$this->_socket) {
-            return false;
+            return (string) false;
         }
         $line = fgets($this->_socket);
 
@@ -97,14 +98,14 @@ class Socket
             $this->_logger->debug('> ' . $line);
         }
 
-        return $line;
+        return (string) $line;
     }
 
     /**
      * Sends data to the socket stream.
      *
      * @param string $data The data to send.
-     * 
+     *
      * @return void
      */
     public function send(string $data): void

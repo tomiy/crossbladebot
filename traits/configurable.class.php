@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
 /**
  * PHP version 7
- * 
+ *
  * @category PHP
  * @package  CrossbladeBot
  * @author   tomiy <tom@tomiy.me>
@@ -36,7 +37,7 @@ trait Configurable
      *
      * @param string $subFolder (optional) The subfolder to load from.
      *                          If empty, defaults to the root config folder.
-     * 
+     *
      * @return void
      */
     public function loadConfig(string $subFolder = null): void
