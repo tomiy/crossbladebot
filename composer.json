@@ -6,7 +6,9 @@
     }],
     "type": "project",
     "require": {
-        "phpunit/phpunit": "^8.3"
+        "phpunit/phpunit": "^8.3",
+        "php": "^7.2",
+        "ext-sqlite3": "^7.2"
     },
     "license": "GPL 3.0",
     "autoload": {
