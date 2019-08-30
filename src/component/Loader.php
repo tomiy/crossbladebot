@@ -42,14 +42,14 @@ class Loader
      */
     public function __construct(Logger $logger)
     {
-        foreach (glob('./component/basic/*.class.php') as $file) {
-            $name = basename($file, '.class.php');
+        foreach (glob(__DIR__ . '/basic/*.php') as $file) {
+            $name = basename($file, '.php');
             $class = __NAMESPACE__ . '\Basic\\' . ucfirst($name);
             $this->_components[$name] = new $class($logger);
         }
 
-        foreach (glob('./component/impl/*.class.php') as $file) {
-            $name = basename($file, '.class.php');
+        foreach (glob(__DIR__ . '/impl/*.php') as $file) {
+            $name = basename($file, '.php');
             $class = __NAMESPACE__ . '\Impl\\' . ucfirst($name);
             $this->_components[$name] = new $class($logger);
         }

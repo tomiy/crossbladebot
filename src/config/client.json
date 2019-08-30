@@ -1,0 +1,9 @@
+{
+    "prefix": "!",
+    "name": "crossbladebot",
+    "channel": "crossbladebot",
+    "password": "oauth:oauth",
+    "admins": [
+        "tomiy__"
+    ]
+}

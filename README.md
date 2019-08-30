@@ -8,15 +8,16 @@ CrossbladeBot is a Twitch IRC bot made entirely in PHP and ran through the CLI.
 
 In config/client.json, put your bot name, channel, and oauth.
 
-Then, in a console, run `php main.php` from the root folder.
+Then, in a console, run `php main.php` from the root directory.
 
 ### Prerequisites
 
-  * PHP 7 and up
+* PHP 7 and up
+* Composer
 
 ### Installing
 
-Clone the repo. There is nothing else to do (for now).
+Clone the repo and run `composer update` from the root directory.
 
 ## Running the tests
 

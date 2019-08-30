@@ -1,0 +1,15 @@
+{
+    "name": "tomiy/crossbladebot",
+    "description": "CrossbladeBot is a Twitch IRC bot made entirely in PHP and ran through the CLI.",
+    "authors": [{
+        "name": "Tom Chappaz"
+    }],
+    "type": "project",
+    "require": {
+        "phpunit/phpunit": "^8.3"
+    },
+    "license": "GPL 3.0",
+    "autoload": {
+        "psr-4": { "CrossbladeBot\\": "src/" }
+    }
+}

@@ -15,11 +15,16 @@ declare(strict_types=1);
  * We bump it up to 6 to have actual microseconds so we can process messages.
  */
 ini_set('precision', '16');
+/**
+ * IRC only accepts \r\n (not \n) so on Windows systems you can't use PHP_EOL.
+ * Use this constant instead to signify an EOL in messages. (handled by the socket)
+ */
+define('NL', "\r\n");
 
 /**
  * Include the autoloader to be able to do oop PHP.
  */
-require_once 'autoloader.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Core\Socket;
