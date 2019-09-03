@@ -12,8 +12,8 @@ Then, in a console, run `php main.php` from the root directory.
 
 ### Prerequisites
 
-* PHP 7 and up
-* Composer
+*   PHP 7 and up
+*   Composer
 
 ### Installing
 
@@ -25,8 +25,8 @@ In config/logger.json, set the level to 4 (debug). The crossbladebot.log file sh
 
 Use the following commands to generate a coverage report:
 
-* Windows: `vendor/bin/phpunit.bat ./tests --coverage-clover ./build/logs/clover.xml`
-* Linux: `php vendor/bin/phpunit ./tests --coverage-clover ./build/logs/clover.xml`
+*   Windows: `vendor/bin/phpunit.bat ./tests --coverage-clover ./build/logs/clover.xml`
+*   Linux: `php vendor/bin/phpunit ./tests --coverage-clover ./build/logs/clover.xml`
 
 ## Deployment
 
@@ -38,7 +38,7 @@ Just make a PR and i'll check it out, i'm not really into big books of rules.
 
 ## Authors
 
-  * **Tom Chappaz** - *Initial work* - [tomiy](https://github.com/tomiy)
+*   **Tom Chappaz** - *Initial work* - [tomiy](https://github.com/tomiy)
 
 See also the list of [contributors](https://github.com/tomiy/crossbladebot/contributors) who participated in this project.
 
@@ -48,4 +48,4 @@ This project is licensed under the GPL 3.0 License - see the LICENSE file for de
 
 ## Acknowledgments
 
-* tmi.js for the initial structure
+*   tmi.js for the initial structure
