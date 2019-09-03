@@ -23,7 +23,10 @@ Clone the repo and run `composer update` from the root directory.
 
 In config/logger.json, set the level to 4 (debug). The crossbladebot.log file should show much more info about what's going on.
 
-I have no coverage right now but i'm planning to add some in the future.
+Use the following commands to generate a coverage report:
+
+* Windows: `vendor/bin/phpunit.bat ./tests --coverage-clover ./build/logs/clover.xml`
+* Linux: `php vendor/bin/phpunit ./tests --coverage-clover ./build/logs/clover.xml`
 
 ## Deployment
 
@@ -45,4 +48,4 @@ This project is licensed under the GPL 3.0 License - see the LICENSE file for de
 
 ## Acknowledgments
 
-  * tmi.js for the initial structure
+* tmi.js for the initial structure
