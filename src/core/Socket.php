@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Core;
 
+use Exception;
 use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Debug\Logger;
-use Exception;
 
 /**
  * Reads and writes from a socket at the given adress and port.

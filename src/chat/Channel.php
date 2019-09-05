@@ -13,9 +13,9 @@ declare(strict_types=1);
 namespace CrossbladeBot\Chat;
 
 use CrossbladeBot\Traits\RateLimit;
-use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Service\Queue;
+use CrossbladeBot\Debug\Logger;
+use CrossbladeBot\Chat\Message;
 
 /**
  * Handles a channel specific rate limit, and processes userstates and messages.

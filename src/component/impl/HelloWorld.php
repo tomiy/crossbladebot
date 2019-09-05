@@ -13,8 +13,8 @@ declare(strict_types=1);
 namespace CrossbladeBot\Component\Impl;
 
 use CrossbladeBot\Component\Component;
-use CrossbladeBot\Chat\Channel;
 use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Chat\Channel;
 
 /**
  * Example component to demonstrate events and commands.

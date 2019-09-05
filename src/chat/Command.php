@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Chat;
 
+use stdClass;
 use CrossbladeBot\Component\Component;
 use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Channel;
-use stdClass;
 
 /**
  * Provides an extensible object to hold commands and callbacks.

@@ -28,8 +28,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Core\Socket;
-use CrossbladeBot\Core\Client;
 use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Core\Client;
 use CrossbladeBot\Component\Loader;
 
 $logger = new Logger();

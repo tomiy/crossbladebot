@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Service;
 
+use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Core\EventHandler;
 use CrossbladeBot\Core\Client;
 use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Channel;
-use CrossbladeBot\Debug\Logger;
 
 /**
  * Provides function to process IRC messages for the client.

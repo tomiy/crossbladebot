@@ -13,12 +13,12 @@ declare(strict_types=1);
 namespace CrossbladeBot\Component;
 
 use CrossbladeBot\Traits\Configurable;
+use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Core\EventHandler;
 use CrossbladeBot\Core\Client;
-use CrossbladeBot\Chat\Channel;
 use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Command;
-use CrossbladeBot\Debug\Logger;
+use CrossbladeBot\Chat\Channel;
 
 /**
  * The parent component. Holds callbacks to events bound in its config file.

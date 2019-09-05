@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Component\Basic;
 
-use CrossbladeBot\Component\Component;
 use CrossbladeBot\Core\EventHandler;
 use CrossbladeBot\Core\Client;
+use CrossbladeBot\Component\Component;
 use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Channel;
 

@@ -12,16 +12,16 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Core;
 
+use CrossbladeBot\Traits\RateLimit;
 use CrossbladeBot\Traits\Configurable;
-use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Service\Queue;
+use CrossbladeBot\Service\Processor;
 use CrossbladeBot\Debug\Logger;
 use CrossbladeBot\Core\Socket;
 use CrossbladeBot\Core\EventHandler;
 use CrossbladeBot\Component\Loader;
-use CrossbladeBot\Service\Queue;
-use CrossbladeBot\Service\Processor;
-use CrossbladeBot\Traits\RateLimit;
+use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Chat\Channel;
 
 /**
  * The bot client.
