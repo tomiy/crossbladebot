@@ -10,6 +10,8 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
+namespace CrossbladeBotTests;
+
 use PHPUnit\Framework\TestCase;
 
 use CrossbladeBot\Debug\Logger;

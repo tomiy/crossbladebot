@@ -138,4 +138,16 @@ class Logger
     {
         $this->_write('[ERROR] ' . $line, self::$LEVEL_ERROR);
     }
+
+    /**
+     * Set the debug level.
+     *
+     * @param integer $level The level index (use the LEVEL_* constants).
+     *
+     * @return void
+     */
+    public function setLevel(int $level): void
+    {
+        $this->_config->level = $level;
+    }
 }

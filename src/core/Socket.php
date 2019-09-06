@@ -61,13 +61,24 @@ class Socket
      */
     public function connect(): void
     {
-        $this->_socket = fsockopen(
-            $this->_config->address,
-            $this->_config->port,
-            $errno,
-            $errstr,
-            30
-        );
+        $errno = $errstr = $hostip = null;
+
+        $hostname = parse_url($this->_config->address, PHP_URL_HOST);
+
+        if ($hostname) {
+            $hostip = gethostbyname($hostname);
+   
+            if ($hostip !== $this->_config->address) {
+                $this->_socket = @fsockopen(
+                    $this->_config->address,
+                    $this->_config->port,
+                    $errno,
+                    $errstr,
+                    5
+                );
+            }
+        }
+
         if (!$this->_socket) {
             $this->_logger->error('Couldn\'t create socket');
             throw new Exception(
@@ -128,5 +139,29 @@ class Socket
         if ($this->_socket) {
             fclose($this->_socket);
         }
+    }
+
+    /**
+     * Set the address of the stream.
+     *
+     * @param string $address The address of the stream.
+     *
+     * @return void
+     */
+    public function setAddress(string $address): void
+    {
+        $this->_config->address = $address;
+    }
+
+    /**
+     * Set the port of the stream.
+     *
+     * @param int $port The port of the stream.
+     *
+     * @return void
+     */
+    public function setPort(int $port): void
+    {
+        $this->_config->port = $port;
     }
 }
