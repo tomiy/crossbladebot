@@ -100,7 +100,7 @@ class SocketTest extends TestCase
     {
         $logger = new Logger();
         $logFile = $logger->getConfig()->log;
-        $logger->setLevel(Logger::$LEVEL_DEBUG);
+        $logger->setLevel(Logger::LEVEL_DEBUG);
 
         $socket = new Socket($logger);
         $socket->connect();

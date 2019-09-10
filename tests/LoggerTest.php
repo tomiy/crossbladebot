@@ -97,7 +97,7 @@ class LoggerTest extends TestCase
     {
         $logger = new Logger();
         $logFile = $logger->getConfig()->log;
-        $logger->setLevel(Logger::$LEVEL_DEBUG);
+        $logger->setLevel(Logger::LEVEL_DEBUG);
         $logger->$level('test');
 
         $line = __LINE__ - 2;
