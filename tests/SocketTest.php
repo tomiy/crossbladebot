@@ -120,7 +120,7 @@ class SocketTest extends TestCase
      */
     private function _socketErrorMessage(): string
     {
-        return 
+        return
         date('[d/m/y G:i:s] ') .
         'CrossbladeBot\Core\Socket:83 [ERROR] Couldn\'t create socket' .
         PHP_EOL;

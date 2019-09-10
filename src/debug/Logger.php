@@ -34,21 +34,21 @@ class Logger
      *
      * @var integer
      */
-    public static $LEVEL_ERROR = 1;
+    const LEVEL_ERROR = 1;
     /**
      * The index corresponding to the warning level.
      * Used to log when a non-blocking failure happens in the program.
      *
      * @var integer
      */
-    public static $LEVEL_WARNING = 2;
+    const LEVEL_WARNING = 2;
     /**
      * The index corresponding to the info level.
      * Used to log when any kind of non-failure happens in the program.
      *
      * @var integer
      */
-    public static $LEVEL_INFO = 3;
+    const LEVEL_INFO = 3;
     /**
      * The index corresponding to the debug level.
      * Used to log during debugging.
@@ -56,7 +56,7 @@ class Logger
      *
      * @var integer
      */
-    public static $LEVEL_DEBUG = 4;
+    const LEVEL_DEBUG = 4;
 
     /**
      * Instantiate a new logger.
@@ -100,7 +100,7 @@ class Logger
      */
     public function debug(string $line): void
     {
-        $this->_write('[DEBUG] ' . $line, self::$LEVEL_DEBUG);
+        $this->_write('[DEBUG] ' . $line, self::LEVEL_DEBUG);
     }
 
     /**
@@ -112,7 +112,7 @@ class Logger
      */
     public function info(string $line): void
     {
-        $this->_write('[INFO] ' . $line, self::$LEVEL_INFO);
+        $this->_write('[INFO] ' . $line, self::LEVEL_INFO);
     }
 
     /**
@@ -124,7 +124,7 @@ class Logger
      */
     public function warning(string $line): void
     {
-        $this->_write('[WARNING] ' . $line, self::$LEVEL_WARNING);
+        $this->_write('[WARNING] ' . $line, self::LEVEL_WARNING);
     }
 
     /**
@@ -136,7 +136,7 @@ class Logger
      */
     public function error(string $line): void
     {
-        $this->_write('[ERROR] ' . $line, self::$LEVEL_ERROR);
+        $this->_write('[ERROR] ' . $line, self::LEVEL_ERROR);
     }
 
     /**

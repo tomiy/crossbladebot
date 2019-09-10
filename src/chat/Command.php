@@ -33,7 +33,7 @@ class Command
      *
      * @var array
      */
-    private static $_USERLEVEL = [
+    const USERLEVEL = [
         'user' => 0,
         'mod' => 1,
         'owner' => 2
@@ -54,7 +54,7 @@ class Command
     public function __construct(string $cmd, stdClass $params, Component $component)
     {
         $this->_command = $cmd;
-        $this->_userLevel = static::$_USERLEVEL[$params->userLevel];
+        $this->_userLevel = static::USERLEVEL[$params->userLevel];
         $this->_callback = $params->callback;
         $this->_component = $component;
     }
