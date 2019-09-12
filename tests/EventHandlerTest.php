@@ -37,4 +37,34 @@ class EventHandlerTest extends TestCase
     {
         $this->assertInstanceOf(EventHandler::class, new EventHandler(new Logger()));
     }
+
+    /**
+     * Assert that you can register an event and get its unique identifier.
+     *
+     * @return void
+     */
+    public function testCanRegisterEvent(): void
+    {
+        $logger = new Logger();
+        $logFile = $logger->getConfig()->log;
+        $logger->setLevel(Logger::LEVEL_DEBUG);
+
+        $eventHandler = new EventHandler($logger);
+        $uid = $eventHandler->register(
+            'test', function () {
+                print_r('sweet');
+            }
+        );
+
+        $this->assertGreaterThanOrEqual(1E9, $uid);
+        $this->assertGreaterThanOrEqual($uid, 1E10 - 1);
+
+        $this->assertEquals(
+            date('[d/m/y G:i:s] ') .
+            'CrossbladeBot\Core\EventHandler:85 [DEBUG] Registered event ' .
+            $uid .
+            PHP_EOL,
+            file_get_contents($logFile)
+        );
+    }
 }

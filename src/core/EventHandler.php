@@ -69,11 +69,11 @@ class EventHandler
      * @param string   $event    The event name to register to.
      * @param callable $callback The callback to call on trigger.
      *
-     * @return string The event id.
+     * @return int The event id.
      */
-    public function register(string $event, callable $callback): string
+    public function register(string $event, callable $callback): int
     {
-        $uid = uniqid();
+        $uid = random_int((int) 1E9, (int) 1E10-1);
 
         if (!isset($this->_events[$event])) {
             $this->_events[$event] = [];
@@ -101,9 +101,11 @@ class EventHandler
             return;
         }
 
-        $this->_logger->debug('Triggered event ' . $event);
-
-        foreach ($this->_events[$event] as $callback) {
+        
+        foreach ($this->_events[$event] as $uid => $callback) {
+            $this->_logger->debug(
+                'Triggered event ' . $event . ' (uid ' . $uid . ')'
+            );
             call_user_func($callback, ...$data);
         }
     }
