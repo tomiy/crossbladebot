@@ -101,7 +101,6 @@ class EventHandler
             return;
         }
 
-        
         foreach ($this->_events[$event] as $uid => $callback) {
             $this->_logger->debug(
                 'Triggered event ' . $event . ' (uid ' . $uid . ')'

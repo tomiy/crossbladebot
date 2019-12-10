@@ -29,7 +29,7 @@ use CrossbladeBot\Chat\Channel;
  * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
  * @link     https://github.com/tomiy/crossbladebot
  */
-class Component
+abstract class Component
 {
     use Configurable;
 
@@ -67,14 +67,7 @@ class Component
                     continue;
                 }
                 $this->logger->warning(
-                    '@' .
-                    get_class(
-                        debug_backtrace(
-                            DEBUG_BACKTRACE_PROVIDE_OBJECT,
-                            1
-                        )[0]['object']
-                    ) .
-                    ' Invalid event callback: ' . $callback
+                    '@' . static::class . ' Invalid event callback: ' . $callback
                 );
             }
         }
@@ -87,13 +80,7 @@ class Component
                     continue;
                 }
                 $this->logger->warning(
-                    '@' .
-                    get_class(
-                        debug_backtrace(
-                            DEBUG_BACKTRACE_PROVIDE_OBJECT,
-                            1
-                        )[0]['object']
-                    ) .
+                    '@' . static::class .
                     ' Invalid command callback: ' . $cmdInfo->callback
                 );
             }
@@ -132,9 +119,7 @@ class Component
      * @return void
      */
     public function send(
-        string $message,
-        Channel $channel = null,
-        $raw = false
+        string $message, Channel $channel = null, $raw = false
     ): void {
         if ($channel != null) {
             if ($raw) {

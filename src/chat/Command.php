@@ -30,6 +30,7 @@ class Command
 {
     /**
      * Defines the corresponding index of user level strings.
+     * TODO: rework at some point to be flexible (user defined roles)
      *
      * @var array
      */

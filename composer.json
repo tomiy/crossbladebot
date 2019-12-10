@@ -16,5 +16,9 @@
     "license": "GPL 3.0",
     "autoload": {
         "psr-4": { "CrossbladeBot\\": "src/" }
+    },
+    "scripts": {
+        "start": "php main.php",
+        "test": "vendor\\bin\\phpunit.bat ./tests --coverage-clover ./build/logs/clover.xml"
     }
 }

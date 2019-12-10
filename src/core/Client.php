@@ -71,12 +71,6 @@ class Client extends Queue
     private $_processor;
 
     /**
-     * Whether the client is connected to the IRC.
-     *
-     * @var boolean
-     */
-    private $_connected;
-    /**
      * The last unix time in seconds when the IRC sent a PING.
      *
      * @var int
@@ -104,10 +98,7 @@ class Client extends Queue
      * @param Loader       $loader       The loader holding the components.
      */
     public function __construct(
-        Logger $logger,
-        Socket $socket,
-        EventHandler $eventHandler,
-        Loader $loader
+        Logger $logger, Socket $socket, EventHandler $eventHandler, Loader $loader
     ) {
         $this->loadConfig();
         $this->initRate(20, 30);
@@ -132,6 +123,7 @@ class Client extends Queue
     public function connect(): int
     {
         $this->_socket->connect();
+        $this->setLastPing(time());
 
         $this->enqueue(
             [
@@ -155,39 +147,20 @@ class Client extends Queue
     {
         $processed = $this->connect();
         
-        $this->setConnected(true);
-        $this->setLastPing(time());
-        
-        while ($this->isConnected()) {
+        while ($this->_socket->isConnected()) {
             $message = null;
             
             $cost = microtime(true);
-            if ((time() - $this->getLastPing()) > 300 || $this->_socket === false) {
+            while ((time() - $this->getLastPing()) > 300 || !$this->_socket->isConnected()) {
                 $this->_logger->info('Restarting connection');
                 $processed = $this->connect();
-                $this->setLastPing(time());
             }
 
             $data = $this->_socket->getNext();
 
             if ($data) {
                 $message = new Message($data);
-
-                switch ($message->getFrom()) {
-                case null:
-                case '':
-                    $this->_processor->handlePing($message);
-                    break;
-                case 'tmi.twitch.tv':
-                    $this->_processor->handleTmi($message);
-                    break;
-                case 'jtv':
-                    $this->_processor->handleJtv($message);
-                    break;
-                default:
-                    $this->_processor->handleUserMessage($message);
-                    break;
-                }
+                $this->_processor->handle($message);
             }
             $this->_pollChannels();
             $processed += $this->processQueue([$this, 'sendToSocket']);
@@ -321,28 +294,6 @@ class Client extends Queue
     public function setName(string $name): void
     {
         $this->_name = $name;
-    }
-
-    /**
-     * Whether the client is connected.
-     *
-     * @return boolean
-     */
-    public function isConnected(): bool
-    {
-        return $this->_connected;
-    }
-
-    /**
-     * Set the connected flag.
-     *
-     * @param boolean $connected Whether the client is connected.
-     *
-     * @return void
-     */
-    public function setConnected(bool $connected): void
-    {
-        $this->_connected = $connected;
     }
 
     /**

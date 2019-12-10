@@ -79,7 +79,7 @@ class Socket
             }
         }
 
-        if (!$this->_socket) {
+        if (!$this->isConnected()) {
             $this->_logger->error('Couldn\'t create socket');
             throw new Exception(
                 'Couldn\'t create socket: ' .
@@ -139,6 +139,16 @@ class Socket
         if ($this->_socket) {
             fclose($this->_socket);
         }
+    }
+
+    /**
+     * Checks if the socket handle exists and is active.
+     *
+     * @return boolean
+     */
+    public function isConnected(): bool
+    {
+        return is_resource($this->_socket);
     }
 
     /**
