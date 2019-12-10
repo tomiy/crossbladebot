@@ -63,13 +63,11 @@ class PingHandler extends AbstractMessageHandler
     }
 
     /**
-     * Handle a pong message.
-     *
-     * @param Message $message The message to handle.
+     * Handle a pong event.
      *
      * @return void
      */
-    protected function handlePong(Message $message): void
+    protected function handlePong(): void
     {
         $latency = time() - $this->client->getLastPing();
         $this->logger->info('Current latency: ' . $latency);

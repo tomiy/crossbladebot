@@ -79,11 +79,9 @@ class TmiHandler extends AbstractMessageHandler
     /**
      * Trigger the event that we are connected to the irc.
      *
-     * @param Message $message The message to handle.
-     *
      * @return void
      */
-    protected function notifyConnected(Message $message): void
+    protected function notifyConnected(): void
     {
         $this->logger->debug('Client connected');
         $this->eventHandler->trigger('connect');
