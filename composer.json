@@ -19,6 +19,6 @@
     },
     "scripts": {
         "start": "php main.php",
-        "test": "vendor\\bin\\phpunit.bat ./tests --coverage-clover ./build/logs/clover.xml"
+        "test": "phpunit ./tests --coverage-clover ./build/logs/clover.xml"
     }
 }
