@@ -19,6 +19,7 @@
     },
     "scripts": {
         "start": "php main.php",
-        "test": "phpunit ./tests --coverage-clover ./build/logs/clover.xml"
+        "test": "phpunit ./tests --coverage-clover ./build/logs/clover.xml",
+        "coverage": "vendor\\bin\\codacycoverage clover"
     }
 }

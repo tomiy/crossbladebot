@@ -31,55 +31,61 @@ use CrossbladeBot\Chat\Channel;
 class TmiHandler extends AbstractMessageHandler
 {
     /**
-     * Handle tmi messages.
+     * Initialize the callback map for handling tmi messages.
+     *
+     * @param Logger       $logger       The logger object.
+     * @param EventHandler $eventHandler The handler holding the component events.
+     * @param Client       $client       The client object.
+     */
+    public function __construct(
+        Logger $logger, EventHandler $eventHandler, Client $client
+    ) {
+        parent::__construct($logger, $eventHandler, $client);
+
+        $this->callbackMap = [
+            '002' => null,
+            '003' => null,
+            '004' => null,
+            '375' => null,
+            '376' => null,
+            'CAP' => null,
+            '001' => 'setClientName',
+            '372' => 'notifyConnected',
+            'NOTICE' => 'notice',
+            'USERNOTICE' => 'userNotice',
+            'HOSTTARGET' => null,
+            'CLEARCHAT' => null,
+            'CLEARMSG' => null,
+            'RECONNECT' => null,
+            'USERSTATE' => 'userState',
+            'GLOBALUSERSTATE' => null,
+            'ROOMSTATE' => null,
+            'SERVERCHANGE' => null
+        ];
+    }
+
+    /**
+     * Set the bot's name.
      *
      * @param Message $message The message to handle.
      *
      * @return void
      */
-    public function handle(Message $message): void
+    protected function setClientName(Message $message): void
     {
-        switch ($message->getType()) {
-        case '002':
-        case '003':
-        case '004':
-        case '375':
-        case '376':
-        case 'CAP':
-            break;
-        case '001':
-                $this->client->setName($message->getParam(0));
-            break;
-        case '372':
-                $this->logger->debug('Client connected');
-                $this->eventHandler->trigger('connect');
-            break;
-        case 'NOTICE':
-            $this->notice($message);
-            break;
-        case 'USERNOTICE':
-            $this->userNotice($message);
-            break;
-        case 'HOSTTARGET':
-            break;
-        case 'CLEARCHAT':
-            break;
-        case 'CLEARMSG':
-            break;
-        case 'RECONNECT':
-            break;
-        case 'USERSTATE':
-            $this->userState($message);
-            break;
-        case 'GLOBALUSERSTATE':
-            break;
-        case 'ROOMSTATE':
-            break;
-        case 'SERVERCHANGE':
-            break;
-        default:
-            $this->cantParse($message);
-            break;
-        }
+        $this->client->setName($message->getParam(0));
+    }
+
+    /**
+     * Trigger the event that we are connected to the irc.
+     *
+     * @param Message $message The message to handle.
+     *
+     * @return void
+     */
+    protected function notifyConnected(Message $message): void
+    {
+        $this->logger->debug('Client connected');
+        $this->eventHandler->trigger('connect');
     }
 }

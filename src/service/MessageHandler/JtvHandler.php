@@ -20,7 +20,7 @@ use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Channel;
 
 /**
- * Provides function to handle a user message.
+ * Provides function to handle a jtv message. (absolutely useless but required)
  *
  * @category PHP
  * @package  CrossbladeBot
@@ -28,10 +28,10 @@ use CrossbladeBot\Chat\Channel;
  * @license  https://github.com/tomiy/crossbladebot/blob/master/LICENSE GPL-3.0
  * @link     https://github.com/tomiy/crossbladebot
  */
-class UserMessageHandler extends AbstractMessageHandler
+class JtvHandler extends AbstractMessageHandler
 {
     /**
-     * Initialize the callback map for handling user messages.
+     * Initialize the callback map for handling ping messages.
      *
      * @param Logger       $logger       The logger object.
      * @param EventHandler $eventHandler The handler holding the component events.
@@ -43,12 +43,7 @@ class UserMessageHandler extends AbstractMessageHandler
         parent::__construct($logger, $eventHandler, $client);
 
         $this->callbackMap = [
-            '353' => null,
-            '366' => null,
-            'JOIN' => 'join',
-            'PART' => 'part',
-            'WHISPER' => null,
-            'PRIVMSG' => 'privMsg'
+            'MODE' => null
         ];
     }
 }

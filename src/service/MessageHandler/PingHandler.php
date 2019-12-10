@@ -31,27 +31,47 @@ use CrossbladeBot\Chat\Channel;
 class PingHandler extends AbstractMessageHandler
 {
     /**
-     * Handle ping messages (coming directly from the stream)
+     * Initialize the callback map for handling ping messages.
+     *
+     * @param Logger       $logger       The logger object.
+     * @param EventHandler $eventHandler The handler holding the component events.
+     * @param Client       $client       The client object.
+     */
+    public function __construct(
+        Logger $logger, EventHandler $eventHandler, Client $client
+    ) {
+        parent::__construct($logger, $eventHandler, $client);
+
+        $this->callbackMap = [
+            'PING' => 'handlePing',
+            'PONG' => 'handlePong'
+        ];
+    }
+
+    /**
+     * Handle a ping message.
      *
      * @param Message $message The message to handle.
      *
      * @return void
      */
-    public function handle(Message $message): void
+    protected function handlePing(Message $message): void
     {
-        switch ($message->getType()) {
-        case 'PING':
-                $this->client->setLastPing(time());
-                $this->client->send('PONG :' . $message->getParam(0));
-                $this->eventHandler->trigger('pong');
-            break;
-        case 'PONG':
-                $latency = time() - $this->client->getLastPing();
-                $this->logger->info('Current latency: ' . $latency);
-            break;
-        default:
-                $this->cantParse($message);
-            break;
-        }
+        $this->client->setLastPing(time());
+        $this->client->send('PONG :' . $message->getParam(0));
+        $this->eventHandler->trigger('pong');
+    }
+
+    /**
+     * Handle a pong message.
+     *
+     * @param Message $message The message to handle.
+     *
+     * @return void
+     */
+    protected function handlePong(Message $message): void
+    {
+        $latency = time() - $this->client->getLastPing();
+        $this->logger->info('Current latency: ' . $latency);
     }
 }

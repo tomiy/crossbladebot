@@ -62,7 +62,14 @@ abstract class AbstractMessageHandler
     protected $prefixLen;
 
     /**
-     * Instantiate a new processor.
+     * A map of types and callbacks.
+     *
+     * @var array
+     */
+    protected $callbackMap;
+
+    /**
+     * Instantiate a new message handler.
      *
      * @param Logger       $logger       The logger object.
      * @param EventHandler $eventHandler The handler holding the component events.
@@ -86,7 +93,17 @@ abstract class AbstractMessageHandler
      *
      * @return void
      */
-    abstract public function handle(Message $message): void;
+    public function handle(Message $message): void
+    {
+        if (array_key_exists($message->getType(), $this->callbackMap)) {
+            $method = $this->callbackMap[$message->getType()];
+            if (!empty($method) && method_exists($this, $method)) {
+                $this->{$method}($message);
+            }
+            return;
+        }
+        $this->cantParse($message);
+    }
 
     /**
      * Handles the part messages.

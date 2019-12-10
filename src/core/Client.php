@@ -146,12 +146,15 @@ class Client extends Queue
     public function serve(): void
     {
         $processed = $this->connect();
-        
+
         while ($this->_socket->isConnected()) {
             $message = null;
-            
+
             $cost = microtime(true);
-            while ((time() - $this->getLastPing()) > 300 || !$this->_socket->isConnected()) {
+            while (
+                (time() - $this->getLastPing()) > 300 ||
+                !$this->_socket->isConnected()
+            ) {
                 $this->_logger->info('Restarting connection');
                 $processed = $this->connect();
             }
@@ -283,7 +286,7 @@ class Client extends Queue
     {
         return $this->_name;
     }
-    
+
     /**
      * Set the name of the client.
      *

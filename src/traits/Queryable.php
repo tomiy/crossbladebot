@@ -25,18 +25,18 @@ use Throwable;
  */
 trait Queryable
 {
-    private $_db;
+    private $_database;
 
     /**
      * Load the Sqlite3 database object.
      *
-     * @param Sqlite3 $db the database object.
+     * @param Sqlite3 $database the database object.
      *
      * @return void
      */
-    public function loadDb(Sqlite3 $db)
+    public function loadDb(Sqlite3 $database)
     {
-        $this->_db = $db;
+        $this->_database = $database;
     }
 
     /**
@@ -52,9 +52,9 @@ trait Queryable
         $this->beginTransaction();
 
         try {
-            $results = $callback($this->_db);
+            $results = $callback($this->_database);
             $this->commitTransaction();
-        } catch (Throwable $th) {
+        } catch (Throwable $throwable) {
             $this->rollbackTransaction();
         } finally {
             return $results;
@@ -68,7 +68,7 @@ trait Queryable
      */
     public function beginTransaction(): void
     {
-        $this->_db->exec('BEGIN');
+        $this->_database->exec('BEGIN');
     }
 
     /**
@@ -78,7 +78,7 @@ trait Queryable
      */
     public function rollbackTransaction(): void
     {
-        $this->_db->exec('ROLLBACK');
+        $this->_database->exec('ROLLBACK');
     }
 
     /**
@@ -88,6 +88,6 @@ trait Queryable
      */
     public function commitTransaction(): void
     {
-        $this->_db->exec('COMMIT');
+        $this->_database->exec('COMMIT');
     }
 }

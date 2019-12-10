@@ -102,7 +102,7 @@ abstract class Component
         foreach ($this->events as $event => $callback) {
             $eventHandler->register($event, [$this, $callback]);
         }
-        
+
         foreach ($this->commands as $cmdObj) {
             $eventHandler->register('command', [$cmdObj, 'execute']);
         }
