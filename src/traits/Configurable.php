@@ -43,7 +43,7 @@ trait Configurable
     public function loadConfig(string $subFolder = null): void
     {
         $class = strtolower((new \ReflectionClass($this))->getShortName());
-        $filePath = dirname(__DIR__) . '/config/' . $subFolder . $class . '.json';
+        $filePath = getcwd() . '/config/' . $subFolder . $class . '.json';
         $this->_config = json_decode(
             file_get_contents($filePath),
             false,
