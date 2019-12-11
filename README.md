@@ -2,7 +2,7 @@
 
 CrossbladeBot is a Twitch IRC bot made entirely in PHP and ran through the CLI.
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/106b8405d12940c8bc67e184f09a8926)](https://app.codacy.com/app/tomiy/crossbladebot?utm_source=github.com&utm_medium=referral&utm_content=tomiy/crossbladebot&utm_campaign=Badge_Grade_Dashboard)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7250d9320e854606aafad47384d67263)](https://www.codacy.com/manual/tomiy/crossbladebot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tomiy/crossbladebot&amp;utm_campaign=Badge_Grade)
 
 ## Getting Started
 
