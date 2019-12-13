@@ -29,7 +29,7 @@ use CrossbladeBot\Chat\Channel;
  */
 class ChannelManager extends Component
 {
-    private $_defaultChannel;
+    private string $_defaultChannel;
 
     /**
      * (Override Component::register) register events to the handler.

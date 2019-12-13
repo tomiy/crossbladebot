@@ -29,76 +29,76 @@ class Message
      *
      * @var string
      */
-    private $_raw;
+    private string $_raw;
     /**
      * The tags array holding info such as the display name.
      *
      * @var array
      */
-    private $_tags;
+    private array $_tags;
     /**
      * The message type, usually PRIVMSG.
      *
      * @var string
      */
-    private $_type;
+    private string $_type;
 
     /**
      * The channel the message is sent to, if applicable.
      *
      * @var string
      */
-    private $_channel;
+    private ?string $_channel;
     /**
      * The message contents, if applicable.
      *
      * @var string
      */
-    private $_message;
+    private ?string $_message;
     /**
      * The command, if the message has a command.
      *
      * @var string
      */
-    private $_command;
+    private ?string $_command;
 
     /**
      * The user sending the message, if applicable.
      *
      * @var string
      */
-    private $_user;
+    private ?string $_user;
     /**
      * The nickname of the user.
      *
      * @var string
      */
-    private $_nick;
+    private ?string $_nick;
     /**
      * The hostname of the user.
      *
      * @var string
      */
-    private $_host;
+    private ?string $_host;
 
     /**
      * The sender of the message.
      *
      * @var string
      */
-    private $_from;
+    private ?string $_from;
     /**
      * The array of parameters, holding anything that isn't tags or type.
      *
      * @var array
      */
-    private $_params;
+    private ?array $_params;
     /**
      * The message id, if applicable. Used for notices.
      *
      * @var string
      */
-    private $_id;
+    private ?string $_id;
 
     /**
      * Instantiate a message object.
@@ -117,7 +117,7 @@ class Message
     /**
      * Parse a message string.
      *
-     * @return boolean Whether the message was able to be parsed.
+     * @return bool Whether the message was able to be parsed.
      */
     private function _parse(): bool
     {

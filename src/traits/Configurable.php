@@ -30,7 +30,7 @@ trait Configurable
      *
      * @var stdClass
      */
-    private $_config;
+    private stdClass $_config;
 
     /**
      * Load and parses the json file

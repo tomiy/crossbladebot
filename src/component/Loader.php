@@ -33,7 +33,7 @@ class Loader
      *
      * @var array
      */
-    private $_components;
+    private array $_components;
 
     /**
      * Instantiate the loader and all its components.

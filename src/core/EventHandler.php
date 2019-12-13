@@ -35,7 +35,7 @@ class EventHandler
      *
      * @var array
      */
-    private $_events;
+    private array $_events;
     /**
      * The event ids.
      * Useful for clearing events instead of travelling the event array.
@@ -43,13 +43,13 @@ class EventHandler
      *
      * @var array
      */
-    private $_uids;
+    private array $_uids;
     /**
      * The logger object.
      *
      * @var Logger
      */
-    private $_logger;
+    private Logger $_logger;
 
     /**
      * Instantiate a new event handler.

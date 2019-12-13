@@ -38,25 +38,25 @@ class Processor
      *
      * @var PingHandler
      */
-    private $_pingHandler;
+    private PingHandler $_pingHandler;
     /**
      * The message handler for user messages.
      *
      * @var UserMessageHandler
      */
-    private $_userMessageHandler;
+    private UserMessageHandler $_userMessageHandler;
     /**
      * The message handler for tmi messages.
      *
      * @var TmiHandler
      */
-    private $_tmiHandler;
+    private TmiHandler $_tmiHandler;
     /**
      * The message handler for jtv messages.
      *
      * @var JtvHandler
      */
-    private $_jtvHandler;
+    private JtvHandler $_jtvHandler;
 
     /**
      * Instantiate a new processor.

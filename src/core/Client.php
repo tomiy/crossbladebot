@@ -44,50 +44,50 @@ class Client extends Queue
      *
      * @var Logger
      */
-    private $_logger;
+    private Logger $_logger;
     /**
      * The socket object handling the stream.
      *
      * @var Socket
      */
-    private $_socket;
+    private Socket $_socket;
     /**
      * The event handler.
      *
      * @var EventHandler
      */
-    private $_eventHandler;
+    private EventHandler $_eventHandler;
     /**
      * The components' loader.
      *
      * @var Loader
      */
-    private $_loader;
+    private Loader $_loader;
     /**
      * The processor object to process the messages.
      *
      * @var Processor
      */
-    private $_processor;
+    private Processor $_processor;
 
     /**
      * The last unix time in seconds when the IRC sent a PING.
      *
      * @var int
      */
-    private $_lastPing;
+    private int $_lastPing;
     /**
      * The name of the bot. Retrieved during runtime.
      *
      * @var string
      */
-    private $_name;
+    private string $_name;
     /**
      * The channels array holding Channel objects.
      *
      * @var array
      */
-    private $_channels;
+    private array $_channels;
 
     /**
      * Instantiate a new client.
@@ -256,7 +256,7 @@ class Client extends Queue
      *
      * @param string $user The username to check.
      *
-     * @return boolean Whether the user is the client.
+     * @return bool Whether the user is the client.
      */
     public function isMe(string $user): bool
     {

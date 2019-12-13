@@ -38,16 +38,16 @@ abstract class Component
      *
      * @var Logger
      */
-    protected $logger;
+    protected Logger $logger;
     /**
      * The client object.
      *
      * @var Client
      */
-    protected $client;
+    protected Client $client;
 
-    protected $events;
-    protected $commands;
+    protected array $events;
+    protected array $commands;
 
     /**
      * Instantiate a component.
@@ -114,7 +114,7 @@ abstract class Component
      * @param string  $message The message to send.
      * @param Channel $channel The channel to send the message.
      *                         If null, the message is sent to the client directly.
-     * @param boolean $raw     Whether it is sent as chat message, or IRC command.
+     * @param bool    $raw     Whether it is sent as chat message, or IRC command.
      *
      * @return void
      */

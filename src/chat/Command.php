@@ -16,6 +16,7 @@ use stdClass;
 use CrossbladeBot\Component\Component;
 use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Channel;
+use Closure;
 
 /**
  * Provides an extensible object to hold commands and callbacks.
@@ -40,10 +41,10 @@ class Command
         'owner' => 2
     ];
 
-    private $_command;
-    private $_userLevel;
-    private $_callback;
-    private $_component;
+    private string $_command;
+    private int $_userLevel;
+    private Closure $_callback;
+    private Component $_component;
 
     /**
      * Instantiate a command.
@@ -56,7 +57,7 @@ class Command
     {
         $this->_command = $cmd;
         $this->_userLevel = static::USERLEVEL[$params->userLevel];
-        $this->_callback = $params->callback;
+        $this->_callback = Closure::fromCallable([$component, $params->callback]);
         $this->_component = $component;
     }
 
@@ -74,7 +75,7 @@ class Command
         if ($message->getCommand() === $this->_command
             && $channel->getUserLevel($message) >= $this->_userLevel
         ) {
-            $this->_component->{$this->_callback}($message, $channel, ...$data);
+            $this->_callback->call($this->_component, $message, $channel, ...$data);
         }
     }
 }

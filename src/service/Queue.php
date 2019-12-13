@@ -36,7 +36,7 @@ class Queue
      *
      * @var array
      */
-    private $_queue;
+    private array $_queue;
 
     /**
      * Pushes data into the queue.

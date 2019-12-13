@@ -11,8 +11,8 @@
 
 namespace CrossbladeBot\Traits;
 
-use Sqlite3;
 use Throwable;
+use Sqlite3;
 
 /**
  * Wraps a Sqlite3 connection with some helper functions.
@@ -25,7 +25,7 @@ use Throwable;
  */
 trait Queryable
 {
-    private $_database;
+    private Sqlite3 $_database;
 
     /**
      * Load the Sqlite3 database object.

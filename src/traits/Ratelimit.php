@@ -29,25 +29,25 @@ trait RateLimit
      *
      * @var float
      */
-    private $_last;
+    private float $_last;
     /**
      * The number of actions that can be performed during the span.
      *
      * @var float
      */
-    private $_rate;
+    private float $_rate;
     /**
      * The amount of time in seconds in which the rate is constrained.
      *
      * @var int
      */
-    private $_span;
+    private int $_span;
     /**
      * The remaining number of actions that can be performed.
      *
      * @var float
      */
-    private $_allowance;
+    private float $_allowance;
 
     /**
      * Set the last to now, and set the rate limit.
@@ -83,7 +83,7 @@ trait RateLimit
      *
      * @param integer $consumed The number of actions consumed. Defaults to 1.
      *
-     * @return boolean Whether you can perform your action.
+     * @return bool Whether you can perform your action.
      */
     public function limit(int $consumed = 1): bool
     {

@@ -35,26 +35,26 @@ class Channel extends Queue
      *
      * @var Logger
      */
-    private $_logger;
+    private Logger $_logger;
 
     /**
      * The name of the channel.
      *
      * @var string
      */
-    private $_name;
+    private string $_name;
     /**
      * Whether the channel has been parted from.
      *
-     * @var boolean
+     * @var bool
      */
-    private $_part;
+    private bool $_part;
     /**
      * Whether the client has requested the mod status.
      *
-     * @var boolean
+     * @var bool
      */
-    private $_modRequested;
+    private bool $_modRequested;
 
     /**
      * Instantiate a channel.
@@ -140,7 +140,7 @@ class Channel extends Queue
      *
      * @param Message $message The message to check.
      *
-     * @return boolean Whether the user is mod or owner.
+     * @return bool Whether the user is mod or owner.
      */
     private function _isOp(Message $message): bool
     {
@@ -152,7 +152,7 @@ class Channel extends Queue
      *
      * @param Message $message The message to check.
      *
-     * @return boolean Whether the user is a mod.
+     * @return bool Whether the user is a mod.
      */
     private function _isMod(Message $message): bool
     {
@@ -164,7 +164,7 @@ class Channel extends Queue
      *
      * @param Message $message The message to check.
      *
-     * @return boolean Whether the user is the owner.
+     * @return bool Whether the user is the owner.
      */
     private function _isBroadcaster(Message $message): bool
     {
@@ -204,7 +204,7 @@ class Channel extends Queue
     /**
      * Whether the channel is parted from.
      *
-     * @return boolean
+     * @return bool
      */
     public function isParted(): bool
     {

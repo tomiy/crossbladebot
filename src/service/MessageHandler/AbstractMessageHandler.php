@@ -34,39 +34,39 @@ abstract class AbstractMessageHandler
      *
      * @var Logger
      */
-    protected $logger;
+    protected Logger $logger;
     /**
      * The event handler holding the component events.
      *
      * @var EventHandler;
      */
-    protected $eventHandler;
+    protected EventHandler $eventHandler;
     /**
      * The client object.
      *
      * @var Client
      */
-    protected $client;
+    protected Client $client;
 
     /**
      * The command prefix.
      *
      * @var string
      */
-    protected $prefix;
+    protected string $prefix;
     /**
      * The length of the prefix.
      *
      * @var int
      */
-    protected $prefixLen;
+    protected int $prefixLen;
 
     /**
      * A map of types and callbacks.
      *
      * @var array
      */
-    protected $callbackMap;
+    protected array $callbackMap;
 
     /**
      * Instantiate a new message handler.

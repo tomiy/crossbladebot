@@ -40,7 +40,7 @@ class Socket
      *
      * @var Logger
      */
-    private $_logger;
+    private Logger $_logger;
 
     /**
      * Instantiate a new socket object.
@@ -144,7 +144,7 @@ class Socket
     /**
      * Checks if the socket handle exists and is active.
      *
-     * @return boolean
+     * @return bool
      */
     public function isConnected(): bool
     {
