@@ -163,7 +163,8 @@ class Message
         }
 
         $this->_from = $matches['from'] ?? null;
-        $this->_channel = $this->_params[0][0] == '#' ? $this->_params[0] : null;
+        $this->_channel = (!empty($this->_params[0]) && $this->_params[0][0] == '#')
+            ? $this->_params[0] : null;
         $this->_message = $this->_params[1] ?? null;
         $this->_id = $this->_tags['msg-id'] ?? null;
 
