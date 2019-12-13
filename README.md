@@ -12,7 +12,7 @@ Then, in a console, run `php main.php` from the root directory.
 
 ### Prerequisites
 
-*   PHP 7 and up
+*   PHP 7.4 and up
 *   Composer
 
 ### Installing
