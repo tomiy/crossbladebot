@@ -12,13 +12,14 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Component;
 
-use CrossbladeBot\Traits\Configurable;
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Core\Client;
-use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Chat\Command;
 use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Chat\Command;
+use CrossbladeBot\Core\Client;
+use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Debug\Logger;
+use CrossbladeBot\Traits\Configurable;
+use Exception;
+use ReflectionException;
 
 /**
  * The parent component. Holds callbacks to events bound in its config file.
@@ -53,6 +54,7 @@ abstract class Component
      * Instantiate a component.
      *
      * @param Logger $logger The logger object.
+     * @throws ReflectionException
      */
     public function __construct(Logger $logger)
     {
@@ -66,9 +68,7 @@ abstract class Component
                     $this->events[$event] = $callback;
                     continue;
                 }
-                $this->logger->warning(
-                    '@' . static::class . ' Invalid event callback: ' . $callback
-                );
+                $this->logger->warning('@' . static::class . ' Invalid event callback: ' . $callback);
             }
         }
 
@@ -79,10 +79,7 @@ abstract class Component
                     $this->commands[$cmd] = new Command($cmd, $cmdInfo, $this);
                     continue;
                 }
-                $this->logger->warning(
-                    '@' . static::class .
-                    ' Invalid command callback: ' . $cmdInfo->callback
-                );
+                $this->logger->warning('@' . static::class . ' Invalid command callback: ' . $cmdInfo->callback);
             }
         }
     }
@@ -91,9 +88,10 @@ abstract class Component
      * Registers events using bindings from the config
      *
      * @param EventHandler $eventHandler The event handler.
-     * @param Client       $client       The client object.
+     * @param Client $client The client object.
      *
      * @return void
+     * @throws Exception
      */
     public function register(EventHandler $eventHandler, Client $client): void
     {
@@ -111,16 +109,17 @@ abstract class Component
     /**
      * Send a message to a channel or to the client directly.
      *
-     * @param string  $message The message to send.
+     * @param string $message The message to send.
      * @param Channel $channel The channel to send the message.
      *                         If null, the message is sent to the client directly.
-     * @param bool    $raw     Whether it is sent as chat message, or IRC command.
+     * @param bool $raw Whether it is sent as chat message, or IRC command.
      *
      * @return void
      */
     public function send(
         string $message, Channel $channel = null, $raw = false
-    ): void {
+    ): void
+    {
         if ($channel != null) {
             if ($raw) {
                 $channel->sendRaw($message);

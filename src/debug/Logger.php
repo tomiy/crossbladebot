@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace CrossbladeBot\Debug;
 
 use CrossbladeBot\Traits\Configurable;
+use ReflectionException;
 
 /**
  * Provides functions to write to a log file with different levels of severity.
@@ -63,15 +64,31 @@ class Logger
      */
     public function __construct()
     {
-        $this->loadConfig();
+        try {
+            $this->loadConfig();
+        } catch (ReflectionException $reflectionException) {
+            //config not found
+        }
 
         file_put_contents($this->_config->log, '');
     }
 
     /**
+     * Write a line in the log file for the debug level.
+     *
+     * @param string $line The line to write.
+     *
+     * @return void
+     */
+    public function debug(string $line): void
+    {
+        $this->_write('[DEBUG] ' . $line, self::LEVEL_DEBUG);
+    }
+
+    /**
      * Write a line in the log file at the given level.
      *
-     * @param string  $line  The line to write.
+     * @param string $line The line to write.
      * @param integer $level The severity level.
      *
      * @return void
@@ -89,18 +106,6 @@ class Logger
                 FILE_APPEND
             );
         }
-    }
-
-    /**
-     * Write a line in the log file for the debug level.
-     *
-     * @param string $line The line to write.
-     *
-     * @return void
-     */
-    public function debug(string $line): void
-    {
-        $this->_write('[DEBUG] ' . $line, self::LEVEL_DEBUG);
     }
 
     /**

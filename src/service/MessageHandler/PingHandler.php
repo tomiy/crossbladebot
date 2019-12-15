@@ -12,12 +12,10 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Service\MessageHandler;
 
-use CrossbladeBot\Service\MessageHandler\AbstractMessageHandler;
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Core\Client;
 use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Core\Client;
+use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Debug\Logger;
 
 /**
  * Provides function to handle a ping message.
@@ -33,13 +31,12 @@ class PingHandler extends AbstractMessageHandler
     /**
      * Initialize the callback map for handling ping messages.
      *
-     * @param Logger       $logger       The logger object.
+     * @param Logger $logger The logger object.
      * @param EventHandler $eventHandler The handler holding the component events.
-     * @param Client       $client       The client object.
+     * @param Client $client The client object.
      */
-    public function __construct(
-        Logger $logger, EventHandler $eventHandler, Client $client
-    ) {
+    public function __construct(Logger $logger, EventHandler $eventHandler, Client $client)
+    {
         parent::__construct($logger, $eventHandler, $client);
 
         $this->callbackMap = [

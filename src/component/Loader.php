@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Component;
 
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Core\EventHandler;
 use CrossbladeBot\Core\Client;
+use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Debug\Logger;
 
 /**
  * Dynamically loads every class from the component folders.
@@ -59,7 +59,7 @@ class Loader
      * Registers every component's events
      *
      * @param EventHandler $eventHandler The event handler to register into.
-     * @param Client       $client       The bot client, used in the components.
+     * @param Client $client The bot client, used in the components.
      *
      * @return void
      */

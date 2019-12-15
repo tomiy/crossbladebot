@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace CrossbladeBot\Core;
 
 use CrossbladeBot\Debug\Logger;
+use Exception;
 
 /**
  * Registers and triggers callbacks for the defined events.
@@ -66,14 +67,15 @@ class EventHandler
     /**
      * Registers an event into the pool.
      *
-     * @param string   $event    The event name to register to.
+     * @param string $event The event name to register to.
      * @param callable $callback The callback to call on trigger.
      *
      * @return int The event id.
+     * @throws Exception
      */
     public function register(string $event, callable $callback): int
     {
-        $uid = random_int((int) 1E9, (int) 1E10-1);
+        $uid = random_int((int)1E9, (int)1E10 - 1);
 
         if (!isset($this->_events[$event])) {
             $this->_events[$event] = [];
@@ -90,8 +92,8 @@ class EventHandler
     /**
      * Triggers an event and processes every attached callback.
      *
-     * @param string $event   The event name to trigger.
-     * @param mixed  ...$data The data to pass to the callbacks.
+     * @param string $event The event name to trigger.
+     * @param mixed ...$data The data to pass to the callbacks.
      *
      * @return void
      */
@@ -102,9 +104,7 @@ class EventHandler
         }
 
         foreach ($this->_events[$event] as $uid => $callback) {
-            $this->_logger->debug(
-                'Triggered event ' . $event . ' (uid ' . $uid . ')'
-            );
+            $this->_logger->debug('Triggered event ' . $event . ' (uid ' . $uid . ')');
             call_user_func($callback, ...$data);
         }
     }

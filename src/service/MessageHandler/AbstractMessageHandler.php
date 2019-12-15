@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Service\MessageHandler;
 
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Core\Client;
-use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Core\Client;
+use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Debug\Logger;
 
 /**
  * Provides function to handle a type of message.
@@ -71,13 +71,12 @@ abstract class AbstractMessageHandler
     /**
      * Instantiate a new message handler.
      *
-     * @param Logger       $logger       The logger object.
+     * @param Logger $logger The logger object.
      * @param EventHandler $eventHandler The handler holding the component events.
-     * @param Client       $client       The client object.
+     * @param Client $client The client object.
      */
-    public function __construct(
-        Logger $logger, EventHandler $eventHandler, Client $client
-    ) {
+    public function __construct(Logger $logger, EventHandler $eventHandler, Client $client)
+    {
         $this->logger = $logger;
         $this->eventHandler = $eventHandler;
         $this->client = $client;
@@ -106,6 +105,18 @@ abstract class AbstractMessageHandler
     }
 
     /**
+     * Log the message that can't be parsed at warning level.
+     *
+     * @param Message $message The message to log.
+     *
+     * @return void
+     */
+    protected function cantParse(Message $message): void
+    {
+        $this->logger->warning('Could not parse message: ' . $message->getRaw());
+    }
+
+    /**
      * Handles the part messages.
      *
      * @param Message $message The message to handle.
@@ -131,9 +142,7 @@ abstract class AbstractMessageHandler
         if ($this->client->isMe($message->getUser())) {
             $channel = new Channel($this->logger, $message);
             $this->client->addChannel($channel);
-            $this->logger->debug(
-                'Added channel ' . $channel->getName() . ' to client'
-            );
+            $this->logger->debug('Added channel ' . $channel->getName() . ' to client');
             $this->eventHandler->trigger('join', $channel);
             return;
         }
@@ -153,14 +162,9 @@ abstract class AbstractMessageHandler
             return;
         }
         $channel = $this->client->getChannel($message->getChannel());
-        if (substr(
-            $message->getMessage(), 0, $this->prefixLen
-        ) === $this->prefix
-        ) {
+        if (substr($message->getMessage(), 0, $this->prefixLen) === $this->prefix) {
             $args = explode(' ', $message->getMessage());
-            $message->setCommand(
-                substr(array_shift($args), $this->prefixLen)
-            );
+            $message->setCommand(substr(array_shift($args), $this->prefixLen));
             $this->eventHandler->trigger('command', $message, $channel, $args);
             return;
         }
@@ -179,9 +183,7 @@ abstract class AbstractMessageHandler
         $channel = $this->client->getChannel($message->getParam(0));
         if ($channel->isParted() === true) {
             $this->client->removeChannel($channel);
-            $this->logger->debug(
-                'Removed channel ' . $channel->getName() . ' from client'
-            );
+            $this->logger->debug('Removed channel ' . $channel->getName() . ' from client');
             unset($channel);
             return;
         }
@@ -199,15 +201,15 @@ abstract class AbstractMessageHandler
     {
         foreach ( //TODO: rework
             [
-            'Login unsuccessful',
-            'Login authentication failed',
-            'Error logging in',
-            'Improperly formatted auth',
-            'Invalid NICK'
+                'Login unsuccessful',
+                'Login authentication failed',
+                'Error logging in',
+                'Improperly formatted auth',
+                'Invalid NICK'
             ] as $needle) {
             if (strpos($message->getMessage(), $needle) !== false) {
                 $this->logger->error('Potential auth failure: ' . $needle);
-                $this->client->setConnected(false);
+                $this->client->disconnect();
                 break;
             }
         }
@@ -223,23 +225,9 @@ abstract class AbstractMessageHandler
     protected function userNotice(Message $message): void
     {
         switch ($message->getId()) {
-        default:
-            //TODO: handle
-            break;
+            default:
+                //TODO: handle
+                break;
         }
-    }
-
-    /**
-     * Log the message that can't be parsed at warning level.
-     *
-     * @param Message $message The message to log.
-     *
-     * @return void
-     */
-    protected function cantParse(Message $message): void
-    {
-        $this->logger->warning(
-            'Could not parse message: ' . $message->getRaw()
-        );
     }
 }

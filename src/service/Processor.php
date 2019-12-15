@@ -12,15 +12,14 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Service;
 
-use CrossbladeBot\Service\MessageHandler\UserMessageHandler;
-use CrossbladeBot\Service\MessageHandler\TmiHandler;
-use CrossbladeBot\Service\MessageHandler\PingHandler;
-use CrossbladeBot\Service\MessageHandler\JtvHandler;
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Core\Client;
 use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Core\Client;
+use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Debug\Logger;
+use CrossbladeBot\Service\MessageHandler\JtvHandler;
+use CrossbladeBot\Service\MessageHandler\PingHandler;
+use CrossbladeBot\Service\MessageHandler\TmiHandler;
+use CrossbladeBot\Service\MessageHandler\UserMessageHandler;
 
 /**
  * Provides function to process IRC messages for the client.
@@ -61,15 +60,12 @@ class Processor
     /**
      * Instantiate a new processor.
      *
-     * @param Logger       $logger       The logger object.
+     * @param Logger $logger The logger object.
      * @param EventHandler $eventHandler The handler holding the component events.
-     * @param Client       $client       The client object.
+     * @param Client $client The client object.
      */
-    public function __construct(
-        Logger $logger,
-        EventHandler $eventHandler,
-        Client $client
-    ) {
+    public function __construct(Logger $logger, EventHandler $eventHandler, Client $client)
+    {
         $this->_pingHandler = new PingHandler($logger, $eventHandler, $client);
         $this->_tmiHandler = new TmiHandler($logger, $eventHandler, $client);
         $this->_jtvHandler = new JtvHandler($logger, $eventHandler, $client);
@@ -88,19 +84,19 @@ class Processor
     public function handle(Message $message): void
     {
         switch ($message->getFrom()) {
-        case null:
-        case '':
-            $this->_pingHandler->handle($message);
-            break;
-        case 'tmi.twitch.tv':
-            $this->_tmiHandler->handle($message);
-            break;
-        case 'jtv':
-            $this->_jtvHandler->handle($message);
-            break;
-        default:
-            $this->_userMessageHandler->handle($message);
-            break;
+            case null:
+            case '':
+                $this->_pingHandler->handle($message);
+                break;
+            case 'tmi.twitch.tv':
+                $this->_tmiHandler->handle($message);
+                break;
+            case 'jtv':
+                $this->_jtvHandler->handle($message);
+                break;
+            default:
+                $this->_userMessageHandler->handle($message);
+                break;
         }
     }
 }

@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Chat;
 
-use CrossbladeBot\Traits\RateLimit;
-use CrossbladeBot\Service\Queue;
 use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Service\Queue;
+use CrossbladeBot\Traits\RateLimit;
 
 /**
  * Handles a channel specific rate limit, and processes userstates and messages.
@@ -59,8 +58,8 @@ class Channel extends Queue
     /**
      * Instantiate a channel.
      *
-     * @param Logger  $logger The logger object.
-     * @param Message $join   The join message received from the IRC.
+     * @param Logger $logger The logger object.
+     * @param Message $join The join message received from the IRC.
      */
     public function __construct(Logger $logger, Message $join)
     {
@@ -93,46 +92,6 @@ class Channel extends Queue
             $this->_modRequested = true;
             $this->send('Pssst, you should mod me so i can use mod commands!');
         }
-    }
-
-    /**
-     * Flags the channel to be parted.
-     *
-     * @return void
-     */
-    public function part(): void
-    {
-        $this->_part = true;
-    }
-
-    /**
-     * Send a chat message to the channel.
-     *
-     * @param string $message The message to send.
-     *
-     * @return void
-     */
-    public function send(string $message): void
-    {
-        $this->_logger->debug(
-            'Sending message: "' . trim($message) . '" to channel: ' . $this->_name
-        );
-        $this->sendRaw('PRIVMSG ' . $this->_name . ' :' . $message);
-    }
-    
-    /**
-     * Queues a message in the channel queue.
-     *
-     * @param string $message The message to queue.
-     *
-     * @return void
-     */
-    public function sendRaw(string $message): void
-    {
-        $this->_logger->debug(
-            'Sending raw: "' . trim($message) . '" to channel: ' . $this->_name
-        );
-        $this->enqueue([$message]);
     }
 
     /**
@@ -172,6 +131,42 @@ class Channel extends Queue
     }
 
     /**
+     * Send a chat message to the channel.
+     *
+     * @param string $message The message to send.
+     *
+     * @return void
+     */
+    public function send(string $message): void
+    {
+        $this->_logger->debug('Sending message: "' . trim($message) . '" to channel: ' . $this->_name);
+        $this->sendRaw('PRIVMSG ' . $this->_name . ' :' . $message);
+    }
+
+    /**
+     * Queues a message in the channel queue.
+     *
+     * @param string $message The message to queue.
+     *
+     * @return void
+     */
+    public function sendRaw(string $message): void
+    {
+        $this->_logger->debug('Sending raw: "' . trim($message) . '" to channel: ' . $this->_name);
+        $this->enqueue([$message]);
+    }
+
+    /**
+     * Flags the channel to be parted.
+     *
+     * @return void
+     */
+    public function part(): void
+    {
+        $this->_part = true;
+    }
+
+    /**
      * Check the user level of the user sending a message.
      * 0 = user, 1 = moderator, 2 = owner
      *
@@ -181,14 +176,14 @@ class Channel extends Queue
      */
     public function getUserLevel(Message $message): int
     {
-        $userlevel = 0;
+        $userLevel = 0;
         if ($this->_isOp($message)) {
-            $userlevel++;
+            $userLevel++;
         }
         if ($this->_isBroadcaster($message)) {
-            $userlevel++;
+            $userLevel++;
         }
-        return $userlevel;
+        return $userLevel;
     }
 
     /**

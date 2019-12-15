@@ -12,9 +12,10 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Core;
 
-use Exception;
-use CrossbladeBot\Traits\Configurable;
 use CrossbladeBot\Debug\Logger;
+use CrossbladeBot\Traits\Configurable;
+use Exception;
+use ReflectionException;
 
 /**
  * Reads and writes from a socket at the given adress and port.
@@ -46,6 +47,7 @@ class Socket
      * Instantiate a new socket object.
      *
      * @param Logger $logger The logger object.
+     * @throws ReflectionException
      */
     public function __construct(Logger $logger)
     {
@@ -58,22 +60,23 @@ class Socket
      * Creates the socket stream from the config, with a timeout of 1s.
      *
      * @return void
+     * @throws Exception
      */
     public function connect(): void
     {
-        $errno = $errstr = $hostip = null;
+        $errorCode = $errorString = $hostIp = null;
 
         $hostname = parse_url($this->_config->address, PHP_URL_HOST);
 
         if ($hostname) {
-            $hostip = gethostbyname($hostname);
-   
-            if ($hostip !== $this->_config->address) {
+            $hostIp = gethostbyname($hostname);
+
+            if ($hostIp !== $this->_config->address) {
                 $this->_socket = @fsockopen(
                     $this->_config->address,
                     $this->_config->port,
-                    $errno,
-                    $errstr,
+                    $errorCode,
+                    $errorString,
                     5
                 );
             }
@@ -81,16 +84,21 @@ class Socket
 
         if (!$this->isConnected()) {
             $this->_logger->error('Couldn\'t create socket');
-            throw new Exception(
-                'Couldn\'t create socket: ' .
-                $errno .
-                ' ' .
-                $errstr
-            );
+            throw new Exception('Couldn\'t create socket: ' . $errorCode . ' ' . $errorString);
         }
         stream_set_blocking($this->_socket, false);
         stream_set_timeout($this->_socket, 1);
         $this->_logger->debug('Socket created');
+    }
+
+    /**
+     * Checks if the socket handle exists and is active.
+     *
+     * @return bool
+     */
+    public function isConnected(): bool
+    {
+        return is_resource($this->_socket);
     }
 
     /**
@@ -101,7 +109,7 @@ class Socket
     public function getNext(): string
     {
         if (!$this->_socket) {
-            return (string) false;
+            return (string)false;
         }
         $line = fgets($this->_socket);
 
@@ -109,7 +117,7 @@ class Socket
             $this->_logger->debug('> ' . $line);
         }
 
-        return (string) $line;
+        return (string)$line;
     }
 
     /**
@@ -139,16 +147,6 @@ class Socket
         if ($this->_socket) {
             fclose($this->_socket);
         }
-    }
-
-    /**
-     * Checks if the socket handle exists and is active.
-     *
-     * @return bool
-     */
-    public function isConnected(): bool
-    {
-        return is_resource($this->_socket);
     }
 
     /**

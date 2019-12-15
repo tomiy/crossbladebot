@@ -58,6 +58,18 @@ class Queue
     }
 
     /**
+     * Formats the time to have microseconds properly padded. (for Windows)
+     *
+     * @param float $time the time to process.
+     *
+     * @return string the processed time string.
+     */
+    private function _queueTime(float $time): string
+    {
+        return number_format($time, 6);
+    }
+
+    /**
      * Processes the data in the queue and pushes it to a callback.
      *
      * @param array $callback a [class, function] callback array.
@@ -90,17 +102,5 @@ class Queue
         }
 
         return $dataSize;
-    }
-
-    /**
-     * Formats the time to have microseconds properly padded. (for Windows)
-     *
-     * @param float $time the time to process.
-     *
-     * @return string the processed time string.
-     */
-    private function _queueTime(float $time): string
-    {
-        return number_format($time, 6);
     }
 }

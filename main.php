@@ -26,17 +26,21 @@ define('NL', "\r\n");
  */
 require_once __DIR__ . '/vendor/autoload.php';
 
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Core\Socket;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Core\Client;
 use CrossbladeBot\Component\Loader;
+use CrossbladeBot\Core\Client;
+use CrossbladeBot\Core\EventHandler;
+use CrossbladeBot\Core\Socket;
+use CrossbladeBot\Debug\Logger;
 
-$logger = new Logger();
 
-$socket = new Socket($logger);
-$eventhandler = new EventHandler($logger);
-$loader = new Loader($logger);
-$client = new Client($logger, $socket, $eventhandler, $loader);
+try {
+    $logger = new Logger();
 
-$client->serve();
+    $socket = new Socket($logger);
+    $eventHandler = new EventHandler($logger);
+    $loader = new Loader($logger);
+    $client = new Client($logger, $socket, $eventHandler, $loader);
+    $client->serve();
+} catch (Exception $exception) {
+    $logger->error('Fatal error during client initialization');
+}

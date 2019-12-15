@@ -12,16 +12,16 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Core;
 
-use CrossbladeBot\Traits\RateLimit;
-use CrossbladeBot\Traits\Configurable;
-use CrossbladeBot\Service\Queue;
-use CrossbladeBot\Service\Processor;
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Core\Socket;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Component\Loader;
-use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Component\Loader;
+use CrossbladeBot\Debug\Logger;
+use CrossbladeBot\Service\Processor;
+use CrossbladeBot\Service\Queue;
+use CrossbladeBot\Traits\Configurable;
+use CrossbladeBot\Traits\RateLimit;
+use Exception;
+use ReflectionException;
 
 /**
  * The bot client.
@@ -92,14 +92,14 @@ class Client extends Queue
     /**
      * Instantiate a new client.
      *
-     * @param Logger       $logger       The logger object.
-     * @param Socket       $socket       The socket object holding the socket stream.
+     * @param Logger $logger The logger object.
+     * @param Socket $socket The socket object holding the socket stream.
      * @param EventHandler $eventHandler The handler holding the component events.
-     * @param Loader       $loader       The loader holding the components.
+     * @param Loader $loader The loader holding the components.
+     * @throws ReflectionException
      */
-    public function __construct(
-        Logger $logger, Socket $socket, EventHandler $eventHandler, Loader $loader
-    ) {
+    public function __construct(Logger $logger, Socket $socket, EventHandler $eventHandler, Loader $loader)
+    {
         $this->loadConfig();
         $this->initRate(20, 30);
 
@@ -116,32 +116,11 @@ class Client extends Queue
     }
 
     /**
-     * Connect to the socket stream and to the irc and request capabilities.
-     *
-     * @return int
-     */
-    public function connect(): int
-    {
-        $this->_socket->connect();
-        $this->setLastPing(time());
-
-        $this->enqueue(
-            [
-            'CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership',
-            'PASS ' . $this->getConfig()->password,
-            'NICK ' . $this->getConfig()->name,
-            'JOIN #' . $this->getConfig()->channel
-            ]
-        );
-
-        return $this->processQueue([$this, 'sendToSocket']);
-    }
-
-    /**
      * Connect to the irc and loop over the socket messages,
      * dispatching events and messages to channel as necessary.
      *
      * @return void
+     * @throws Exception
      */
     public function serve(): void
     {
@@ -151,10 +130,7 @@ class Client extends Queue
             $message = null;
 
             $cost = microtime(true);
-            while (
-                (time() - $this->getLastPing()) > 300 ||
-                !$this->_socket->isConnected()
-            ) {
+            while ((time() - $this->getLastPing()) > 300 || !$this->_socket->isConnected()) {
                 $this->_logger->info('Restarting connection');
                 $processed = $this->connect();
             }
@@ -169,9 +145,7 @@ class Client extends Queue
             $processed += $this->processQueue([$this, 'sendToSocket']);
             if ($data || $processed > 0) {
                 if ($processed > 0) {
-                    $this->_logger->debug(
-                        'Processed ' . $processed . ' messages from the client queue'
-                    );
+                    $this->_logger->debug('Processed ' . $processed . ' messages from the client queue');
                     $processed = 0;
                 }
                 print_r(sprintf('Cost: %fms' . NL, (microtime(true) - $cost) * 1E3));
@@ -180,20 +154,48 @@ class Client extends Queue
     }
 
     /**
-     * Send the messages extracted from the queue to the socket.
+     * Connect to the socket stream and to the irc and request capabilities.
      *
-     * @param array $messages The messages extracted from the queue
+     * @return int
+     * @throws Exception
+     */
+    public function connect(): int
+    {
+        $this->_socket->connect();
+        $this->setLastPing(time());
+
+        $this->enqueue(
+            [
+                'CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership',
+                'PASS ' . $this->getConfig()->password,
+                'NICK ' . $this->getConfig()->name,
+                'JOIN #' . $this->getConfig()->channel
+            ]
+        );
+
+        return $this->processQueue([$this, 'sendToSocket']);
+    }
+
+    /**
+     * Get the last ping time.
+     *
+     * @return integer
+     */
+    public function getLastPing(): int
+    {
+        return $this->_lastPing;
+    }
+
+    /**
+     * Set the last ping time.
+     *
+     * @param integer $lastPing The time to set.
      *
      * @return void
      */
-    protected function sendToSocket(array $messages): void
+    public function setLastPing(int $lastPing): void
     {
-        foreach ($messages as $message) {
-            $this->_logger->debug(
-                'Pushing to stream: "' . trim($message) . '" at time ' . time()
-            );
-            $this->_socket->send($message);
-        }
+        $this->_lastPing = $lastPing;
     }
 
     /**
@@ -209,9 +211,7 @@ class Client extends Queue
         }
 
         if ($processed > 0) {
-            $this->_logger->debug(
-                'Processed ' . $processed . ' messages from the channel queues'
-            );
+            $this->_logger->debug('Processed ' . $processed . ' messages from the channel queues');
         }
         return $processed;
     }
@@ -251,6 +251,7 @@ class Client extends Queue
     {
         unset($this->_channels[$channel->getName()]);
     }
+
     /**
      * Check if the user is the client.
      *
@@ -270,11 +271,13 @@ class Client extends Queue
      *
      * @return Channel The channel object.
      */
-    public function getChannel(string $name): Channel
+    public function getChannel(string $name): ?Channel
     {
         if (isset($this->_channels[$name])) {
             return $this->_channels[$name];
         }
+
+        return null;
     }
 
     /**
@@ -299,25 +302,23 @@ class Client extends Queue
         $this->_name = $name;
     }
 
-    /**
-     * Get the last ping time.
-     *
-     * @return integer
-     */
-    public function getLastPing(): int
+    public function disconnect(): void
     {
-        return $this->_lastPing;
+        $this->_socket->close();
     }
 
     /**
-     * Set the last ping time.
+     * Send the messages extracted from the queue to the socket.
      *
-     * @param integer $lastPing The time to set.
+     * @param array $messages The messages extracted from the queue
      *
      * @return void
      */
-    public function setLastPing(int $lastPing): void
+    protected function sendToSocket(array $messages): void
     {
-        $this->_lastPing = $lastPing;
+        foreach ($messages as $message) {
+            $this->_logger->debug('Pushing to stream: "' . trim($message) . '" at time ' . time());
+            $this->_socket->send($message);
+        }
     }
 }

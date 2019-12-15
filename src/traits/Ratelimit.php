@@ -52,7 +52,7 @@ trait RateLimit
     /**
      * Set the last to now, and set the rate limit.
      *
-     * @param float   $rate # of actions that can be performed during the span.
+     * @param float $rate # of actions that can be performed during the span.
      * @param integer $span Time in seconds in which the rate is constrained.
      *
      * @return void
@@ -66,7 +66,7 @@ trait RateLimit
     /**
      * Set the rate limit.
      *
-     * @param float   $rate # of actions that can be performed during the span.
+     * @param float $rate # of actions that can be performed during the span.
      * @param integer $span Time in seconds in which the rate is constrained.
      *
      * @return void

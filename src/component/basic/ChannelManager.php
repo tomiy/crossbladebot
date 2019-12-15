@@ -12,11 +12,12 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Component\Basic;
 
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Core\Client;
-use CrossbladeBot\Component\Component;
-use CrossbladeBot\Chat\Message;
 use CrossbladeBot\Chat\Channel;
+use CrossbladeBot\Chat\Message;
+use CrossbladeBot\Component\Component;
+use CrossbladeBot\Core\Client;
+use CrossbladeBot\Core\EventHandler;
+use Exception;
 
 /**
  * Component responsible for joining and parting channels.
@@ -35,9 +36,10 @@ class ChannelManager extends Component
      * (Override Component::register) register events to the handler.
      *
      * @param EventHandler $eventHandler The event handler to register in.
-     * @param Client       $client       The client object.
+     * @param Client $client The client object.
      *
      * @return void
+     * @throws Exception
      */
     public function register(EventHandler $eventHandler, Client $client): void
     {

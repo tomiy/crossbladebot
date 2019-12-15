@@ -12,11 +12,9 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Chat;
 
-use stdClass;
-use CrossbladeBot\Component\Component;
-use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Chat\Channel;
 use Closure;
+use CrossbladeBot\Component\Component;
+use stdClass;
 
 /**
  * Provides an extensible object to hold commands and callbacks.
@@ -49,8 +47,8 @@ class Command
     /**
      * Instantiate a command.
      *
-     * @param string    $cmd       The command name.
-     * @param stdClass  $params    The config object that hold the command params.
+     * @param string $cmd The command name.
+     * @param stdClass $params The config object that hold the command params.
      * @param Component $component The component to bind the command to.
      */
     public function __construct(string $cmd, stdClass $params, Component $component)
@@ -66,15 +64,13 @@ class Command
      *
      * @param Message $message The message that calls a command.
      * @param Channel $channel The channel the message is from.
-     * @param mixed   ...$data Additional data that can be passed to the command
+     * @param mixed ...$data Additional data that can be passed to the command
      *
      * @return void
      */
     public function execute(Message $message, Channel $channel, ...$data): void
     {
-        if ($message->getCommand() === $this->_command
-            && $channel->getUserLevel($message) >= $this->_userLevel
-        ) {
+        if ($message->getCommand() === $this->_command && $channel->getUserLevel($message) >= $this->_userLevel) {
             $this->_callback->call($this->_component, $message, $channel, ...$data);
         }
     }

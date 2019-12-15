@@ -11,8 +11,8 @@
 
 namespace CrossbladeBot\Traits;
 
-use Throwable;
 use Sqlite3;
+use Throwable;
 
 /**
  * Wraps a Sqlite3 connection with some helper functions.
@@ -72,16 +72,6 @@ trait Queryable
     }
 
     /**
-     * Rollback a transaction.
-     *
-     * @return void
-     */
-    public function rollbackTransaction(): void
-    {
-        $this->_database->exec('ROLLBACK');
-    }
-
-    /**
      * Commit a transaction.
      *
      * @return void
@@ -89,5 +79,15 @@ trait Queryable
     public function commitTransaction(): void
     {
         $this->_database->exec('COMMIT');
+    }
+
+    /**
+     * Rollback a transaction.
+     *
+     * @return void
+     */
+    public function rollbackTransaction(): void
+    {
+        $this->_database->exec('ROLLBACK');
     }
 }

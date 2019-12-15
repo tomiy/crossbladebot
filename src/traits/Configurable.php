@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace CrossbladeBot\Traits;
 
+use ReflectionClass;
+use ReflectionException;
 use stdClass;
 
 /**
@@ -39,10 +41,11 @@ trait Configurable
      *                          If empty, defaults to the root config folder.
      *
      * @return void
+     * @throws ReflectionException
      */
     public function loadConfig(string $subFolder = null): void
     {
-        $class = strtolower((new \ReflectionClass($this))->getShortName());
+        $class = strtolower((new ReflectionClass($this))->getShortName());
         $filePath = getcwd() . '/config/' . $subFolder . $class . '.json';
         $this->_config = json_decode(
             file_get_contents($filePath),

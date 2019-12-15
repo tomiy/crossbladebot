@@ -124,14 +124,14 @@ class Message
         $regex = implode(
             '',
             [
-            'open' => '/^',
-            'tags' => '(?:@(?P<tags>[^\r\n ]*) +|())',
-            'from' => '(?::(?P<from>[^\r\n ]+) +|())',
-            'type' => '(?P<type>[^\r\n ]+)',
-            'params' =>
-            '(?: +(?P<params>[^:\r\n ]+[^\r\n ]*(?: +[^:\r\n ]+[^\r\n ]*)*)|())?',
-            'trailing' => '(?: +:(?P<trailing>[^\r\n]*)| +())?[\r\n]*',
-            'close' => '$/'
+                'open' => '/^',
+                'tags' => '(?:@(?P<tags>[^\r\n ]*) +|())',
+                'from' => '(?::(?P<from>[^\r\n ]+) +|())',
+                'type' => '(?P<type>[^\r\n ]+)',
+                'params' =>
+                    '(?: +(?P<params>[^:\r\n ]+[^\r\n ]*(?: +[^:\r\n ]+[^\r\n ]*)*)|())?',
+                'trailing' => '(?: +:(?P<trailing>[^\r\n]*)| +())?[\r\n]*',
+                'close' => '$/'
             ]
         );
 
@@ -192,29 +192,9 @@ class Message
     }
 
     /**
-     * Parse the badges-info tag.
-     *
-     * @return void
-     */
-    private function _badgeInfo(): void
-    {
-        $this->_parseTag('badge-info');
-    }
-
-    /**
-     * Parse the emotes tag.
-     *
-     * @return void
-     */
-    private function _emotes(): void
-    {
-        $this->_parseTag('emotes', '/', ':', ',');
-    }
-
-    /**
      * Parse a tag with a set of delimiters.
      *
-     * @param string $index  The tag to parse.
+     * @param string $index The tag to parse.
      * @param string $delim1 The first delimiter to split the tag.
      * @param string $delim2 The second delimiter to split the tag.
      * @param string $delim3 (optional) The last delimiter if necessary.
@@ -226,7 +206,8 @@ class Message
         string $delim1 = ',',
         string $delim2 = '/',
         string $delim3 = null
-    ): void {
+    ): void
+    {
         if (!isset($this->_tags[$index])) {
             return;
         }
@@ -255,6 +236,26 @@ class Message
                 }
             }
         }
+    }
+
+    /**
+     * Parse the badges-info tag.
+     *
+     * @return void
+     */
+    private function _badgeInfo(): void
+    {
+        $this->_parseTag('badge-info');
+    }
+
+    /**
+     * Parse the emotes tag.
+     *
+     * @return void
+     */
+    private function _emotes(): void
+    {
+        $this->_parseTag('emotes', '/', ':', ',');
     }
 
     /**
@@ -336,7 +337,19 @@ class Message
      */
     public function getCommand(): string
     {
-        return $this->command;
+        return $this->_command;
+    }
+
+    /**
+     * Set the command name of the message.
+     *
+     * @param string $command The command name.
+     *
+     * @return void
+     */
+    public function setCommand(string $command): void
+    {
+        $this->_command = $command;
     }
 
     /**
@@ -399,17 +412,5 @@ class Message
     public function getRaw(): string
     {
         return $this->_raw;
-    }
-
-    /**
-     * Set the command name of the message.
-     *
-     * @param string $command The command name.
-     *
-     * @return void
-     */
-    public function setCommand(string $command): void
-    {
-        $this->command = $command;
     }
 }
