@@ -10,12 +10,12 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBotTests;
+namespace crossbladebottests;
 
+use crossbladebot\core\EventHandler;
+use crossbladebot\debug\Logger;
+use Exception;
 use PHPUnit\Framework\TestCase;
-
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Core\EventHandler;
 
 /**
  * Test case for the EventHandler class.
@@ -42,6 +42,7 @@ class EventHandlerTest extends TestCase
      * Assert that you can register an event and get its unique identifier.
      *
      * @return void
+     * @throws Exception
      */
     public function testCanRegisterEvent(): void
     {
@@ -52,8 +53,8 @@ class EventHandlerTest extends TestCase
         $eventHandler = new EventHandler($logger);
         $uid = $eventHandler->register(
             'test', function () {
-                print_r('sweet');
-            }
+            print_r('sweet');
+        }
         );
 
         $this->assertGreaterThanOrEqual(1E9, $uid);
@@ -61,7 +62,7 @@ class EventHandlerTest extends TestCase
 
         $this->assertEquals(
             date('[d/m/y G:i:s] ') .
-            'CrossbladeBot\Core\EventHandler:85 [DEBUG] Registered event ' .
+            'crossbladebot\core\EventHandler:87 [DEBUG] Registered event ' .//TODO: change bad test data
             $uid .
             PHP_EOL,
             file_get_contents($logFile)

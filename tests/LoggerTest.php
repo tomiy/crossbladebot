@@ -10,11 +10,10 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBotTests;
+namespace crossbladebottests;
 
+use crossbladebot\debug\Logger;
 use PHPUnit\Framework\TestCase;
-
-use CrossbladeBot\Debug\Logger;
 
 /**
  * Test case for the Logger class.
@@ -41,7 +40,7 @@ class LoggerTest extends TestCase
         $this->assertFileIsWritable($logFile);
         $this->assertEmpty(file_get_contents($logFile));
     }
-    
+
     /**
      * Assert that you can log a line at the debug level.
      *

@@ -10,12 +10,11 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBotTests;
+namespace crossbladebottests;
 
+use crossbladebot\component\Loader;
+use crossbladebot\debug\Logger;
 use PHPUnit\Framework\TestCase;
-
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Component\Loader;
 
 /**
  * Test case for the Loader class.

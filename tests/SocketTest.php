@@ -10,13 +10,13 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBotTests;
+namespace crossbladebottests;
 
-use PHPUnit\Framework\TestCase;
-
+use crossbladebot\core\Socket;
+use crossbladebot\debug\Logger;
 use Exception;
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Core\Socket;
+use PHPUnit\Framework\TestCase;
+use ReflectionException;
 
 /**
  * Test case for the Socket class.
@@ -33,6 +33,7 @@ class SocketTest extends TestCase
      * Assert that you can create a Socket object.
      *
      * @return void
+     * @throws ReflectionException
      */
     public function testCanInstantiate(): void
     {
@@ -43,6 +44,7 @@ class SocketTest extends TestCase
      * Assert that the socket throws an Exception with an invalid address.
      *
      * @return void
+     * @throws ReflectionException
      */
     public function testConnectionWithInvalidAddress(): void
     {
@@ -69,6 +71,7 @@ class SocketTest extends TestCase
      * Assert that the socket throws an Exception with an invalid port.
      *
      * @return void
+     * @throws ReflectionException
      */
     public function testConnectionWithInvalidPort(): void
     {
@@ -95,6 +98,7 @@ class SocketTest extends TestCase
      * Assert that the socket can connect.
      *
      * @return void
+     * @throws Exception
      */
     public function testConnection(): void
     {
@@ -102,12 +106,16 @@ class SocketTest extends TestCase
         $logFile = $logger->getConfig()->log;
         $logger->setLevel(Logger::LEVEL_DEBUG);
 
-        $socket = new Socket($logger);
+        try {
+            $socket = new Socket($logger);
+        } catch (ReflectionException $e) {
+            $this->fail('ReflectionException');
+        }
         $socket->connect();
 
         $this->assertEquals(
             date('[d/m/y G:i:s] ') .
-            'CrossbladeBot\Core\Socket:93 [DEBUG] Socket created' .
+            'crossbladebot\core\Socket:91 [DEBUG] Socket created' .//TODO: change bad test data
             PHP_EOL,
             file_get_contents($logFile)
         );
@@ -122,7 +130,7 @@ class SocketTest extends TestCase
     {
         return
         date('[d/m/y G:i:s] ') .
-        'CrossbladeBot\Core\Socket:83 [ERROR] Couldn\'t create socket' .
+        'crossbladebot\core\Socket:86 [ERROR] Couldn\'t create socket' .//TODO: change bad test data
         PHP_EOL;
     }
 }
