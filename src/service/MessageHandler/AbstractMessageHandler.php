@@ -10,13 +10,13 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Service\MessageHandler;
+namespace crossbladebot\service\messagehandler;
 
-use CrossbladeBot\Chat\Channel;
-use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Core\Client;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Debug\Logger;
+use crossbladebot\chat\Channel;
+use crossbladebot\chat\Message;
+use crossbladebot\core\Client;
+use crossbladebot\core\EventHandler;
+use crossbladebot\debug\Logger;
 
 /**
  * Provides function to handle a type of message.

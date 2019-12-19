@@ -26,11 +26,11 @@ define('NL', "\r\n");
  */
 require_once __DIR__ . '/vendor/autoload.php';
 
-use CrossbladeBot\Component\Loader;
-use CrossbladeBot\Core\Client;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Core\Socket;
-use CrossbladeBot\Debug\Logger;
+use crossbladebot\component\Loader;
+use crossbladebot\core\Client;
+use crossbladebot\core\EventHandler;
+use crossbladebot\core\Socket;
+use crossbladebot\debug\Logger;
 
 
 try {

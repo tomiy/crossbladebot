@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Traits;
+namespace crossbladebot\basic;
 
 /**
  * Provides a set of functions to limit incoming actions.

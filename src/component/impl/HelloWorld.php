@@ -10,11 +10,11 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Component\Impl;
+namespace crossbladebot\component\impl;
 
-use CrossbladeBot\Chat\Channel;
-use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Component\Component;
+use crossbladebot\chat\Channel;
+use crossbladebot\chat\Message;
+use crossbladebot\component\Component;
 
 /**
  * Example component to demonstrate events and commands.

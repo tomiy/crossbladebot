@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Traits;
+namespace crossbladebot\basic;
 
 use ReflectionClass;
 use ReflectionException;

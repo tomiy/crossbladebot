@@ -10,16 +10,16 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Service;
+namespace crossbladebot\service;
 
-use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Core\Client;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Service\MessageHandler\JtvHandler;
-use CrossbladeBot\Service\MessageHandler\PingHandler;
-use CrossbladeBot\Service\MessageHandler\TmiHandler;
-use CrossbladeBot\Service\MessageHandler\UserMessageHandler;
+use crossbladebot\chat\Message;
+use crossbladebot\core\Client;
+use crossbladebot\core\EventHandler;
+use crossbladebot\debug\Logger;
+use crossbladebot\service\messagehandler\JtvHandler;
+use crossbladebot\service\messagehandler\PingHandler;
+use crossbladebot\service\messagehandler\TmiHandler;
+use crossbladebot\service\messagehandler\UserMessageHandler;
 
 /**
  * Provides function to process IRC messages for the client.

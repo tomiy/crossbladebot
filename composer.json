@@ -16,7 +16,9 @@
     },
     "license": "GPL 3.0",
     "autoload": {
-        "psr-4": { "CrossbladeBot\\": "src/" }
+        "psr-4": {
+            "crossbladebot\\": "src/"
+        }
     },
     "scripts": {
         "start": "php main.php",

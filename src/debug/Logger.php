@@ -10,9 +10,9 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Debug;
+namespace crossbladebot\debug;
 
-use CrossbladeBot\Traits\Configurable;
+use crossbladebot\basic\Configurable;
 use ReflectionException;
 
 /**

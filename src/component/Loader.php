@@ -10,11 +10,11 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Component;
+namespace crossbladebot\component;
 
-use CrossbladeBot\Core\Client;
-use CrossbladeBot\Core\EventHandler;
-use CrossbladeBot\Debug\Logger;
+use crossbladebot\core\Client;
+use crossbladebot\core\EventHandler;
+use crossbladebot\debug\Logger;
 
 /**
  * Dynamically loads every class from the component folders.
@@ -44,13 +44,13 @@ class Loader
     {
         foreach (glob(__DIR__ . '/basic/*.php') as $file) {
             $name = basename($file, '.php');
-            $class = __NAMESPACE__ . '\Basic\\' . ucfirst($name);
+            $class = __NAMESPACE__ . '\basic\\' . ucfirst($name);
             $this->_components[$name] = new $class($logger);
         }
 
         foreach (glob(__DIR__ . '/impl/*.php') as $file) {
             $name = basename($file, '.php');
-            $class = __NAMESPACE__ . '\Impl\\' . ucfirst($name);
+            $class = __NAMESPACE__ . '\impl\\' . ucfirst($name);
             $this->_components[$name] = new $class($logger);
         }
     }

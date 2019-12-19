@@ -9,7 +9,7 @@
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Traits;
+namespace crossbladebot\basic;
 
 use Sqlite3;
 use Throwable;

@@ -10,11 +10,11 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Chat;
+namespace crossbladebot\chat;
 
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Service\Queue;
-use CrossbladeBot\Traits\RateLimit;
+use crossbladebot\basic\RateLimit;
+use crossbladebot\debug\Logger;
+use crossbladebot\service\Queue;
 
 /**
  * Handles a channel specific rate limit, and processes userstates and messages.

@@ -10,16 +10,16 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Core;
+namespace crossbladebot\core;
 
-use CrossbladeBot\Chat\Channel;
-use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Component\Loader;
-use CrossbladeBot\Debug\Logger;
-use CrossbladeBot\Service\Processor;
-use CrossbladeBot\Service\Queue;
-use CrossbladeBot\Traits\Configurable;
-use CrossbladeBot\Traits\RateLimit;
+use crossbladebot\basic\Configurable;
+use crossbladebot\basic\RateLimit;
+use crossbladebot\chat\Channel;
+use crossbladebot\chat\Message;
+use crossbladebot\component\Loader;
+use crossbladebot\debug\Logger;
+use crossbladebot\service\Processor;
+use crossbladebot\service\Queue;
 use Exception;
 use ReflectionException;
 

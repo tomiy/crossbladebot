@@ -10,10 +10,10 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Chat;
+namespace crossbladebot\chat;
 
 use Closure;
-use CrossbladeBot\Component\Component;
+use crossbladebot\component\Component;
 use stdClass;
 
 /**

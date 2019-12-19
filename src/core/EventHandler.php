@@ -10,9 +10,9 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Core;
+namespace crossbladebot\core;
 
-use CrossbladeBot\Debug\Logger;
+use crossbladebot\debug\Logger;
 use Exception;
 
 /**

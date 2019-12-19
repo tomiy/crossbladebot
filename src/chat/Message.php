@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Chat;
+namespace crossbladebot\chat;
 
 /**
  * The message object holding the parsed parts of an IRC message.

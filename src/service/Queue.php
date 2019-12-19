@@ -10,9 +10,9 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Service;
+namespace crossbladebot\service;
 
-use CrossbladeBot\Traits\RateLimit;
+use crossbladebot\basic\RateLimit;
 
 /**
  * Provides a queue system to process messages in the least possible blocking way.

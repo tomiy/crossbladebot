@@ -10,13 +10,13 @@ declare(strict_types=1);
  * @link     https://github.com/tomiy/crossbladebot
  */
 
-namespace CrossbladeBot\Component\Basic;
+namespace crossbladebot\component\basic;
 
-use CrossbladeBot\Chat\Channel;
-use CrossbladeBot\Chat\Message;
-use CrossbladeBot\Component\Component;
-use CrossbladeBot\Core\Client;
-use CrossbladeBot\Core\EventHandler;
+use crossbladebot\chat\Channel;
+use crossbladebot\chat\Message;
+use crossbladebot\component\Component;
+use crossbladebot\core\Client;
+use crossbladebot\core\EventHandler;
 use Exception;
 
 /**
