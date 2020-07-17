@@ -36,6 +36,12 @@ class Logger
     private static ?self $_instance = null;
     
     /**
+     * The log level.
+     * 
+     * @var int
+     */
+    private int $_level;
+    /**
      * The index corresponding to the error level.
      * Used to log when a critical failure happens in the program.
      *
@@ -84,6 +90,7 @@ class Logger
     {
         try {
             $this->loadConfig();
+            $this->setLevel($this->getConfig('level'));
         } catch (ReflectionException $reflectionException) {
             //config not found
         }
@@ -93,7 +100,7 @@ class Logger
 
     public function clearLogFile(): void
     {
-        file_put_contents($this->_config->log, '');
+        file_put_contents($this->getConfig('log'), '');
     }
     
     /**
@@ -118,13 +125,13 @@ class Logger
      */
     private function _write(string $line, int $level): void
     {
-        if ($level <= $this->_config->level) {
+        if ($level <= $this->_level) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
             $date = date('[d/m/y G:i:s] ');
             $lineNumber = $backtrace[1]['line'];
             $class = $backtrace[2]['class'];
             file_put_contents(
-                $this->_config->log,
+                $this->getConfig('log'),
                 trim("$date$class:$lineNumber $line") . PHP_EOL,
                 FILE_APPEND
             );
@@ -176,6 +183,6 @@ class Logger
      */
     public function setLevel(int $level): void
     {
-        $this->_config->level = $level;
+        $this->_level = $level;
     }
 }

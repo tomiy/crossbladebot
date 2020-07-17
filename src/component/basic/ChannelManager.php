@@ -44,7 +44,7 @@ class ChannelManager extends Component
     public function register(EventHandler $eventHandler, Client $client): void
     {
         parent::register($eventHandler, $client);
-        $this->_defaultChannel = '#' . $client->getConfig()->channel;
+        $this->_defaultChannel = '#' . $client->getConfig('channel');
     }
 
     /**

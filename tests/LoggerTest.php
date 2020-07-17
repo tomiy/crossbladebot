@@ -35,7 +35,7 @@ class LoggerTest extends TestCase
     {
         $logger = Logger::getInstance();
         $logger->clearLogFile();
-        $logFile = $logger->getConfig()->log;
+        $logFile = $logger->getConfig('log');
         $this->assertInstanceOf(Logger::class, $logger);
         $this->assertFileExists($logFile);
         $this->assertFileIsWritable($logFile);
@@ -97,7 +97,7 @@ class LoggerTest extends TestCase
     {
         $logger = Logger::getInstance();
         $logger->clearLogFile();
-        $logFile = $logger->getConfig()->log;
+        $logFile = $logger->getConfig('log');
         $logger->setLevel(Logger::LEVEL_DEBUG);
         $logger->$level('test');
 

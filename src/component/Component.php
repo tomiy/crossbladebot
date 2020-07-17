@@ -61,8 +61,8 @@ abstract class Component
         $this->logger = Logger::getInstance();
 
         $this->events = [];
-        if (isset($this->_config->events)) {
-            foreach ($this->_config->events as $event => $callback) {
+        if (!is_null($this->getConfig('events'))) {
+            foreach ($this->getConfig('events') as $event => $callback) {
                 if (method_exists($this, $callback)) {
                     $this->events[$event] = $callback;
                     continue;
@@ -72,8 +72,8 @@ abstract class Component
         }
 
         $this->commands = [];
-        if (isset($this->_config->commands)) {
-            foreach ($this->_config->commands as $cmd => $cmdInfo) {
+        if (!is_null($this->getConfig('commands'))) {
+            foreach ($this->getConfig('commands') as $cmd => $cmdInfo) {
                 if (method_exists($this, $cmdInfo->callback)) {
                     $this->commands[$cmd] = new Command($cmd, $cmdInfo, $this);
                     continue;

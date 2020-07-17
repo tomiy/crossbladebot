@@ -166,9 +166,9 @@ class Client extends Queue
         $this->enqueue(
             [
                 'CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership',
-                'PASS ' . $this->getConfig()->password,
-                'NICK ' . $this->getConfig()->name,
-                'JOIN #' . $this->getConfig()->channel
+                'PASS ' . $this->getConfig('password'),
+                'NICK ' . $this->getConfig('name'),
+                'JOIN #' . $this->getConfig('channel')
             ]
         );
 

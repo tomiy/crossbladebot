@@ -50,7 +50,7 @@ class SocketTest extends TestCase
     {
         $logger = Logger::getInstance();
         $logger->clearLogFile();
-        $logFile = $logger->getConfig()->log;
+        $logFile = $logger->getConfig('log');
 
         $socket = new Socket();
         $socket->setAddress('invalid');
@@ -78,7 +78,7 @@ class SocketTest extends TestCase
     {
         $logger = Logger::getInstance();
         $logger->clearLogFile();
-        $logFile = $logger->getConfig()->log;
+        $logFile = $logger->getConfig('log');
 
         $socket = new Socket();
         $socket->setPort(777);
@@ -106,7 +106,7 @@ class SocketTest extends TestCase
     {
         $logger = Logger::getInstance();
         $logger->clearLogFile();
-        $logFile = $logger->getConfig()->log;
+        $logFile = $logger->getConfig('log');
         $logger->setLevel(Logger::LEVEL_DEBUG);
 
         try {

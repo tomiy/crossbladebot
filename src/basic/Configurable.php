@@ -56,12 +56,18 @@ trait Configurable
     }
 
     /**
-     * Get the config object.
+     * Get a variable from the config.
      *
-     * @return stdClass The config object.
+     * @param string $key the variable name.
+     *
+     * @return mixed the variable.
      */
-    public function getConfig(): stdClass
+    public function getConfig(string $key) 
     {
-        return $this->_config;
+        if(isset($this->_config->{$key})) {
+            return $this->_config->{$key};
+        }
+        
+        return null;
     }
 }

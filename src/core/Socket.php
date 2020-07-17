@@ -37,6 +37,18 @@ class Socket
      */
     private $_socket;
     /**
+     * The address of the stream.
+     * 
+     * @var string
+     */
+    private string $_address;
+    /**
+     * The port of the stream.
+     *
+     * @var int
+     */
+    private int $_port;
+    /**
      * The logger object.
      *
      * @var Logger
@@ -51,7 +63,9 @@ class Socket
     public function __construct()
     {
         $this->loadConfig();
-
+        $this->setAddress($this->getConfig('address'));
+        $this->setPort($this->getConfig('port'));
+        
         $this->_logger = Logger::getInstance();
     }
 
@@ -65,15 +79,15 @@ class Socket
     {
         $errorCode = $errorString = $hostIp = null;
 
-        $hostname = parse_url($this->_config->address, PHP_URL_HOST);
+        $hostname = parse_url($this->_address, PHP_URL_HOST);
 
         if ($hostname) {
             $hostIp = gethostbyname($hostname);
 
-            if ($hostIp !== $this->_config->address) {
+            if ($hostIp !== $this->_address) {
                 $this->_socket = @fsockopen(
-                    $this->_config->address,
-                    $this->_config->port,
+                    $this->_address,
+                    $this->_port,
                     $errorCode,
                     $errorString,
                     5
@@ -157,7 +171,7 @@ class Socket
      */
     public function setAddress(string $address): void
     {
-        $this->_config->address = $address;
+        $this->_address = $address;
     }
 
     /**
@@ -169,6 +183,6 @@ class Socket
      */
     public function setPort(int $port): void
     {
-        $this->_config->port = $port;
+        $this->_port = $port;
     }
 }

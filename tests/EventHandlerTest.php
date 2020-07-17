@@ -47,7 +47,7 @@ class EventHandlerTest extends TestCase
     public function testCanRegisterEvent(): void
     {
         $logger = Logger::getInstance();
-        $logFile = $logger->getConfig()->log;
+        $logFile = $logger->getConfig('log');
         $logger->setLevel(Logger::LEVEL_DEBUG);
 
         $eventHandler = new EventHandler();
