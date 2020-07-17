@@ -5,3 +5,6 @@
 /.idea/
 /vendor/
 /build/
+/.settings/
+.project
+.buildpath

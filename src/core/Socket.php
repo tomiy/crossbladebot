@@ -46,14 +46,13 @@ class Socket
     /**
      * Instantiate a new socket object.
      *
-     * @param Logger $logger The logger object.
      * @throws ReflectionException
      */
-    public function __construct(Logger $logger)
+    public function __construct()
     {
         $this->loadConfig();
 
-        $this->_logger = $logger;
+        $this->_logger = Logger::getInstance();
     }
 
     /**

@@ -30,16 +30,13 @@ use crossbladebot\component\Loader;
 use crossbladebot\core\Client;
 use crossbladebot\core\EventHandler;
 use crossbladebot\core\Socket;
-use crossbladebot\debug\Logger;
 
 
 try {
-    $logger = new Logger();
-
-    $socket = new Socket($logger);
-    $eventHandler = new EventHandler($logger);
-    $loader = new Loader($logger);
-    $client = new Client($logger, $socket, $eventHandler, $loader);
+    $socket = new Socket();
+    $eventHandler = new EventHandler();
+    $loader = new Loader();
+    $client = new Client($socket, $eventHandler, $loader);
     $client->serve();
 } catch (Exception $exception) {
     $logger->error('Fatal error during client initialization');

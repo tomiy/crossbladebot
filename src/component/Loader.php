@@ -38,20 +38,19 @@ class Loader
     /**
      * Instantiate the loader and all its components.
      *
-     * @param Logger $logger The logger object.
      */
-    public function __construct(Logger $logger)
+    public function __construct()
     {
         foreach (glob(__DIR__ . '/basic/*.php') as $file) {
             $name = basename($file, '.php');
             $class = __NAMESPACE__ . '\basic\\' . ucfirst($name);
-            $this->_components[$name] = new $class($logger);
+            $this->_components[$name] = new $class();
         }
 
         foreach (glob(__DIR__ . '/impl/*.php') as $file) {
             $name = basename($file, '.php');
             $class = __NAMESPACE__ . '\impl\\' . ucfirst($name);
-            $this->_components[$name] = new $class($logger);
+            $this->_components[$name] = new $class();
         }
     }
 

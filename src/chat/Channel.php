@@ -58,13 +58,12 @@ class Channel extends Queue
     /**
      * Instantiate a channel.
      *
-     * @param Logger $logger The logger object.
      * @param Message $join The join message received from the IRC.
      */
-    public function __construct(Logger $logger, Message $join)
+    public function __construct(Message $join)
     {
         $this->initRate(1, 3);
-        $this->_logger = $logger;
+        $this->_logger = Logger::getInstance();
         $this->_name = $join->getParam(0);
         $this->_part = false;
 

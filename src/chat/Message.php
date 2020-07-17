@@ -135,6 +135,7 @@ class Message
             ]
         );
 
+        $matches = null;
         $match = preg_match($regex, $this->_raw, $matches);
 
         if (!$match) {
@@ -168,6 +169,7 @@ class Message
         $this->_message = $this->_params[1] ?? null;
         $this->_id = $this->_tags['msg-id'] ?? null;
 
+        $user = null;
         $userMatch = preg_match('/(.*)!(.*)@(.*)/', $this->_from, $user);
 
         if ($userMatch) {

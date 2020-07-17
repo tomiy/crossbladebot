@@ -55,13 +55,12 @@ class EventHandler
     /**
      * Instantiate a new event handler.
      *
-     * @param Logger $logger The logger object.
      */
-    public function __construct(Logger $logger)
+    public function __construct()
     {
         $this->_events = [];
         $this->_uids = [];
-        $this->_logger = $logger;
+        $this->_logger = Logger::getInstance();
     }
 
     /**

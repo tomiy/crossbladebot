@@ -31,13 +31,12 @@ class PingHandler extends AbstractMessageHandler
     /**
      * Initialize the callback map for handling ping messages.
      *
-     * @param Logger $logger The logger object.
      * @param EventHandler $eventHandler The handler holding the component events.
      * @param Client $client The client object.
      */
-    public function __construct(Logger $logger, EventHandler $eventHandler, Client $client)
+    public function __construct(EventHandler $eventHandler, Client $client)
     {
-        parent::__construct($logger, $eventHandler, $client);
+        parent::__construct($eventHandler, $client);
 
         $this->callbackMap = [
             'PING' => 'handlePing',

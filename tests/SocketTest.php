@@ -37,7 +37,7 @@ class SocketTest extends TestCase
      */
     public function testCanInstantiate(): void
     {
-        $this->assertInstanceOf(Socket::class, new Socket(new Logger()));
+        $this->assertInstanceOf(Socket::class, new Socket());
     }
 
     /**
@@ -48,10 +48,11 @@ class SocketTest extends TestCase
      */
     public function testConnectionWithInvalidAddress(): void
     {
-        $logger = new Logger();
+        $logger = Logger::getInstance();
+        $logger->clearLogFile();
         $logFile = $logger->getConfig()->log;
 
-        $socket = new Socket($logger);
+        $socket = new Socket();
         $socket->setAddress('invalid');
 
         try {
@@ -75,10 +76,11 @@ class SocketTest extends TestCase
      */
     public function testConnectionWithInvalidPort(): void
     {
-        $logger = new Logger();
+        $logger = Logger::getInstance();
+        $logger->clearLogFile();
         $logFile = $logger->getConfig()->log;
 
-        $socket = new Socket($logger);
+        $socket = new Socket();
         $socket->setPort(777);
 
         try {
@@ -102,12 +104,13 @@ class SocketTest extends TestCase
      */
     public function testConnection(): void
     {
-        $logger = new Logger();
+        $logger = Logger::getInstance();
+        $logger->clearLogFile();
         $logFile = $logger->getConfig()->log;
         $logger->setLevel(Logger::LEVEL_DEBUG);
 
         try {
-            $socket = new Socket($logger);
+            $socket = new Socket();
         } catch (ReflectionException $e) {
             $this->fail('ReflectionException');
         }

@@ -31,13 +31,12 @@ class TmiHandler extends AbstractMessageHandler
     /**
      * Initialize the callback map for handling tmi messages.
      *
-     * @param Logger $logger The logger object.
      * @param EventHandler $eventHandler The handler holding the component events.
      * @param Client $client The client object.
      */
-    public function __construct(Logger $logger, EventHandler $eventHandler, Client $client)
+    public function __construct(EventHandler $eventHandler, Client $client)
     {
-        parent::__construct($logger, $eventHandler, $client);
+        parent::__construct($eventHandler, $client);
 
         $this->callbackMap = [
             '002' => null,
@@ -82,5 +81,65 @@ class TmiHandler extends AbstractMessageHandler
     {
         $this->logger->debug('Client connected');
         $this->eventHandler->trigger('connect');
+    }
+    
+    /**
+     * Handles the notice messages.
+     *
+     * @param Message $message The message to handle.
+     *
+     * @return void
+     */
+    protected function notice(Message $message): void
+    {
+        foreach ( //TODO: rework
+            [
+                'Login unsuccessful',
+                'Login authentication failed',
+                'Error logging in',
+                'Improperly formatted auth',
+                'Invalid NICK'
+            ] as $needle) {
+                if (strpos($message->getMessage(), $needle) !== false) {
+                    $this->logger->error('Potential auth failure: ' . $needle);
+                    $this->client->disconnect();
+                    break;
+                }
+            }
+    }
+    
+    /**
+     * Handles the user notice messages.
+     *
+     * @param Message $message The message to handle.
+     *
+     * @return void
+     */
+    protected function userNotice(Message $message): void
+    {
+        switch ($message->getId()) {
+            default:
+                //TODO: handle
+                break;
+        }
+    }
+    
+    /**
+     * Handles the user state messages.
+     *
+     * @param Message $message The message to handle.
+     *
+     * @return void
+     */
+    protected function userState(Message $message): void
+    {
+        $channel = $this->client->getChannel($message->getParam(0));
+        if ($channel->isParted() === true) {
+            $this->client->removeChannel($channel);
+            $this->logger->debug('Removed channel ' . $channel->getName() . ' from client');
+            unset($channel);
+            return;
+        }
+        $channel->userState($message);
     }
 }

@@ -12,14 +12,14 @@ declare(strict_types=1);
 
 namespace crossbladebot\service;
 
-use crossbladebot\chat\Message;
-use crossbladebot\core\Client;
-use crossbladebot\core\EventHandler;
-use crossbladebot\debug\Logger;
-use crossbladebot\service\messagehandler\JtvHandler;
-use crossbladebot\service\messagehandler\PingHandler;
-use crossbladebot\service\messagehandler\TmiHandler;
 use crossbladebot\service\messagehandler\UserMessageHandler;
+use crossbladebot\service\messagehandler\TmiHandler;
+use crossbladebot\service\messagehandler\PingHandler;
+use crossbladebot\service\messagehandler\JtvHandler;
+use crossbladebot\debug\Logger;
+use crossbladebot\core\EventHandler;
+use crossbladebot\core\Client;
+use crossbladebot\chat\Message;
 
 /**
  * Provides function to process IRC messages for the client.
@@ -60,18 +60,15 @@ class Processor
     /**
      * Instantiate a new processor.
      *
-     * @param Logger $logger The logger object.
      * @param EventHandler $eventHandler The handler holding the component events.
      * @param Client $client The client object.
      */
-    public function __construct(Logger $logger, EventHandler $eventHandler, Client $client)
+    public function __construct(EventHandler $eventHandler, Client $client)
     {
-        $this->_pingHandler = new PingHandler($logger, $eventHandler, $client);
-        $this->_tmiHandler = new TmiHandler($logger, $eventHandler, $client);
-        $this->_jtvHandler = new JtvHandler($logger, $eventHandler, $client);
-        $this->_userMessageHandler = new UserMessageHandler(
-            $logger, $eventHandler, $client
-        );
+        $this->_pingHandler = new PingHandler($eventHandler, $client);
+        $this->_tmiHandler = new TmiHandler($eventHandler, $client);
+        $this->_jtvHandler = new JtvHandler($eventHandler, $client);
+        $this->_userMessageHandler = new UserMessageHandler($eventHandler, $client);
     }
 
     /**

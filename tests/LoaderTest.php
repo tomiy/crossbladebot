@@ -34,6 +34,6 @@ class LoaderTest extends TestCase
      */
     public function testCanInstantiate(): void
     {
-        $this->assertInstanceOf(Loader::class, new Loader(new Logger()));
+        $this->assertInstanceOf(Loader::class, new Loader());
     }
 }

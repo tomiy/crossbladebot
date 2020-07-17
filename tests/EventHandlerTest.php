@@ -35,7 +35,7 @@ class EventHandlerTest extends TestCase
      */
     public function testCanInstantiate(): void
     {
-        $this->assertInstanceOf(EventHandler::class, new EventHandler(new Logger()));
+        $this->assertInstanceOf(EventHandler::class, new EventHandler());
     }
 
     /**
@@ -46,26 +46,21 @@ class EventHandlerTest extends TestCase
      */
     public function testCanRegisterEvent(): void
     {
-        $logger = new Logger();
+        $logger = Logger::getInstance();
         $logFile = $logger->getConfig()->log;
         $logger->setLevel(Logger::LEVEL_DEBUG);
 
-        $eventHandler = new EventHandler($logger);
+        $eventHandler = new EventHandler();
         $uid = $eventHandler->register(
             'test', function () {
-            print_r('sweet');
-        }
+                print_r('sweet');
+            }
         );
 
         $this->assertGreaterThanOrEqual(1E9, $uid);
         $this->assertGreaterThanOrEqual($uid, 1E10 - 1);
 
-        $this->assertEquals(
-            date('[d/m/y G:i:s] ') .
-            'crossbladebot\core\EventHandler:87 [DEBUG] Registered event ' .//TODO: change bad test data
-            $uid .
-            PHP_EOL,
-            file_get_contents($logFile)
-        );
+        $this->assertStringContainsString('crossbladebot\core\EventHandler', file_get_contents($logFile));
+        $this->assertStringContainsString('[DEBUG] Registered event ' . $uid, file_get_contents($logFile));
     }
 }

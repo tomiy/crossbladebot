@@ -92,23 +92,22 @@ class Client extends Queue
     /**
      * Instantiate a new client.
      *
-     * @param Logger $logger The logger object.
      * @param Socket $socket The socket object holding the socket stream.
      * @param EventHandler $eventHandler The handler holding the component events.
      * @param Loader $loader The loader holding the components.
      * @throws ReflectionException
      */
-    public function __construct(Logger $logger, Socket $socket, EventHandler $eventHandler, Loader $loader)
+    public function __construct(Socket $socket, EventHandler $eventHandler, Loader $loader)
     {
         $this->loadConfig();
         $this->initRate(20, 30);
 
-        $this->_logger = $logger;
+        $this->_logger = Logger::getInstance();
         $this->_socket = $socket;
         $this->_eventHandler = $eventHandler;
         $this->_loader = $loader;
 
-        $this->_processor = new Processor($logger, $eventHandler, $this);
+        $this->_processor = new Processor($eventHandler, $this);
 
         $this->_loader->register($eventHandler, $this);
 

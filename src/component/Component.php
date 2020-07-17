@@ -53,13 +53,12 @@ abstract class Component
     /**
      * Instantiate a component.
      *
-     * @param Logger $logger The logger object.
      * @throws ReflectionException
      */
-    public function __construct(Logger $logger)
+    public function __construct()
     {
         $this->loadConfig('components/');
-        $this->logger = $logger;
+        $this->logger = Logger::getInstance();
 
         $this->events = [];
         if (isset($this->_config->events)) {

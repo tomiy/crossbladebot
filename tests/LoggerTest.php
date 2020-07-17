@@ -33,7 +33,8 @@ class LoggerTest extends TestCase
      */
     public function testCanInstantiate(): void
     {
-        $logger = new Logger();
+        $logger = Logger::getInstance();
+        $logger->clearLogFile();
         $logFile = $logger->getConfig()->log;
         $this->assertInstanceOf(Logger::class, $logger);
         $this->assertFileExists($logFile);
@@ -94,7 +95,8 @@ class LoggerTest extends TestCase
      */
     private function _testCanLog(string $level): array
     {
-        $logger = new Logger();
+        $logger = Logger::getInstance();
+        $logger->clearLogFile();
         $logFile = $logger->getConfig()->log;
         $logger->setLevel(Logger::LEVEL_DEBUG);
         $logger->$level('test');

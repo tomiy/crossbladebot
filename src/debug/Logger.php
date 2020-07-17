@@ -30,6 +30,12 @@ class Logger
     use Configurable;
 
     /**
+     * The Logger instance.
+     * @var Logger
+     */
+    private static ?self $_instance = null;
+    
+    /**
      * The index corresponding to the error level.
      * Used to log when a critical failure happens in the program.
      *
@@ -60,9 +66,21 @@ class Logger
     const LEVEL_DEBUG = 4;
 
     /**
+     * Get the instance of our Logger.
+     * @return self
+     */
+    public static function getInstance(): self
+    {
+        if(is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+    
+    /**
      * Instantiate a new logger.
      */
-    public function __construct()
+    private function __construct()
     {
         try {
             $this->loadConfig();
@@ -70,9 +88,14 @@ class Logger
             //config not found
         }
 
-        file_put_contents($this->_config->log, '');
+        $this->clearLogFile();
     }
 
+    public function clearLogFile(): void
+    {
+        file_put_contents($this->_config->log, '');
+    }
+    
     /**
      * Write a line in the log file for the debug level.
      *
