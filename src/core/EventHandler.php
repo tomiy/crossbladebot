@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace crossbladebot\core;
 
+use crossbladebot\basic\KeyValueArray;
 use crossbladebot\debug\Logger;
 use Exception;
 
@@ -34,17 +35,17 @@ class EventHandler
      * 'eventName2' => ['id3' => callback3, 'id4' => callback4]
      * ]
      *
-     * @var array
+     * @var KeyValueArray
      */
-    private array $_events;
+    private KeyValueArray $_events;
     /**
      * The event ids.
      * Useful for clearing events instead of travelling the event array.
      * ['id1' => 'eventName1', 'id3' => 'eventName2']
      *
-     * @var array
+     * @var KeyValueArray
      */
-    private array $_uids;
+    private KeyValueArray $_uids;
     /**
      * The logger object.
      *
@@ -58,8 +59,9 @@ class EventHandler
      */
     public function __construct()
     {
-        $this->_events = [];
-        $this->_uids = [];
+        $this->setEvents(new KeyValueArray([]));
+        $this->setUids(new KeyValueArray([]));
+        
         $this->_logger = Logger::getInstance();
     }
 
@@ -74,14 +76,14 @@ class EventHandler
      */
     public function register(string $event, callable $callback): int
     {
-        $uid = random_int((int)1E9, (int)1E10 - 1);
+        $uid = random_int(intval(1E9), intval(1E10 - 1));
 
-        if (!isset($this->_events[$event])) {
-            $this->_events[$event] = [];
+        if (is_null($this->getEvents()->get($event))) {
+            $this->getEvents()->set($event, new KeyValueArray([]));
         }
 
-        $this->_events[$event][$uid] = $callback;
-        $this->_uids[$uid] = $event;
+        $this->getEvents()->get($event)->set($uid, $callback);
+        $this->getUids()->set($uid, $event);
 
         $this->_logger->debug('Registered event ' . $uid);
 
@@ -98,11 +100,11 @@ class EventHandler
      */
     public function trigger(string $event, ...$data): void
     {
-        if (!isset($this->_events[$event])) {
+        if (is_null($this->getEvents()->get($event))) {
             return;
         }
 
-        foreach ($this->_events[$event] as $uid => $callback) {
+        foreach ($this->getEvents()->get($event)->getArray() as $uid => $callback) {
             $this->_logger->debug('Triggered event ' . $event . ' (uid ' . $uid . ')');
             call_user_func($callback, ...$data);
         }
@@ -117,12 +119,43 @@ class EventHandler
      */
     public function clear(string $uid): void
     {
-        if (!isset($this->_uids[$uid])) {
+        if (is_null($this->getUids()->get($uid))) {
             return;
         }
-        unset($this->_events[$this->_uids[$uid]][$uid]);
-        unset($this->_uids[$uid]);
+        unset($this->getEvents()->get($this->getUids()->get($uid))[$uid]);
+        unset($this->getUids()[$uid]);
 
         $this->_logger->debug('Cleared event ' . $uid);
+    }
+    /**
+     * @return KeyValueArray
+     */
+    public function getEvents(): KeyValueArray
+    {
+        return $this->_events;
+    }
+
+    /**
+     * @return KeyValueArray
+     */
+    public function getUids(): KeyValueArray
+    {
+        return $this->_uids;
+    }
+
+    /**
+     * @param KeyValueArray $_events
+     */
+    public function setEvents(KeyValueArray $_events): void
+    {
+        $this->_events = $_events;
+    }
+
+    /**
+     * @param KeyValueArray $_uids
+     */
+    public function setUids(KeyValueArray $_uids): void
+    {
+        $this->_uids = $_uids;
     }
 }

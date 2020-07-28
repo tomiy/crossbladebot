@@ -15,7 +15,6 @@ namespace crossbladebot\service\messagehandler;
 use crossbladebot\chat\Message;
 use crossbladebot\core\Client;
 use crossbladebot\core\EventHandler;
-use crossbladebot\debug\Logger;
 
 /**
  * Provides function to handle a ping message.

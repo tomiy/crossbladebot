@@ -16,7 +16,6 @@ use crossbladebot\chat\Channel;
 use crossbladebot\chat\Message;
 use crossbladebot\core\Client;
 use crossbladebot\core\EventHandler;
-use crossbladebot\debug\Logger;
 
 /**
  * Provides function to handle a user message.
@@ -77,7 +76,7 @@ class UserMessageHandler extends AbstractMessageHandler
      */
     protected function part(Message $message): void
     {
-        $channel = $this->client->getChannel($message->getChannel());
+        $channel = $this->client->getChannelByName($message->getChannel());
         $channel->part();
         $this->eventHandler->trigger('part', $channel);
     }
@@ -94,7 +93,7 @@ class UserMessageHandler extends AbstractMessageHandler
         if ($this->client->isMe($message->getUser())) {
             return;
         }
-        $channel = $this->client->getChannel($message->getChannel());
+        $channel = $this->client->getChannelByName($message->getChannel());
         if (substr($message->getMessage(), 0, $this->prefixLen) === $this->prefix) {
             $args = explode(' ', $message->getMessage());
             $message->setCommand(substr(array_shift($args), $this->prefixLen));

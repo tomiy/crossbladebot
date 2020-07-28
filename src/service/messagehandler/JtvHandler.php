@@ -14,7 +14,6 @@ namespace crossbladebot\service\messagehandler;
 
 use crossbladebot\core\Client;
 use crossbladebot\core\EventHandler;
-use crossbladebot\debug\Logger;
 
 /**
  * Provides function to handle a jtv message. (absolutely useless but required)

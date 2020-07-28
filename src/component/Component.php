@@ -12,13 +12,14 @@ declare(strict_types=1);
 
 namespace crossbladebot\component;
 
-use crossbladebot\basic\Configurable;
+use crossbladebot\basic\Configuration;
 use crossbladebot\chat\Channel;
 use crossbladebot\chat\Command;
 use crossbladebot\core\Client;
 use crossbladebot\core\EventHandler;
 use crossbladebot\debug\Logger;
 use Exception;
+use ReflectionClass;
 use ReflectionException;
 
 /**
@@ -32,7 +33,6 @@ use ReflectionException;
  */
 abstract class Component
 {
-    use Configurable;
 
     /**
      * The logger object.
@@ -57,12 +57,12 @@ abstract class Component
      */
     public function __construct()
     {
-        $this->loadConfig('components/');
+        $config = Configuration::load('components/' . (new ReflectionClass($this))->getShortName() . '.json');
         $this->logger = Logger::getInstance();
 
         $this->events = [];
-        if (!is_null($this->getConfig('events'))) {
-            foreach ($this->getConfig('events') as $event => $callback) {
+        if (!is_null($config->get('events'))) {
+            foreach ($config->get('events') as $event => $callback) {
                 if (method_exists($this, $callback)) {
                     $this->events[$event] = $callback;
                     continue;
@@ -72,8 +72,8 @@ abstract class Component
         }
 
         $this->commands = [];
-        if (!is_null($this->getConfig('commands'))) {
-            foreach ($this->getConfig('commands') as $cmd => $cmdInfo) {
+        if (!is_null($config->get('commands'))) {
+            foreach ($config->get('commands') as $cmd => $cmdInfo) {
                 if (method_exists($this, $cmdInfo->callback)) {
                     $this->commands[$cmd] = new Command($cmd, $cmdInfo, $this);
                     continue;

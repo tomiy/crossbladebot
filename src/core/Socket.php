@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace crossbladebot\core;
 
-use crossbladebot\basic\Configurable;
+use crossbladebot\basic\Configuration;
 use crossbladebot\debug\Logger;
 use Exception;
 use ReflectionException;
@@ -28,7 +28,6 @@ use ReflectionException;
  */
 class Socket
 {
-    use Configurable;
 
     /**
      * The socket stream resource.
@@ -62,9 +61,9 @@ class Socket
      */
     public function __construct()
     {
-        $this->loadConfig();
-        $this->setAddress($this->getConfig('address'));
-        $this->setPort($this->getConfig('port'));
+        $config = Configuration::load('Socket.json');
+        $this->setAddress($config->get('address'));
+        $this->setPort($config->get('port'));
         
         $this->_logger = Logger::getInstance();
     }
@@ -79,18 +78,20 @@ class Socket
     {
         $errorCode = $errorString = $hostIp = null;
 
-        $hostname = parse_url($this->_address, PHP_URL_HOST);
+        $hostname = parse_url($this->getAddress(), PHP_URL_HOST);
 
         if ($hostname) {
             $hostIp = gethostbyname($hostname);
 
-            if ($hostIp !== $this->_address) {
-                $this->_socket = @fsockopen(
-                    $this->_address,
-                    $this->_port,
-                    $errorCode,
-                    $errorString,
-                    5
+            if ($hostIp !== $this->getAddress()) {
+                $this->setSocket(
+                    @fsockopen(
+                        $this->getAddress(),
+                        $this->getPort(),
+                        $errorCode,
+                        $errorString,
+                        5
+                    )
                 );
             }
         }
@@ -99,8 +100,8 @@ class Socket
             $this->_logger->error('Couldn\'t create socket');
             throw new Exception('Couldn\'t create socket: ' . $errorCode . ' ' . $errorString);
         }
-        stream_set_blocking($this->_socket, false);
-        stream_set_timeout($this->_socket, 1);
+        stream_set_blocking($this->getSocket(), false);
+        stream_set_timeout($this->getSocket(), 1);
         $this->_logger->debug('Socket created');
     }
 
@@ -111,7 +112,7 @@ class Socket
      */
     public function isConnected(): bool
     {
-        return is_resource($this->_socket);
+        return is_resource($this->getSocket());
     }
 
     /**
@@ -119,18 +120,20 @@ class Socket
      *
      * @return string The data returned by the stream.
      */
-    public function getNext(): string
+    public function getNext(): ?string
     {
-        if (!$this->_socket) {
-            return (string)false;
+        if (!$this->getSocket()) {
+            return null;
         }
-        $line = fgets($this->_socket);
+        
+        $line = fgets($this->getSocket());
 
-        if ($line) {
+        if (is_string($line)) {
             $this->_logger->debug('> ' . $line);
+            return $line;
         }
-
-        return (string)$line;
+        
+        return null;
     }
 
     /**
@@ -142,10 +145,10 @@ class Socket
      */
     public function send(string $data): void
     {
-        if (!$this->_socket) {
+        if (!$this->getSocket()) {
             return;
         }
-        fputs($this->_socket, $data . NL);
+        fputs($this->getSocket(), $data . NL);
 
         $this->_logger->debug('< ' . $data);
     }
@@ -157,9 +160,41 @@ class Socket
      */
     public function close(): void
     {
-        if ($this->_socket) {
-            fclose($this->_socket);
+        if ($this->getSocket()) {
+            fclose($this->getSocket());
         }
+    }
+
+    /**
+     * @return resource
+     */
+    public function getSocket()
+    {
+        return $this->_socket;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddress(): string
+    {
+        return $this->_address;
+    }
+
+    /**
+     * @return number
+     */
+    public function getPort(): int
+    {
+        return $this->_port;
+    }
+
+    /**
+     * @param resource $_socket
+     */
+    public function setSocket($_socket): void
+    {
+        $this->_socket = $_socket;
     }
 
     /**

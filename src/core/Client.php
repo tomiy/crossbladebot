@@ -12,7 +12,8 @@ declare(strict_types=1);
 
 namespace crossbladebot\core;
 
-use crossbladebot\basic\Configurable;
+use crossbladebot\basic\Configuration;
+use crossbladebot\basic\KeyValueArray;
 use crossbladebot\basic\RateLimit;
 use crossbladebot\chat\Channel;
 use crossbladebot\chat\Message;
@@ -36,7 +37,6 @@ use ReflectionException;
  */
 class Client extends Queue
 {
-    use Configurable;
     use RateLimit;
 
     /**
@@ -82,13 +82,17 @@ class Client extends Queue
      * @var string
      */
     private string $_name;
+    private string $_password;
+    private string $_channel;
     /**
      * The channels array holding Channel objects.
      *
-     * @var array
+     * @var KeyValueArray
      */
-    private array $_channels;
+    private KeyValueArray $_channels;
 
+    private string $_prefix;
+    
     /**
      * Instantiate a new client.
      *
@@ -99,19 +103,25 @@ class Client extends Queue
      */
     public function __construct(Socket $socket, EventHandler $eventHandler, Loader $loader)
     {
-        $this->loadConfig();
         $this->initRate(20, 30);
+        
+        $config = Configuration::load('Client.json');
+        
+        $this->setPrefix($config->get('prefix'));
+        $this->setPassword($config->get('password'));
+        $this->setName($config->get('name'));
+        $this->setChannel($config->get('channel'));
 
         $this->_logger = Logger::getInstance();
-        $this->_socket = $socket;
-        $this->_eventHandler = $eventHandler;
-        $this->_loader = $loader;
+        $this->setSocket($socket);
+        $this->setEventHandler($eventHandler);
+        $this->setLoader($loader);
 
-        $this->_processor = new Processor($eventHandler, $this);
+        $this->setProcessor(new Processor($this->getEventHandler(), $this));
 
-        $this->_loader->register($eventHandler, $this);
+        $this->getLoader()->register($this->getEventHandler(), $this);
 
-        $this->_channels = [];
+        $this->setChannels(new KeyValueArray([]));
     }
 
     /**
@@ -125,20 +135,20 @@ class Client extends Queue
     {
         $processed = $this->connect();
 
-        while ($this->_socket->isConnected()) {
+        while ($this->getSocket()->isConnected()) {
             $message = null;
 
             $cost = microtime(true);
-            while ((time() - $this->getLastPing()) > 300 || !$this->_socket->isConnected()) {
+            while ((time() - $this->getLastPing()) > 300 || !$this->getSocket()->isConnected()) {
                 $this->_logger->info('Restarting connection');
                 $processed = $this->connect();
             }
 
-            $data = $this->_socket->getNext();
+            $data = $this->getSocket()->getNext();
 
             if ($data) {
                 $message = new Message($data);
-                $this->_processor->handle($message);
+                $this->getProcessor()->handle($message);
             }
             $this->_pollChannels();
             $processed += $this->processQueue([$this, 'sendToSocket']);
@@ -159,16 +169,16 @@ class Client extends Queue
      * @throws Exception
      */
     public function connect(): int
-    {
-        $this->_socket->connect();
+    {   
+        $this->getSocket()->connect();
         $this->setLastPing(time());
 
         $this->enqueue(
             [
                 'CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership',
-                'PASS ' . $this->getConfig('password'),
-                'NICK ' . $this->getConfig('name'),
-                'JOIN #' . $this->getConfig('channel')
+                'PASS ' . $this->getPassword(),
+                'NICK ' . $this->getName(),
+                'JOIN #' . $this->getChannel()
             ]
         );
 
@@ -205,7 +215,7 @@ class Client extends Queue
     private function _pollChannels(): int
     {
         $processed = 0;
-        foreach ($this->_channels as $channel) {
+        foreach ($this->getChannels() as $channel) {
             $processed += $channel->processQueue([$this, 'enqueue']);
         }
 
@@ -236,7 +246,7 @@ class Client extends Queue
      */
     public function addChannel(Channel $channel): void
     {
-        $this->_channels[$channel->getName()] = $channel;
+        $this->getChannels()->set($channel->getName(), $channel);
     }
 
     /**
@@ -248,7 +258,7 @@ class Client extends Queue
      */
     public function removeChannel(Channel $channel): void
     {
-        unset($this->_channels[$channel->getName()]);
+        unset($this->getChannels()[$channel->getName()]);
     }
 
     /**
@@ -260,7 +270,87 @@ class Client extends Queue
      */
     public function isMe(string $user): bool
     {
-        return $user === $this->_name;
+        return $user === $this->getName();
+    }
+
+    /**
+     * @return \crossbladebot\core\Socket
+     */
+    public function getSocket()
+    {
+        return $this->_socket;
+    }
+
+    /**
+     * @return \crossbladebot\core\EventHandler
+     */
+    public function getEventHandler()
+    {
+        return $this->_eventHandler;
+    }
+
+    /**
+     * @return \crossbladebot\component\Loader
+     */
+    public function getLoader()
+    {
+        return $this->_loader;
+    }
+
+    /**
+     * @return \crossbladebot\service\Processor
+     */
+    public function getProcessor()
+    {
+        return $this->_processor;
+    }
+
+    /**
+     * @return KeyValueArray
+     */
+    public function getChannels()
+    {
+        return $this->_channels;
+    }
+
+    /**
+     * @param \crossbladebot\core\Socket $_socket
+     */
+    public function setSocket($_socket)
+    {
+        $this->_socket = $_socket;
+    }
+
+    /**
+     * @param \crossbladebot\core\EventHandler $_eventHandler
+     */
+    public function setEventHandler($_eventHandler)
+    {
+        $this->_eventHandler = $_eventHandler;
+    }
+
+    /**
+     * @param \crossbladebot\component\Loader $_loader
+     */
+    public function setLoader($_loader)
+    {
+        $this->_loader = $_loader;
+    }
+
+    /**
+     * @param \crossbladebot\service\Processor $_processor
+     */
+    public function setProcessor($_processor)
+    {
+        $this->_processor = $_processor;
+    }
+
+    /**
+     * @param KeyValueArray $_channels
+     */
+    public function setChannels($_channels)
+    {
+        $this->_channels = $_channels;
     }
 
     /**
@@ -270,10 +360,10 @@ class Client extends Queue
      *
      * @return Channel The channel object.
      */
-    public function getChannel(string $name): ?Channel
+    public function getChannelByName(string $name): ?Channel
     {
-        if (isset($this->_channels[$name])) {
-            return $this->_channels[$name];
+        if (!is_null($this->getChannels()->get($name))) {
+            return $this->getChannels()->get($name);
         }
 
         return null;
@@ -289,6 +379,16 @@ class Client extends Queue
         return $this->_name;
     }
 
+    public function setPrefix(string $prefix): void
+    {
+        $this->_prefix = $prefix;
+    }
+    
+    public function getPrefix(): string
+    {
+        return $this->_prefix;
+    }
+    
     /**
      * Set the name of the client.
      *
@@ -301,9 +401,41 @@ class Client extends Queue
         $this->_name = $name;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPassword()
+    {
+        return $this->_password;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getChannel()
+    {
+        return $this->_channel;
+    }
+
+    /**
+     * @param mixed $_password
+     */
+    public function setPassword($_password)
+    {
+        $this->_password = $_password;
+    }
+
+    /**
+     * @param mixed $_channel
+     */
+    public function setChannel($_channel)
+    {
+        $this->_channel = $_channel;
+    }
+
     public function disconnect(): void
     {
-        $this->_socket->close();
+        $this->getSocket()->close();
     }
 
     /**
@@ -317,7 +449,7 @@ class Client extends Queue
     {
         foreach ($messages as $message) {
             $this->_logger->debug('Pushing to stream: "' . trim($message) . '" at time ' . time());
-            $this->_socket->send($message);
+            $this->getSocket()->send($message);
         }
     }
 }

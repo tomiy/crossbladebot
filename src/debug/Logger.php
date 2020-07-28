@@ -12,8 +12,7 @@ declare(strict_types=1);
 
 namespace crossbladebot\debug;
 
-use crossbladebot\basic\Configurable;
-use ReflectionException;
+use crossbladebot\basic\Configuration;
 
 /**
  * Provides functions to write to a log file with different levels of severity.
@@ -27,7 +26,6 @@ use ReflectionException;
  */
 class Logger
 {
-    use Configurable;
 
     /**
      * The Logger instance.
@@ -41,6 +39,12 @@ class Logger
      * @var int
      */
     private int $_level;
+    /**
+     * The log file path.
+     * 
+     * @var string
+     */
+    private string $_logFile;
     /**
      * The index corresponding to the error level.
      * Used to log when a critical failure happens in the program.
@@ -88,19 +92,16 @@ class Logger
      */
     private function __construct()
     {
-        try {
-            $this->loadConfig();
-            $this->setLevel($this->getConfig('level'));
-        } catch (ReflectionException $reflectionException) {
-            //config not found
-        }
+        $config = Configuration::load('Logger.json');
+        $this->setLevel($config->get('level'));
+        $this->setLogFile($config->get('log'));
 
         $this->clearLogFile();
     }
 
     public function clearLogFile(): void
     {
-        file_put_contents($this->getConfig('log'), '');
+        file_put_contents($this->getLogFile(), '');
     }
     
     /**
@@ -125,13 +126,13 @@ class Logger
      */
     private function _write(string $line, int $level): void
     {
-        if ($level <= $this->_level) {
+        if ($level <= $this->getLevel()) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
             $date = date('[d/m/y G:i:s] ');
             $lineNumber = $backtrace[1]['line'];
             $class = $backtrace[2]['class'];
             file_put_contents(
-                $this->getConfig('log'),
+                $this->getLogFile(),
                 trim("$date$class:$lineNumber $line") . PHP_EOL,
                 FILE_APPEND
             );
@@ -175,6 +176,22 @@ class Logger
     }
 
     /**
+     * @return number
+     */
+    public function getLevel(): int
+    {
+        return $this->_level;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogFile(): string
+    {
+        return $this->_logFile;
+    }
+
+    /**
      * Set the debug level.
      *
      * @param integer $level The level index (use the LEVEL_* constants).
@@ -184,5 +201,17 @@ class Logger
     public function setLevel(int $level): void
     {
         $this->_level = $level;
+    }
+    
+    /**
+     * Set the log file path.
+     * 
+     * @param string $logFile the log file path.
+     * 
+     * @return void
+     */
+    public function setLogFile(string $logFile): void
+    {
+        $this->_logFile = $logFile;
     }
 }

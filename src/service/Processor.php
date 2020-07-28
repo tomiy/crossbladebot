@@ -12,14 +12,13 @@ declare(strict_types=1);
 
 namespace crossbladebot\service;
 
-use crossbladebot\service\messagehandler\UserMessageHandler;
-use crossbladebot\service\messagehandler\TmiHandler;
-use crossbladebot\service\messagehandler\PingHandler;
-use crossbladebot\service\messagehandler\JtvHandler;
-use crossbladebot\debug\Logger;
-use crossbladebot\core\EventHandler;
-use crossbladebot\core\Client;
 use crossbladebot\chat\Message;
+use crossbladebot\core\Client;
+use crossbladebot\core\EventHandler;
+use crossbladebot\service\messagehandler\JtvHandler;
+use crossbladebot\service\messagehandler\PingHandler;
+use crossbladebot\service\messagehandler\TmiHandler;
+use crossbladebot\service\messagehandler\UserMessageHandler;
 
 /**
  * Provides function to process IRC messages for the client.

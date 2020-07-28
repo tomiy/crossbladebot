@@ -15,7 +15,6 @@ namespace crossbladebot\service\messagehandler;
 use crossbladebot\chat\Message;
 use crossbladebot\core\Client;
 use crossbladebot\core\EventHandler;
-use crossbladebot\debug\Logger;
 
 /**
  * Provides function to handle a tmi message.
@@ -133,7 +132,7 @@ class TmiHandler extends AbstractMessageHandler
      */
     protected function userState(Message $message): void
     {
-        $channel = $this->client->getChannel($message->getParam(0));
+        $channel = $this->client->getChannelByName($message->getParam(0));
         if ($channel->isParted() === true) {
             $this->client->removeChannel($channel);
             $this->logger->debug('Removed channel ' . $channel->getName() . ' from client');

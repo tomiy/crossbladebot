@@ -79,7 +79,7 @@ abstract class AbstractMessageHandler
         $this->eventHandler = $eventHandler;
         $this->client = $client;
 
-        $this->prefix = $client->getConfig('prefix');
+        $this->prefix = $client->getPrefix();
         $this->prefixLen = strlen($this->prefix);
     }
 
