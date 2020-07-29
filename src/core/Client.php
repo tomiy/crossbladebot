@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace crossbladebot\core;
 
 use crossbladebot\basic\Configuration;
-use crossbladebot\basic\KeyValueArray;
+use crossbladebot\basic\Collection;
 use crossbladebot\basic\RateLimit;
 use crossbladebot\chat\Channel;
 use crossbladebot\chat\Message;
@@ -87,9 +87,9 @@ class Client extends Queue
     /**
      * The channels array holding Channel objects.
      *
-     * @var KeyValueArray
+     * @var Collection
      */
-    private KeyValueArray $_channels;
+    private Collection $_channels;
 
     private string $_prefix;
     
@@ -121,7 +121,7 @@ class Client extends Queue
 
         $this->getLoader()->register($this->getEventHandler(), $this);
 
-        $this->setChannels(new KeyValueArray([]));
+        $this->setChannels(new Collection());
     }
 
     /**
@@ -258,7 +258,7 @@ class Client extends Queue
      */
     public function removeChannel(Channel $channel): void
     {
-        unset($this->getChannels()[$channel->getName()]);
+        $this->getChannels()->unset($channel->getName());
     }
 
     /**
@@ -306,7 +306,7 @@ class Client extends Queue
     }
 
     /**
-     * @return KeyValueArray
+     * @return Collection
      */
     public function getChannels()
     {
@@ -346,7 +346,7 @@ class Client extends Queue
     }
 
     /**
-     * @param KeyValueArray $_channels
+     * @param Collection $_channels
      */
     public function setChannels($_channels)
     {

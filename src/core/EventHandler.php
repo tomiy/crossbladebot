@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace crossbladebot\core;
 
-use crossbladebot\basic\KeyValueArray;
+use crossbladebot\basic\Collection;
 use crossbladebot\debug\Logger;
 use Exception;
 
@@ -35,17 +35,17 @@ class EventHandler
      * 'eventName2' => ['id3' => callback3, 'id4' => callback4]
      * ]
      *
-     * @var KeyValueArray
+     * @var Collection
      */
-    private KeyValueArray $_events;
+    private Collection $_events;
     /**
      * The event ids.
      * Useful for clearing events instead of travelling the event array.
      * ['id1' => 'eventName1', 'id3' => 'eventName2']
      *
-     * @var KeyValueArray
+     * @var Collection
      */
-    private KeyValueArray $_uids;
+    private Collection $_uids;
     /**
      * The logger object.
      *
@@ -59,8 +59,8 @@ class EventHandler
      */
     public function __construct()
     {
-        $this->setEvents(new KeyValueArray([]));
-        $this->setUids(new KeyValueArray([]));
+        $this->setEvents(new Collection());
+        $this->setUids(new Collection());
         
         $this->_logger = Logger::getInstance();
     }
@@ -79,7 +79,7 @@ class EventHandler
         $uid = random_int(intval(1E9), intval(1E10 - 1));
 
         if (is_null($this->getEvents()->get($event))) {
-            $this->getEvents()->set($event, new KeyValueArray([]));
+            $this->getEvents()->set($event, new Collection());
         }
 
         $this->getEvents()->get($event)->set($uid, $callback);
@@ -104,7 +104,7 @@ class EventHandler
             return;
         }
 
-        foreach ($this->getEvents()->get($event)->getArray() as $uid => $callback) {
+        foreach ($this->getEvents()->get($event) as $uid => $callback) {
             $this->_logger->debug('Triggered event ' . $event . ' (uid ' . $uid . ')');
             call_user_func($callback, ...$data);
         }
@@ -122,39 +122,39 @@ class EventHandler
         if (is_null($this->getUids()->get($uid))) {
             return;
         }
-        unset($this->getEvents()->get($this->getUids()->get($uid))[$uid]);
-        unset($this->getUids()[$uid]);
+        $this->getEvents()->get($this->getUids()->get($uid))->unset($uid);
+        $this->getUids()->unset($uid);
 
         $this->_logger->debug('Cleared event ' . $uid);
     }
     /**
-     * @return KeyValueArray
+     * @return Collection
      */
-    public function getEvents(): KeyValueArray
+    public function getEvents(): Collection
     {
         return $this->_events;
     }
 
     /**
-     * @return KeyValueArray
+     * @return Collection
      */
-    public function getUids(): KeyValueArray
+    public function getUids(): Collection
     {
         return $this->_uids;
     }
 
     /**
-     * @param KeyValueArray $_events
+     * @param Collection $_events
      */
-    public function setEvents(KeyValueArray $_events): void
+    public function setEvents(Collection $_events): void
     {
         $this->_events = $_events;
     }
 
     /**
-     * @param KeyValueArray $_uids
+     * @param Collection $_uids
      */
-    public function setUids(KeyValueArray $_uids): void
+    public function setUids(Collection $_uids): void
     {
         $this->_uids = $_uids;
     }

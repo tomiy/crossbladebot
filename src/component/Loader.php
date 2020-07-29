@@ -14,7 +14,7 @@ namespace crossbladebot\component;
 
 use crossbladebot\core\Client;
 use crossbladebot\core\EventHandler;
-use crossbladebot\basic\KeyValueArray;
+use crossbladebot\basic\Collection;
 
 /**
  * Dynamically loads every class from the component folders.
@@ -31,9 +31,9 @@ class Loader
     /**
      * The array of loaded components.
      *
-     * @var KeyValueArray
+     * @var Collection
      */
-    private KeyValueArray $_components;
+    private Collection $_components;
 
     /**
      * Instantiate the loader and all its components.
@@ -41,7 +41,7 @@ class Loader
      */
     public function __construct()
     {
-        $this->setComponents(new KeyValueArray([]));
+        $this->setComponents(new Collection());
         
         foreach (glob(__DIR__ . '/basic/*.php') as $file) {
             $name = basename($file, '.php');
@@ -66,7 +66,7 @@ class Loader
      */
     public function register(EventHandler $eventHandler, Client $client): void
     {
-        foreach ($this->getComponents()->getArray() as $component) {
+        foreach ($this->getComponents() as $component) {
             $component->register($eventHandler, $client);
         }
     }
@@ -76,14 +76,14 @@ class Loader
      *
      * @return array
      */
-    public function getComponents(): KeyValueArray
+    public function getComponents(): Collection
     {
         return $this->_components;
     }
     /**
      * @param array $_components
      */
-    public function setComponents(KeyValueArray $_components)
+    public function setComponents(Collection $_components)
     {
         $this->_components = $_components;
     }
